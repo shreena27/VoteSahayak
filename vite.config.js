@@ -13,6 +13,12 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // The Mixpanel SDK is dynamically import()'d only once a real
+        // analytics token exists (see src/lib/analytics.js) specifically so
+        // it never costs the offline shell anything when analytics is off —
+        // precaching it here at install time would silently undo that.
+        // Normal browser HTTP caching still applies whenever it does load.
+        globIgnores: ['**/mixpanel*.js'],
       },
       manifest: {
         name: 'Vote Sahayak',

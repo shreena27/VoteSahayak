@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { trackLangSelected } from '../lib/analytics.js'
 
 const STORAGE_KEY = 'voteSahayak.lang'
 
@@ -22,6 +23,7 @@ export function LanguageProvider({ children }) {
   const setLang = useCallback((next) => {
     if (next !== 'en' && next !== 'hi') return
     setLangState(next)
+    trackLangSelected(next)
     try {
       window.localStorage.setItem(STORAGE_KEY, next)
     } catch {
