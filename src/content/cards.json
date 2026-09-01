@@ -7,9 +7,15 @@
     "meaning_en": "You moved, so your voter registration needs to move with you. This is normal and common — Form 8 covers exactly this, no other form needed.",
     "meaning_hi": "आप कहीं और रहने चले गए हैं, इसलिए आपका वोटर पंजीकरण भी वहीं होना चाहिए। यह सामान्य और आम बात है — फॉर्म 8 इसे पूरी तरह कवर करता है, किसी और फॉर्म की ज़रूरत नहीं।",
     "form_id": "form-8",
-    "timeline_en": "Usually a few weeks. In some documented cases it has taken up to 6 months, so it helps to apply as early as you can.",
-    "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है। कुछ मामलों में 6 महीने तक भी लग सकते हैं, इसलिए जितनी जल्दी हो सके आवेदन करना बेहतर है।",
-    "rejection_tags": ["Not \"ordinarily resident\" — about 12–15% of cases"],
+    "timeline_en": "Usually a few weeks. In one documented case (a former diplomat's public account) it took up to 6 months — treat that as a possibility, not a guarantee, and apply as early as you can.",
+    "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है। एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार) इसमें 6 महीने तक लगे — इसे एक संभावना मानें, गारंटी नहीं, और जितनी जल्दी हो सके आवेदन करें।",
+    "rejection_tags": [
+      {
+        "id": "reject-not-ordinarily-resident",
+        "label_en": "Not \"ordinarily resident\" — about 12–15% of cases (research estimate, not an official figure)",
+        "label_hi": "\"सामान्य निवासी\" नहीं — लगभग 12–15% मामलों में (शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      }
+    ],
     "document_requirements": [
       {
         "id": "doc-address-proof",

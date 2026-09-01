@@ -1,0 +1,334 @@
+/* Action Card ("parchi") styling, ported directly from the locked mockup
+   (vote-sahayak-mockups-v1.html, .receipt / .stamp / .listen-btn / .btn-wa
+   rules) rather than redesigned. Selectors keep their mockup names so this
+   stays diffable against the reference file. */
+
+.receipt {
+  background: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.31 0 0 0 0 0.24 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  border: none;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  box-shadow: var(--shadow-lift);
+  padding-bottom: 10px;
+  max-width: 420px;
+  margin: 0 auto;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+  clip-path: polygon(
+    0 0, 100% 0, 100% calc(100% - 8px),
+    97.5% 100%, 95% calc(100% - 8px), 92.5% 100%, 90% calc(100% - 8px), 87.5% 100%,
+    85% calc(100% - 8px), 82.5% 100%, 80% calc(100% - 8px), 77.5% 100%,
+    75% calc(100% - 8px), 72.5% 100%, 70% calc(100% - 8px), 67.5% 100%,
+    65% calc(100% - 8px), 62.5% 100%, 60% calc(100% - 8px), 57.5% 100%,
+    55% calc(100% - 8px), 52.5% 100%, 50% calc(100% - 8px), 47.5% 100%,
+    45% calc(100% - 8px), 42.5% 100%, 40% calc(100% - 8px), 37.5% 100%,
+    35% calc(100% - 8px), 32.5% 100%, 30% calc(100% - 8px), 27.5% 100%,
+    25% calc(100% - 8px), 22.5% 100%, 20% calc(100% - 8px), 17.5% 100%,
+    15% calc(100% - 8px), 12.5% 100%, 10% calc(100% - 8px), 7.5% 100%,
+    5% calc(100% - 8px), 2.5% 100%, 0 calc(100% - 8px)
+  );
+}
+.receipt:hover {
+  transform: translateY(-3px) rotate(-0.3deg);
+  box-shadow: 0 4px 8px rgba(33, 28, 21, 0.1), 0 24px 44px -18px rgba(33, 28, 21, 0.32);
+}
+.receipt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 18px);
+  opacity: 0.55;
+}
+.receipt-inner {
+  padding: 22px 18px 18px;
+}
+
+.receipt-tag {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: 5px;
+  padding: 4px 8px;
+  margin-bottom: 14px;
+}
+.receipt h3 {
+  font-size: 19px;
+  line-height: 1.4;
+  margin: 0 0 4px;
+}
+
+.listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  background: var(--surface);
+  cursor: pointer;
+  font-family: inherit;
+  margin: 0 0 12px;
+}
+
+.receipt-meaning {
+  background: var(--surface-alt);
+  border-radius: 11px;
+  padding: 13px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 14px 0;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.receipt-row:last-child {
+  border-bottom: none;
+}
+.receipt-row .k {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  flex: none;
+  width: 38%;
+}
+.receipt-row .v {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+.receipt-row.stack {
+  display: block;
+}
+.receipt-row.stack .k {
+  display: block;
+  width: auto;
+  margin-bottom: 5px;
+}
+.receipt-row.stack .v {
+  display: block;
+  text-align: left;
+}
+
+.receipt-rejects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 6px;
+}
+.reject-tag {
+  background: var(--amber-soft);
+  color: var(--amber-ink);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 999px;
+}
+
+.doclist-heading {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 14px 0 8px;
+}
+
+.receipt-doclist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.receipt-doclist li {
+  display: flex;
+  gap: 9px;
+  font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.receipt-doclist li:last-child {
+  border: none;
+}
+.receipt-doclist .box {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  flex: none;
+  margin-top: 2px;
+}
+.receipt-doclist .any-one-of {
+  display: block;
+  font-size: 10.5px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+
+.receipt-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.receipt-steps li {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.receipt-steps .n {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.receipt-steps .step-ico {
+  flex: none;
+  font-size: 15px;
+  width: 22px;
+  text-align: center;
+}
+.receipt-steps .body {
+  flex: 1;
+  min-width: 0;
+}
+.step-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  margin-right: 6px;
+  border: 1.5px solid var(--accent);
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface);
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.stamp {
+  display: inline-block;
+  width: 96px;
+  height: 96px;
+  color: var(--accent-ink);
+  transform: rotate(-8deg);
+  margin: 6px 0 12px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 .45'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 .45'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)'/%3E%3C/svg%3E");
+}
+.stamp svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.stamp-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 2px 0 -6px;
+}
+.stamp-row .stamp {
+  margin: 0;
+}
+
+.receipt-footer {
+  border-top: 1px dashed var(--border-strong);
+  margin-top: 16px;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+.receipt-footer .stale-flag {
+  display: block;
+  color: var(--amber-ink);
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.btn-wa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ok);
+  color: var(--on-ok);
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Print: the card fills the page, everything else disappears. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt,
+  .receipt * {
+    visibility: visible;
+  }
+  .receipt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    clip-path: none;
+    background-image: none;
+  }
+  .listen-btn,
+  .step-act,
+  .receipt-actions {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt {
+    transition: none;
+  }
+  .receipt:hover {
+    transform: none;
+  }
+}

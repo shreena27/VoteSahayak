@@ -11,6 +11,7 @@
     "validate:content": "node scripts/validate-content.mjs"
   },
   "dependencies": {
+    "html-to-image": "^1.11.13",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

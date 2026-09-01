@@ -1,4 +1,21 @@
 {
   "app.name": "वोट सहायक",
-  "app.tagline": "वोटर ID का काम, सरल भाषा में"
+  "app.tagline": "वोटर ID का काम, सरल भाषा में",
+
+  "card.listen": "🔊 सुनें · Listen",
+  "card.helpline": "हेल्पलाइन: 1950",
+  "card.verified": "सत्यापित",
+  "card.stale": "जानकारी पुरानी हो सकती है — कृपया दोबारा जांचें",
+  "card.documentsNeeded": "ज़रूरी दस्तावेज़",
+  "card.documentsAnyOneOf": "इनमें से कोई एक",
+  "card.timeline": "समय",
+  "card.shareWhatsapp": "WhatsApp पर शेयर करें",
+  "card.save": "सेव करें",
+  "card.saved": "सेव हो गया",
+  "card.saveFailed": "इस डिवाइस पर सेव नहीं हो सका",
+  "card.open": "खोलें ↗",
+  "card.tag.sirOutcome": "SIR जोखिम जांच",
+  "card.tag.sirNotice": "SIR नोटिस · जवाब",
+  "card.tag.wizardResult": "आपका परिणाम",
+  "card.tag.gatherFirst": "शुरू करने से पहले"
 }

@@ -1,4 +1,21 @@
 {
   "app.name": "Vote Sahayak",
-  "app.tagline": "Voter ID help, in plain words."
+  "app.tagline": "Voter ID help, in plain words.",
+
+  "card.listen": "🔊 सुनें · Listen",
+  "card.helpline": "Helpline: 1950",
+  "card.verified": "Verified",
+  "card.stale": "May be out of date — please recheck",
+  "card.documentsNeeded": "Documents needed",
+  "card.documentsAnyOneOf": "Any one of these",
+  "card.timeline": "Timeline",
+  "card.shareWhatsapp": "Share on WhatsApp",
+  "card.save": "Save",
+  "card.saved": "Saved",
+  "card.saveFailed": "Couldn't save on this device",
+  "card.open": "Open ↗",
+  "card.tag.sirOutcome": "SIR Risk Check",
+  "card.tag.sirNotice": "SIR Notice · Response",
+  "card.tag.wizardResult": "Your Result",
+  "card.tag.gatherFirst": "Before You Start"
 }
