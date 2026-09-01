@@ -56,6 +56,7 @@
  * @property {DocumentReq[]} document_requirements - denormalized here (not a separate top-level array) since each card authors its own document list; field names still match the ERD's DOCUMENT_REQ entity minus the redundant card_id FK
  * @property {Step[]} steps         - denormalized for the same reason as document_requirements; matches the ERD's STEP entity minus card_id
  * @property {string} source_line   - e.g. "Source: Election Commission of India"; shown in the UI's permanent trust footer. Names the card's primary authoritative source — a claim inside the card that comes from elsewhere (a press account, a research estimate) is attributed inline in that claim's own text instead, not folded into this single line.
+ * @property {string} source_line_hi - the same trust-footer line in Hindi; must not fall back to the English string in Hindi mode, same rule this project already applies to form names and dates
  * @property {string} verified_on   - ISO date "YYYY-MM-DD"
  */
 
@@ -268,7 +269,7 @@ export function validateCards(cards, forms) {
 
   for (const card of cards) {
     const label = card?.id ?? '(missing id)';
-    for (const field of ['id', 'kind', 'headline_en', 'headline_hi', 'meaning_en', 'meaning_hi', 'timeline_en', 'timeline_hi', 'source_line', 'verified_on']) {
+    for (const field of ['id', 'kind', 'headline_en', 'headline_hi', 'meaning_en', 'meaning_hi', 'timeline_en', 'timeline_hi', 'source_line', 'source_line_hi', 'verified_on']) {
       if (!card[field]) errors.push(`"${label}" is missing required field "${field}"`);
     }
     if (card.id) {

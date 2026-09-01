@@ -167,13 +167,16 @@ export function ActionCard({ card, forms = [] }) {
         </div>
 
         {card.rejection_tags.length > 0 && (
-          <div className="receipt-rejects">
-            {card.rejection_tags.map((tagItem) => (
-              <span key={tagItem.id} className="reject-tag">
-                {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
-              </span>
-            ))}
-          </div>
+          <>
+            <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
+            <div className="receipt-rejects">
+              {card.rejection_tags.map((tagItem) => (
+                <span key={tagItem.id} className="reject-tag">
+                  {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
+                </span>
+              ))}
+            </div>
+          </>
         )}
 
         {card.document_requirements.length > 0 && (
@@ -243,7 +246,7 @@ export function ActionCard({ card, forms = [] }) {
 
         <div className="receipt-footer">
           <span>
-            {card.source_line} · {t('card.verified')} {formatDisplayDate(card.verified_on, activeLang)}
+            {activeLang === 'hi' ? card.source_line_hi : card.source_line} · {t('card.verified')} {formatDisplayDate(card.verified_on, activeLang)}
             {stale && <span className="stale-flag">{t('card.stale')}</span>}
           </span>
           <span>{t('card.helpline')}</span>
