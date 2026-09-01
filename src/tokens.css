@@ -1,0 +1,52 @@
+:root{
+  --bg:#F7F2E7; --surface:#FFFFFF; --surface-alt:#EFE7D3; --surface-sunken:#EDE4CE;
+  --ink:#211C15; --ink-secondary:#57503E; --ink-muted:#6E6752;
+  --border:#E0D4B4; --border-strong:#CBBB8E;
+  --accent:#4A2E8C; --accent-ink:#3A2470; --accent-soft:#ECE6F7; --on-accent:#FFFFFF;
+  --amber:#B07A1E; --amber-soft:#F7EDD8; --amber-ink:#8C6018;
+  --ok:#3E7A57; --ok-soft:#E7F1EA; --on-ok:#FFFFFF;
+  --danger:#A6433A; --danger-soft:#F5E6E4;
+  --neutral:#6B6558; --neutral-soft:#EAE4D5;
+  --shadow:0 1px 2px rgba(33,28,21,.06), 0 8px 20px -12px rgba(33,28,21,.18);
+  --shadow-lift:0 2px 4px rgba(33,28,21,.08), 0 16px 32px -16px rgba(33,28,21,.28);
+  --radius:14px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+    --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+    --border:#3B3424; --border-strong:#4E4530;
+    --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+    --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+    --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+    --danger:#D98077; --danger-soft:#3A211E;
+    --neutral:#A39C89; --neutral-soft:#2A251A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+  }
+}
+
+:root[data-theme="dark"]{
+  --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+  --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+  --border:#3B3424; --border-strong:#4E4530;
+  --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+  --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+  --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+  --danger:#D98077; --danger-soft:#3A211E;
+  --neutral:#A39C89; --neutral-soft:#2A251A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans Devanagari','Hind',-apple-system,sans-serif;
+  margin:0;
+  padding:0;
+  font-variant-numeric:tabular-nums;
+}
