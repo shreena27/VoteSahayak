@@ -133,13 +133,13 @@
     "rejection_tags": [
       {
         "id": "reject-duplicate-entry",
-        "label_en": "Duplicate entry (30–35%)",
-        "label_hi": "डुप्लीकेट एंट्री (30–35%)"
+        "label_en": "Duplicate entry (30–35% of cases, research estimate, not an official figure)",
+        "label_hi": "डुप्लीकेट एंट्री (लगभग 30–35% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
       },
       {
         "id": "reject-blo-verify",
-        "label_en": "BLO couldn't verify address (20–25%)",
-        "label_hi": "BLO पता सत्यापित नहीं कर सका (20–25%)"
+        "label_en": "BLO couldn't verify address (20–25% of cases, research estimate, not an official figure)",
+        "label_hi": "BLO पता सत्यापित नहीं कर सका (लगभग 20–25% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
       },
       {
         "id": "reject-photo-mismatch",
@@ -707,6 +707,231 @@
     ],
     "source_line": "Source: ECI Form Inventory",
     "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-sir-found-inactive",
+    "kind": "sir-outcome",
+    "headline_en": "Your registration is marked inactive",
+    "headline_hi": "आपका पंजीकरण निष्क्रिय (inactive) दिखा रहा है",
+    "meaning_en": "You can still vote. Voting itself moves your status back to active. But don't wait for election day — confirm with your local election office before then.",
+    "meaning_hi": "आप अब भी वोट डाल सकते हैं। वोट डालने से आपकी स्थिति अपने आप सक्रिय हो जाती है। लेकिन चुनाव के दिन तक इंतज़ार न करें — उससे पहले अपने स्थानीय चुनाव कार्यालय से पुष्टि कर लें।",
+    "form_id": null,
+    "timeline_en": "There's no fixed processing time for this — the sooner you confirm with your Booth Level Officer (BLO), the sooner it's sorted.",
+    "timeline_hi": "इसके लिए कोई तय प्रक्रिया-समय नहीं है — जितनी जल्दी आप अपने बूथ लेवल ऑफिसर (BLO) से पुष्टि करेंगे, उतनी जल्दी यह ठीक हो जाएगा।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-inactive-aadhaar",
+        "label_en": "Aadhaar card",
+        "label_hi": "आधार कार्ड",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-inactive-epic",
+        "label_en": "Voter ID (EPIC) card",
+        "label_hi": "वोटर ID (EPIC) कार्ड",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-inactive-ration",
+        "label_en": "Ration card",
+        "label_hi": "राशन कार्ड",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-inactive-call",
+        "order": 1,
+        "text_en": "Call the helpline and ask what \"inactive\" means for your specific entry",
+        "text_hi": "हेल्पलाइन पर कॉल करें और पूछें कि आपकी एंट्री के लिए \"निष्क्रिय (inactive)\" का क्या मतलब है",
+        "icon": "phone",
+        "action_kind": "tel",
+        "action_value": "tel:1950"
+      },
+      {
+        "id": "step-inactive-blo",
+        "order": 2,
+        "text_en": "Visit or call your local Booth Level Officer (BLO) and ask them to confirm and reactivate your registration. Carry any one of the documents above",
+        "text_hi": "अपने स्थानीय बूथ लेवल ऑफिसर (BLO) से मिलें या कॉल करें और उनसे अपना पंजीकरण पुष्टि व सक्रिय करने को कहें। ऊपर दिए गए किसी एक दस्तावेज़ को साथ रखें",
+        "icon": "info",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-inactive-save",
+        "order": 3,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-inactive-share",
+        "order": 4,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग (आपके द्वारा चुना गया SIR खोज परिणाम)",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-sir-found-different-spelling",
+    "kind": "sir-outcome",
+    "headline_en": "A similar name appeared, not an exact match",
+    "headline_hi": "मिलता-जुलता नाम दिखा, पूरी तरह एक जैसा नहीं",
+    "meaning_en": "This is common — small spelling differences between how your name was typed and how it's typed in the voter roll happen often, and don't always mean you're not registered. Look at the other details in the result: if the age, address area, or a relative's name shown matches you, this is likely your entry, just spelled differently.",
+    "meaning_hi": "यह आम बात है — आपके नाम की स्पेलिंग और वोटर सूची में दर्ज स्पेलिंग में छोटा अंतर अक्सर होता है, और इसका मतलब यह नहीं कि आप पंजीकृत नहीं हैं। परिणाम में दी गई बाकी जानकारी देखें: अगर उम्र, पते का इलाका, या किसी रिश्तेदार का नाम आपसे मेल खाता है, तो यह संभवतः आपकी ही एंट्री है, बस स्पेलिंग अलग है।",
+    "form_id": null,
+    "timeline_en": "No deadline here — this is just a matching check, not an application. Correcting the spelling for the future is optional, not urgent.",
+    "timeline_hi": "यहां कोई समय-सीमा नहीं है — यह सिर्फ मिलान की जांच है, कोई आवेदन नहीं। भविष्य के लिए स्पेलिंग सुधारना वैकल्पिक है, ज़रूरी नहीं।",
+    "rejection_tags": [],
+    "document_requirements": [],
+    "steps": [
+      {
+        "id": "step-spelling-compare",
+        "order": 1,
+        "text_en": "Compare the age, address area, and any relative's name shown — do they match you?",
+        "text_hi": "दिखाई गई उम्र, पते का इलाका, और किसी रिश्तेदार का नाम मिलाकर देखें — क्या ये आपसे मेल खाते हैं?",
+        "icon": "info",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-spelling-call",
+        "order": 2,
+        "text_en": "Still not sure? Call the helpline to confirm",
+        "text_hi": "फिर भी पक्का नहीं? पुष्टि के लिए हेल्पलाइन पर कॉल करें",
+        "icon": "phone",
+        "action_kind": "tel",
+        "action_value": "tel:1950"
+      },
+      {
+        "id": "step-spelling-save",
+        "order": 3,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      }
+    ],
+    "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग (आपके द्वारा चुना गया SIR खोज परिणाम)",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-sir-not-found",
+    "kind": "sir-outcome",
+    "headline_en": "No matching name appeared",
+    "headline_hi": "कोई मिलता-जुलता नाम नहीं दिखा",
+    "meaning_en": "This doesn't automatically mean you've been removed — the official site's search can miss a match for small spelling or entry reasons. Before assuming the worst, try again with one of your name variants, or add your district to narrow the search. If it's still not found after that, this is worth confirming directly with your Booth Level Officer (BLO) or the helpline, calmly and soon.",
+    "meaning_hi": "इसका यह मतलब नहीं कि आपका नाम हटा दिया गया है — आधिकारिक साइट की खोज छोटी स्पेलिंग या एंट्री वजहों से मेल न ढूंढ पाए, यह हो सकता है। सबसे बुरा मान लेने से पहले, अपने किसी नाम-वेरिएंट के साथ दोबारा कोशिश करें, या खोज को सीमित करने के लिए अपना ज़िला जोड़ें। अगर उसके बाद भी नहीं मिलता, तो शांति से लेकिन जल्द ही अपने बूथ लेवल ऑफिसर (BLO) या हेल्पलाइन से सीधे पुष्टि कर लें।",
+    "form_id": null,
+    "timeline_en": "Confirm with your BLO or the helpline soon rather than waiting — but this alone isn't an emergency.",
+    "timeline_hi": "इंतज़ार करने के बजाय जल्द ही अपने BLO या हेल्पलाइन से पुष्टि कर लें — लेकिन सिर्फ इतने से यह कोई आपातकाल नहीं है।",
+    "rejection_tags": [
+      {
+        "id": "reject-not-found-duplicate",
+        "label_en": "Duplicate entry (30–35% of cases, research estimate, not an official figure)",
+        "label_hi": "डुप्लीकेट एंट्री (लगभग 30–35% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      },
+      {
+        "id": "reject-not-found-blo",
+        "label_en": "BLO couldn't verify the address on file (20–25% of cases, research estimate, not an official figure)",
+        "label_hi": "BLO पते की पुष्टि नहीं कर सका (लगभग 20–25% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      },
+      {
+        "id": "reject-not-found-not-ordinarily-resident",
+        "label_en": "Not \"ordinarily resident\" — about 12–15% of cases (research estimate, not an official figure)",
+        "label_hi": "\"सामान्य निवासी\" नहीं — लगभग 12–15% मामलों में (शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      }
+    ],
+    "document_requirements": [],
+    "steps": [
+      {
+        "id": "step-not-found-retry",
+        "order": 1,
+        "text_en": "Try the official search again with a name variant, or add your district",
+        "text_hi": "किसी नाम-वेरिएंट के साथ, या अपना ज़िला जोड़कर, आधिकारिक खोज दोबारा आज़माएं",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-not-found-call",
+        "order": 2,
+        "text_en": "Still nothing? Call the helpline or visit your BLO to confirm",
+        "text_hi": "फिर भी कुछ नहीं? पुष्टि के लिए हेल्पलाइन पर कॉल करें या अपने BLO से मिलें",
+        "icon": "phone",
+        "action_kind": "tel",
+        "action_value": "tel:1950"
+      },
+      {
+        "id": "step-not-found-save",
+        "order": 3,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-not-found-share",
+        "order": 4,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग (आपके द्वारा चुना गया SIR खोज परिणाम)",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-sir-incomplete",
+    "kind": "sir-outcome",
+    "headline_en": "Couldn't complete the check — that's okay",
+    "headline_hi": "जांच पूरी नहीं हो पाई — कोई बात नहीं",
+    "meaning_en": "The official site can be slow, the CAPTCHA can be hard to read, or it may have been briefly down. This doesn't tell you anything about your registration either way. You can try again anytime, or call the helpline directly.",
+    "meaning_hi": "आधिकारिक साइट कभी-कभी धीमी हो सकती है, CAPTCHA पढ़ने में मुश्किल हो सकता है, या साइट कुछ समय के लिए बंद हो सकती है। इससे आपके पंजीकरण के बारे में कुछ भी पता नहीं चलता। आप जब चाहें दोबारा कोशिश कर सकते हैं, या सीधे हेल्पलाइन पर कॉल कर सकते हैं।",
+    "form_id": null,
+    "timeline_en": "No rush — try again whenever the site or your connection is working better.",
+    "timeline_hi": "कोई जल्दी नहीं — जब साइट या आपका इंटरनेट कनेक्शन बेहतर काम करे, तब दोबारा कोशिश करें।",
+    "rejection_tags": [],
+    "document_requirements": [],
+    "steps": [
+      {
+        "id": "step-incomplete-retry",
+        "order": 1,
+        "text_en": "Try the official search again",
+        "text_hi": "आधिकारिक खोज फिर से आज़माएं",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-incomplete-call",
+        "order": 2,
+        "text_en": "Or call the helpline directly",
+        "text_hi": "या सीधे हेल्पलाइन पर कॉल करें",
+        "icon": "phone",
+        "action_kind": "tel",
+        "action_value": "tel:1950"
+      },
+      {
+        "id": "step-incomplete-save",
+        "order": 3,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      }
+    ],
+    "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग (आपके द्वारा चुना गया SIR खोज परिणाम)",
     "verified_on": "2026-09-01"
   }
 ]

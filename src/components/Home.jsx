@@ -13,14 +13,14 @@ import './Home.css'
  *
  * The SIR-check row and the chat bubble are both real, fully-styled per the
  * locked design (not dimmed — dimming one row would itself violate the
- * "equal peer" decision), but neither has a working destination yet: the SIR
- * flow is Phase 2 step 9 and Chunav Saathi is Phase 3 step 12. Tapping either
- * shows an honest "not built yet" notice instead of doing nothing or
- * navigating somewhere broken.
+ * "equal peer" decision). The SIR flow is real as of Phase 2 step 9; Chunav
+ * Saathi is still Phase 3 step 12, so its bubble still shows an honest "not
+ * built yet" notice rather than doing nothing or navigating somewhere
+ * broken.
  *
- * @param {{ onOpenPicker: () => void }} props
+ * @param {{ onOpenPicker: () => void, onOpenSir: () => void }} props
  */
-export function Home({ onOpenPicker }) {
+export function Home({ onOpenPicker, onOpenSir }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
@@ -56,7 +56,7 @@ export function Home({ onOpenPicker }) {
         </div>
       )}
 
-      <button type="button" className="menu-row" onClick={() => setComingSoon(t('home.sirComingSoon'))}>
+      <button type="button" className="menu-row" onClick={onOpenSir}>
         <div className="ico" aria-hidden="true">
           🔍
         </div>
