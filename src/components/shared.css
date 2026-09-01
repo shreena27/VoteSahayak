@@ -1,0 +1,84 @@
+/* Shared chrome used by more than one real screen (Home, Wizard, and later
+   the SIR flow) — ported directly from the locked mockup's own "shared
+   components" block (app-header/back/title, btn-primary/secondary/text),
+   not redesigned. Imported once per screen component that needs it. */
+
+.app-header {
+  padding: 6px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-header .back {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--ink-secondary);
+  flex: none;
+  background: var(--surface);
+  cursor: pointer;
+  font-family: inherit;
+}
+.app-header .title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--accent-ink);
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--ink-secondary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-header .back {
+    transition: none;
+  }
+}

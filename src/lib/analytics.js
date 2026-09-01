@@ -53,6 +53,17 @@ if (enabled) {
       track_pageview: false,
       ip: false,
       persistence: 'localStorage',
+      // `autocapture:false`/`ip:false` alone don't stop Mixpanel's default
+      // super-properties ($current_url, $referrer, etc.) from riding along
+      // on every event — confirmed on the wire in the Phase 1 step 5 review.
+      // Harmless while the app is a single "/" route, but the wizard this
+      // step adds is exactly the kind of UI that could put state in a query
+      // string later, which would then reach Mixpanel with no code change
+      // and no review. Blacklisted here as defense in depth (the wizard
+      // itself is also built to keep step/answer state out of the URL in
+      // the first place, so this should stay a no-op belt-and-braces check,
+      // not the only thing standing between user state and analytics).
+      property_blacklist: ['$current_url', '$referrer', '$referring_domain', '$initial_referrer', '$initial_referring_domain'],
     })
     client = mixpanel
     for (const [eventName, props] of queue) client.track(eventName, props)

@@ -1,0 +1,117 @@
+/* Wizard engine screens — ported directly from the locked mockup's task-
+   picker/chip-question rules (.chip-row / .chip / .preflight / .advance-hint
+   / .wizard-slide), not redesigned. One question per screen, chips not
+   dropdowns, no progress bar (implies bureaucratic length — deliberately
+   avoided per this project's design history). */
+
+.wizard-screen {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 18px 100px;
+}
+
+.preflight {
+  background: var(--surface-alt);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.preflight .glyph {
+  font-size: 16px;
+  flex: none;
+}
+.preflight .txt {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+.preflight .txt b {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 3px;
+}
+
+.wizard-question {
+  font-size: 19px;
+  margin: 6px 0 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 22px;
+}
+.chip-row.stacked {
+  flex-direction: column;
+}
+.chip {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.18s ease-out, border-color 0.18s ease-out, background 0.18s ease-out;
+}
+.chip:hover {
+  border-color: var(--accent);
+}
+.chip.sel {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.chip-row.stacked .chip {
+  width: 100%;
+  text-align: center;
+  padding: 14px;
+}
+
+.advance-hint {
+  font-size: 11.5px;
+  color: var(--ink-muted);
+  margin-top: 14px;
+  text-align: center;
+}
+
+.wizard-slide {
+  animation: slide-in 0.18s ease-out;
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.wizard-result {
+  padding-top: 12px;
+}
+.wizard-result .back-home {
+  margin-top: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard-slide {
+    animation: none;
+  }
+  .chip {
+    transition: none;
+  }
+}

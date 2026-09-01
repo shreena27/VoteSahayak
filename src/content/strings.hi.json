@@ -19,5 +19,23 @@
   "card.tag.sirOutcome": "SIR जोखिम जांच",
   "card.tag.sirNotice": "SIR नोटिस · जवाब",
   "card.tag.wizardResult": "आपका परिणाम",
-  "card.tag.gatherFirst": "शुरू करने से पहले"
+  "card.tag.gatherFirst": "शुरू करने से पहले",
+
+  "chat.name": "चुनाव साथी",
+
+  "home.sirRow.title": "क्या मेरा नाम अभी भी सूची में है?",
+  "home.sirRow.subtitle": "देखें कि हाल के पुनरीक्षण का आप पर असर पड़ा या नहीं",
+  "home.wizardRow.title": "मेरी जानकारी ग़लत है, या मैं स्थानांतरित हुआ/हुई हूँ",
+  "home.wizardRow.subtitle": "अपनी स्थिति के लिए सही फ़ॉर्म, सरल भाषा में",
+  "home.sirComingSoon": "यह जल्द ही बन रहा है — कृपया बाद में देखें।",
+  "home.chatComingSoon": "चुनाव साथी जल्द आ रहा है — कृपया बाद में देखें।",
+
+  "wizard.back": "वापस",
+  "wizard.continue": "आगे बढ़ें",
+  "wizard.multiSelectHint": "जो लागू हो वह चुनें, फिर आगे बढ़ें",
+  "wizard.singleSelectHint": "आगे बढ़ने के लिए एक जवाब चुनें",
+  "wizard.taskPicker.title": "मुझे क्या चाहिए",
+  "wizard.preflight.label": "तैयार रखें",
+  "wizard.preflight.body": "आधार या सही जानकारी का अन्य प्रमाण, और अगर आपके पास है तो आपका वोटर ID (EPIC) नंबर।",
+  "wizard.backToHome": "होम पर वापस जाएं"
 }

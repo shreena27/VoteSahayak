@@ -1,0 +1,18 @@
+[
+  {
+    "id": "q-correct-what-wrong",
+    "task_id": "correct-details",
+    "text_en": "What's wrong on your card?",
+    "text_hi": "आपके कार्ड पर क्या गलत है?",
+    "multi_select": true,
+    "order": 1
+  },
+  {
+    "id": "q-correct-have-proof",
+    "task_id": "correct-details",
+    "text_en": "Do you have proof of the correct details?",
+    "text_hi": "क्या आपके पास सही जानकारी का प्रमाण है?",
+    "multi_select": false,
+    "order": 2
+  }
+]

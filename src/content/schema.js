@@ -59,6 +59,44 @@
  * @property {string} verified_on   - ISO date "YYYY-MM-DD"
  */
 
+/**
+ * @typedef {Object} Task
+ * @property {string} id       - PK, e.g. "correct-details", "update-address"
+ * @property {string} title_en
+ * @property {string} title_hi
+ * @property {string} icon
+ */
+
+/**
+ * @typedef {Object} Question
+ * @property {string} id
+ * @property {string} task_id     - FK into tasks.json
+ * @property {string} text_en
+ * @property {string} text_hi
+ * @property {boolean} multi_select - true keeps a Continue button; false auto-advances on tap
+ * @property {number} order
+ */
+
+/**
+ * @typedef {Object} Option
+ * @property {string} id
+ * @property {string} question_id - FK into questions.json
+ * @property {string} label_en
+ * @property {string} label_hi
+ * @property {string} next        - the next QUESTION id, or a CARD_PAYLOAD id when this option ends the flow
+ */
+
+/**
+ * @typedef {Object} UpdateItem
+ * @property {string} id
+ * @property {string|null} state_id  - FK into a future STATE_INFO table; null = national-level update (state-scoped SIR updates are Phase 2 step 9's job, not this step's)
+ * @property {string} text_en
+ * @property {string} text_hi
+ * @property {string|null} last_date - ISO date; null when there's no pending deadline to show (a calm/settled update, not an active countdown) — never a countdown timer either way, per this project's locked "no fake urgency" rule
+ * @property {string} verified_on    - ISO date
+ * @property {string} source_url     - must be an official source; ECI notifications only, per this project's no-news decision
+ */
+
 const STALE_AFTER_DAYS = 30;
 
 /**
@@ -274,5 +312,139 @@ export function validateCards(cards, forms) {
   return {
     errors: errors.map((e) => (e.startsWith('cards.json') ? e : `cards.json: ${e}`)),
     staleWarnings: staleWarnings.map((w) => `cards.json: ${w}`),
+  };
+}
+
+/**
+ * Checks tasks.json/questions.json/options.json together against the ERD's
+ * TASK/QUESTION/OPTION shape and FK rules — every `question.task_id` must
+ * resolve to a real task, every `option.next` must resolve to either a real
+ * question or a real card, every task must have at least one question, and
+ * every question must have at least one option (a single-choice question
+ * needs at least two, since one option offers no real choice).
+ *
+ * Multi-select routing note: this validator does not require every option on
+ * a multi-select question to share the same `next` — the current wizard
+ * engine's simplifying assumption (all options on a given multi-select
+ * question point to the same next node, since Continue advances once
+ * regardless of which combination was picked) is an engine-level behavior,
+ * not a content-integrity rule, so a future task with genuinely
+ * option-specific multi-select branching wouldn't be rejected here.
+ *
+ * @param {Task[]} tasks
+ * @param {Question[]} questions
+ * @param {Option[]} options
+ * @param {CardPayload[]} cards - for option.next FK validation
+ * @returns {{errors: string[]}}
+ */
+export function validateWizardContent(tasks, questions, options, cards) {
+  const errors = [];
+  const taskIds = new Set();
+  const questionIds = new Set();
+  const cardIds = new Set(cards.map((c) => c.id));
+
+  for (const task of tasks) {
+    const label = task?.id ?? '(missing id)';
+    for (const field of ['id', 'title_en', 'title_hi', 'icon']) {
+      if (!task[field]) errors.push(`tasks.json: "${label}" is missing required field "${field}"`);
+    }
+    if (task.id) {
+      if (taskIds.has(task.id)) errors.push(`tasks.json: duplicate id "${task.id}"`);
+      taskIds.add(task.id);
+    }
+  }
+
+  const questionsByTask = new Map();
+  for (const q of questions) {
+    const label = q?.id ?? '(missing id)';
+    for (const field of ['id', 'task_id', 'text_en', 'text_hi']) {
+      if (!q[field]) errors.push(`questions.json: "${label}" is missing required field "${field}"`);
+    }
+    if (typeof q.multi_select !== 'boolean') {
+      errors.push(`questions.json: "${label}" must have a boolean multi_select`);
+    }
+    if (typeof q.order !== 'number') {
+      errors.push(`questions.json: "${label}" must have a numeric order`);
+    }
+    if (q.id) {
+      if (questionIds.has(q.id)) errors.push(`questions.json: duplicate id "${q.id}"`);
+      questionIds.add(q.id);
+    }
+    if (q.task_id && !taskIds.has(q.task_id)) {
+      errors.push(`questions.json: "${label}" references unknown task_id "${q.task_id}"`);
+    }
+    if (q.task_id) {
+      if (!questionsByTask.has(q.task_id)) questionsByTask.set(q.task_id, []);
+      questionsByTask.get(q.task_id).push(q);
+    }
+  }
+  for (const task of tasks) {
+    if (!questionsByTask.get(task.id)?.length) {
+      errors.push(`questions.json: task "${task.id}" has no questions`);
+    }
+  }
+
+  const optionsByQuestion = new Map();
+  for (const opt of options) {
+    const label = opt?.id ?? '(missing id)';
+    for (const field of ['id', 'question_id', 'label_en', 'label_hi', 'next']) {
+      if (!opt[field]) errors.push(`options.json: "${label}" is missing required field "${field}"`);
+    }
+    if (opt.question_id && !questionIds.has(opt.question_id)) {
+      errors.push(`options.json: "${label}" references unknown question_id "${opt.question_id}"`);
+    }
+    if (opt.next && !questionIds.has(opt.next) && !cardIds.has(opt.next)) {
+      errors.push(`options.json: "${label}".next ("${opt.next}") doesn't resolve to any known question or card`);
+    }
+    if (opt.question_id) {
+      if (!optionsByQuestion.has(opt.question_id)) optionsByQuestion.set(opt.question_id, []);
+      optionsByQuestion.get(opt.question_id).push(opt);
+    }
+  }
+  for (const q of questions) {
+    const opts = optionsByQuestion.get(q.id) ?? [];
+    if (opts.length === 0) {
+      errors.push(`options.json: question "${q.id}" has no options`);
+    } else if (!q.multi_select && opts.length < 2) {
+      errors.push(`options.json: single-choice question "${q.id}" needs at least 2 options to be a real choice`);
+    }
+  }
+
+  return { errors: errors.map((e) => e) };
+}
+
+/**
+ * Checks updates.json against the ERD's UPDATE_ITEM shape. `last_date` and
+ * `state_id` are both intentionally nullable (see the UpdateItem typedef);
+ * `verified_on` and `source_url` are not.
+ * @param {UpdateItem[]} updates
+ * @returns {{errors: string[], staleWarnings: string[]}}
+ */
+export function validateUpdates(updates) {
+  const errors = [];
+  const staleWarnings = [];
+  const seenIds = new Set();
+
+  for (const update of updates) {
+    const label = update?.id ?? '(missing id)';
+    for (const field of ['id', 'text_en', 'text_hi', 'verified_on', 'source_url']) {
+      if (!update[field]) errors.push(`updates.json: "${label}" is missing required field "${field}"`);
+    }
+    if (update.id) {
+      if (seenIds.has(update.id)) errors.push(`updates.json: duplicate id "${update.id}"`);
+      seenIds.add(update.id);
+    }
+    if (update.last_date != null && !isValidIsoDate(update.last_date)) {
+      errors.push(`updates.json: "${label}" has an invalid last_date ("${update.last_date}")`);
+    }
+    if (update.source_url && !/^https:\/\//.test(update.source_url)) {
+      errors.push(`updates.json: "${label}".source_url must be an https:// URL ("${update.source_url}")`);
+    }
+    checkVerifiedOnDate(label, 'verified_on', update.verified_on, errors, staleWarnings);
+  }
+
+  return {
+    errors: errors.map((e) => (e.startsWith('updates.json') ? e : `updates.json: ${e}`)),
+    staleWarnings: staleWarnings.map((w) => `updates.json: ${w}`),
   };
 }

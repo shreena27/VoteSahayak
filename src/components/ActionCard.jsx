@@ -14,6 +14,7 @@ const STEP_ICON_MAP = {
   send: '📮',
   bookmark: '🔖',
   share: '📤',
+  info: 'ℹ️',
 }
 
 // The seal's own text is a fixed English "stamp engraving" (see Seal.jsx),
