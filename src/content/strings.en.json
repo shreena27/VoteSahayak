@@ -3,6 +3,8 @@
   "app.tagline": "Voter ID help, in plain words.",
 
   "card.listen": "🔊 सुनें · Listen",
+  "card.stopListening": "⏹ रोकें · Stop",
+  "card.saveAnnounce": "Card saved to this device",
   "card.helpline": "Helpline: 1950",
   "card.verified": "Verified",
   "card.stale": "May be out of date — please recheck",

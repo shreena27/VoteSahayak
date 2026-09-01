@@ -3,6 +3,8 @@
   "app.tagline": "वोटर ID का काम, सरल भाषा में",
 
   "card.listen": "🔊 सुनें · Listen",
+  "card.stopListening": "⏹ रोकें · Stop",
+  "card.saveAnnounce": "कार्ड इस डिवाइस पर सेव हो गया",
   "card.helpline": "हेल्पलाइन: 1950",
   "card.verified": "सत्यापित",
   "card.stale": "जानकारी पुरानी हो सकती है — कृपया दोबारा जांचें",

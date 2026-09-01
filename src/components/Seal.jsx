@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 // The circular "stamp" on every Action Card. Ported from the locked mockup
 // (vote-sahayak-mockups-v1.html) rather than redesigned: three concentric
 // rings, "VOTE SAHAYAK" curved along a top arc, three stars, and a two-line
@@ -12,16 +14,20 @@
 // through t(), unlike the rest of the card.
 export function Seal({ label, date }) {
   const dateText = formatSealDate(date)
+  // Two Seals can render on the same page (App.jsx currently shows every
+  // card in cards.json) — a hardcoded "sealArcTop" id would collide across
+  // instances, so each instance gets its own via useId().
+  const arcId = `sealArcTop-${useId()}`
   return (
     <svg viewBox="0 0 120 120" role="img" aria-label={`${label} ${dateText}`}>
       <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" strokeWidth="4.5" strokeDasharray="3.5 4.2" />
       <circle cx="60" cy="60" r="49" fill="none" stroke="currentColor" strokeWidth="2.5" />
       <circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" strokeWidth="1.4" />
       <defs>
-        <path id="sealArcTop" d="M22.5,60 A37.5,37.5 0 0 1 97.5,60" />
+        <path id={arcId} d="M22.5,60 A37.5,37.5 0 0 1 97.5,60" />
       </defs>
       <text fontSize="9.8" fontWeight="700" letterSpacing="2.2" fill="currentColor">
-        <textPath href="#sealArcTop" startOffset="50%" textAnchor="middle">
+        <textPath href={`#${arcId}`} startOffset="50%" textAnchor="middle">
           VOTE SAHAYAK
         </textPath>
       </text>

@@ -1,3 +1,5 @@
+import { todayIsoDateIST } from '../content/schema.js'
+
 // Device-local "keep this card" storage — the ERD's SAVED_CARD entity.
 // Deliberately a distinct localStorage key from the language preference
 // (voteSahayak.lang) so the two features can't clobber each other.
@@ -17,7 +19,11 @@ export function saveCard(cardPayload) {
     const snapshot = {
       id: cardPayload.id,
       payload_snapshot: cardPayload,
-      saved_on: new Date().toISOString().slice(0, 10),
+      // IST calendar date, not raw UTC — this app's real users are IST-based,
+      // and a raw new Date().toISOString() would show "yesterday" for up to
+      // 5.5 hours of every IST day (UTC midnight lands 5:30 before IST
+      // midnight).
+      saved_on: todayIsoDateIST(),
     }
     window.localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify([...withoutDupe, snapshot]))
     return true

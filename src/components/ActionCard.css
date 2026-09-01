@@ -322,6 +322,15 @@
   .receipt-actions {
     display: none !important;
   }
+  /* Chrome's print dialog defaults "background graphics" off, which would
+     otherwise print these as white-on-white/amber-on-amber and lose the
+     content entirely. */
+  .receipt-steps .n,
+  .receipt-tag,
+  .reject-tag {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

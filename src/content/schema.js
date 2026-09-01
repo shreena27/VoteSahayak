@@ -8,6 +8,7 @@
  * @typedef {Object} Form
  * @property {string} id            - PK, e.g. "form-6", "form-8"
  * @property {string} name          - e.g. "Form 8"
+ * @property {string} name_hi       - e.g. "फॉर्म 8" — the same name in Hindi, for UI spots (like the wizard-result tag) that must not show an untranslated "FORM 8" inside otherwise-Hindi text
  * @property {string} purpose_en
  * @property {string} purpose_hi
  * @property {string} official_url
@@ -80,12 +81,28 @@ export function isValidIsoDate(isoDate) {
   );
 }
 
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+/**
+ * Today's calendar date in IST ("YYYY-MM-DD") — this app's real audience and
+ * content authors are IST-based, so "is this date in the future" has to use
+ * IST calendar-date semantics, not a raw UTC instant comparison. A raw
+ * `new Date(isoDate).getTime() > Date.now()` check wrongly flags a
+ * same-IST-day date as "future" for the first ~5.5 hours of every IST day,
+ * because `new Date("YYYY-MM-DD")` parses as UTC midnight, which falls 5:30
+ * *before* that date's real IST midnight.
+ * @returns {string}
+ */
+export function todayIsoDateIST() {
+  return new Date(Date.now() + IST_OFFSET_MS).toISOString().slice(0, 10);
+}
+
 /**
  * @param {string} isoDate - must already be a valid ISO date; caller checks that first
  * @returns {boolean}
  */
 export function isFutureDate(isoDate) {
-  return new Date(isoDate).getTime() > Date.now();
+  return isoDate > todayIsoDateIST();
 }
 
 /**
@@ -139,7 +156,7 @@ export function validateForms(forms) {
 
   for (const form of forms) {
     const label = form?.id ?? '(missing id)';
-    for (const field of ['id', 'name', 'purpose_en', 'purpose_hi', 'official_url', 'url_verified_on']) {
+    for (const field of ['id', 'name', 'name_hi', 'purpose_en', 'purpose_hi', 'official_url', 'url_verified_on']) {
       if (!form[field]) errors.push(`forms.json: "${label}" is missing required field "${field}"`);
     }
     if (form.id) {
@@ -224,13 +241,23 @@ export function validateCards(cards, forms) {
         }
         if (step?.action_kind && !validActionKinds.has(step.action_kind)) {
           errors.push(`"${label}" step "${stepLabel}" has an invalid action_kind ("${step.action_kind}")`);
-        } else if (
-          (step?.action_kind === 'tel' || step?.action_kind === 'url') &&
-          !step.action_value
-        ) {
+        } else if (step?.action_kind === 'tel' || step?.action_kind === 'url') {
           // "save"/"share" are self-contained UI actions (a button click), not
           // a navigation target, so only tel/url need a real action_value.
-          errors.push(`"${label}" step "${stepLabel}" has action_kind "${step.action_kind}" but no action_value`);
+          if (!step.action_value) {
+            errors.push(`"${label}" step "${stepLabel}" has action_kind "${step.action_kind}" but no action_value`);
+          } else if (step.action_kind === 'tel' && !step.action_value.startsWith('tel:')) {
+            errors.push(`"${label}" step "${stepLabel}" has action_kind "tel" but action_value doesn't start with "tel:" ("${step.action_value}")`);
+          } else if (
+            step.action_kind === 'url' &&
+            !/^https?:\/\//.test(step.action_value)
+          ) {
+            // Closes off a javascript:/data:/etc. injection surface — this is
+            // trusted author-curated content today, but the check is cheap
+            // and stays correct if content authoring ever becomes less
+            // trusted (e.g. a future CMS).
+            errors.push(`"${label}" step "${stepLabel}" has action_kind "url" but action_value isn't an http(s) URL ("${step.action_value}")`);
+          }
         }
       }
     }

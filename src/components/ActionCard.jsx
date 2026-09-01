@@ -1,10 +1,10 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { isStale } from '../content/schema.js'
 import { Seal } from './Seal.jsx'
 import { saveCard, isCardSaved } from '../lib/savedCards.js'
-import { shareCard } from '../lib/shareCard.js'
-import { speak, isSpeechSupported } from '../lib/speak.js'
+import { shareCard, renderCardAsFile } from '../lib/shareCard.js'
+import { speak, stopSpeaking, isSpeechSupported } from '../lib/speak.js'
 import './ActionCard.css'
 
 const STEP_ICON_MAP = {
@@ -39,7 +39,9 @@ export function ActionCard({ card, forms = [] }) {
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
   const cardRef = useRef(null)
+  const shareFileRef = useRef(null)
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
+  const [speaking, setSpeaking] = useState(false)
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -48,18 +50,57 @@ export function ActionCard({ card, forms = [] }) {
   const timeline = activeLang === 'hi' ? card.timeline_hi : card.timeline_en
 
   const tag = useMemo(() => {
-    if (card.kind === 'wizard-result' && form) return `${t('card.tag.wizardResult')} · ${form.name}`
+    if (card.kind === 'wizard-result' && form) {
+      const formName = activeLang === 'hi' ? form.name_hi : form.name
+      return `${t('card.tag.wizardResult')} · ${formName}`
+    }
     if (card.kind === 'sir-notice') return t('card.tag.sirNotice')
     if (card.kind === 'gather-first') return t('card.tag.gatherFirst')
     return t('card.tag.sirOutcome')
-  }, [card.kind, form, t])
+  }, [card.kind, form, t, activeLang])
 
   const sealLabel = SEAL_LABEL_BY_KIND[card.kind] ?? 'VERIFIED'
   const stale = isStale(card.verified_on)
   const ttsAvailable = isSpeechSupported()
 
+  const orderedSteps = useMemo(() => [...card.steps].sort((a, b) => a.order - b.order), [card.steps])
+
+  // Best-effort background render so Share can respond within the same
+  // click's user-activation gesture — iOS Safari requires navigator.share()
+  // to be called with no `await` ahead of it in the handler, so we can't
+  // render the share image on click. renderCardAsFile has its own internal
+  // timeout guard, so a stalled render here can't hang the component; it
+  // just leaves shareFileRef empty and handleShare falls back to a
+  // text-only share. Re-runs on language change so the cached image never
+  // shows the wrong language.
+  useEffect(() => {
+    if (!cardRef.current) return undefined
+    let cancelled = false
+    renderCardAsFile(cardRef.current).then((file) => {
+      if (!cancelled) shareFileRef.current = file
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [activeLang])
+
   function handleListen() {
-    speak([headline, meaning, timeline].join('. '), activeLang)
+    if (speaking) {
+      stopSpeaking()
+      setSpeaking(false)
+      return
+    }
+    // The full spoken text, not just the headline/meaning/timeline summary —
+    // the document checklist and steps are the actually-actionable part of
+    // the card for the low-literacy audience this feature is for.
+    const docLines =
+      card.document_requirements.length > 0
+        ? [t('card.documentsNeeded'), ...card.document_requirements.map((doc) => (activeLang === 'hi' ? doc.label_hi : doc.label_en))]
+        : []
+    const stepLines = orderedSteps.map((step) => (activeLang === 'hi' ? step.text_hi : step.text_en))
+    const spokenText = [headline, meaning, timeline, ...docLines, ...stepLines].filter(Boolean).join('. ')
+    const started = speak(spokenText, activeLang, () => setSpeaking(false))
+    if (started) setSpeaking(true)
   }
 
   function handleSave() {
@@ -69,10 +110,12 @@ export function ActionCard({ card, forms = [] }) {
   async function handleShare() {
     const officialLink = card.steps.find((s) => s.action_kind === 'url')?.action_value
     const waText = `${headline}\n\n${meaning}${officialLink ? `\n\n${officialLink}` : ''}`
-    if (cardRef.current) await shareCard(cardRef.current, { headline, waText })
+    // No `await` before this call — shareCard's first action is calling
+    // navigator.share() synchronously off shareFileRef's already-resolved
+    // value (or a text-only share if it isn't ready yet), which is what iOS
+    // Safari's user-activation rules require.
+    await shareCard({ headline, waText, precomputedFile: shareFileRef.current })
   }
-
-  const orderedSteps = useMemo(() => [...card.steps].sort((a, b) => a.order - b.order), [card.steps])
 
   return (
     <div className="receipt" ref={cardRef}>
@@ -80,8 +123,8 @@ export function ActionCard({ card, forms = [] }) {
         <span className="receipt-tag">{tag}</span>
         <h3>{headline}</h3>
         {ttsAvailable && (
-          <button type="button" className="listen-btn" onClick={handleListen}>
-            {t('card.listen')}
+          <button type="button" className="listen-btn" onClick={handleListen} aria-pressed={speaking}>
+            {speaking ? t('card.stopListening') : t('card.listen')}
           </button>
         )}
 
@@ -123,7 +166,7 @@ export function ActionCard({ card, forms = [] }) {
           {orderedSteps.map((step, i) => (
             <li key={step.id}>
               <span className="n">{i + 1}</span>
-              <span className="step-ico">{STEP_ICON_MAP[step.icon] ?? '•'}</span>
+              <span className="step-ico" aria-hidden="true">{STEP_ICON_MAP[step.icon] ?? '•'}</span>
               <span className="body">
                 {activeLang === 'hi' ? step.text_hi : step.text_en}
                 <br />
@@ -138,9 +181,18 @@ export function ActionCard({ card, forms = [] }) {
                   </a>
                 )}
                 {step.action_kind === 'save' && (
-                  <button type="button" className="step-act" onClick={handleSave}>
-                    {saveState === 'saved' ? t('card.saved') : saveState === 'failed' ? t('card.saveFailed') : t('card.save')}
-                  </button>
+                  <>
+                    <button type="button" className="step-act" onClick={handleSave}>
+                      {saveState === 'saved' ? t('card.saved') : saveState === 'failed' ? t('card.saveFailed') : t('card.save')}
+                    </button>
+                    {/* Visually redundant with the button's own label change
+                        above — this exists so a screen-reader user hears the
+                        save confirmation without having to re-focus the
+                        button. */}
+                    <span className="visually-hidden" role="status" aria-live="polite">
+                      {saveState === 'saved' ? t('card.saveAnnounce') : ''}
+                    </span>
+                  </>
                 )}
                 {step.action_kind === 'share' && (
                   <button type="button" className="step-act" onClick={handleShare}>

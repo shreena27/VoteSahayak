@@ -2,6 +2,7 @@
   {
     "id": "form-6",
     "name": "Form 6",
+    "name_hi": "फॉर्म 6",
     "purpose_en": "For registering as a voter for the first time, in the place you live now.",
     "purpose_hi": "पहली बार वोटर के रूप में, आप अभी जहाँ रहते हैं वहाँ पंजीकरण के लिए।",
     "official_url": "https://voters.eci.gov.in/",
@@ -10,6 +11,7 @@
   {
     "id": "form-6a",
     "name": "Form 6A",
+    "name_hi": "फॉर्म 6A",
     "purpose_en": "For NRI (overseas) Indian citizens registering to vote from abroad.",
     "purpose_hi": "विदेश में रह रहे भारतीय नागरिकों (NRI) के लिए, वोटर पंजीकरण हेतु।",
     "official_url": "https://voters.eci.gov.in/",
@@ -18,6 +20,7 @@
   {
     "id": "form-6b",
     "name": "Form 6B",
+    "name_hi": "फॉर्म 6B",
     "purpose_en": "For linking your Aadhaar number to your existing voter ID (EPIC).",
     "purpose_hi": "अपने मौजूदा वोटर ID (EPIC) से आधार नंबर जोड़ने के लिए।",
     "official_url": "https://voters.eci.gov.in/",
@@ -26,6 +29,7 @@
   {
     "id": "form-7",
     "name": "Form 7",
+    "name_hi": "फॉर्म 7",
     "purpose_en": "To object to an entry on the voter list, or to remove a name (for example, after a death, or a permanent move away).",
     "purpose_hi": "वोटर सूची में किसी नाम पर आपत्ति दर्ज करने के लिए, या किसी का नाम हटाने के लिए (जैसे, मृत्यु के बाद, या स्थायी रूप से कहीं और चले जाने पर)।",
     "official_url": "https://voters.eci.gov.in/",
@@ -34,6 +38,7 @@
   {
     "id": "form-8",
     "name": "Form 8",
+    "name_hi": "फॉर्म 8",
     "purpose_en": "For correcting a mistake in your entry (like a name spelling), updating your address after you moved, replacing a lost or damaged voter ID, or marking yourself as a person with disability. One form covers all four.",
     "purpose_hi": "अपनी जानकारी में गलती सुधारने के लिए (जैसे नाम की स्पेलिंग), पता बदलने के बाद उसे अपडेट करने के लिए, खोया या खराब वोटर ID बदलने के लिए, या खुद को दिव्यांग के रूप में दर्ज कराने के लिए। यह एक फॉर्म इन चारों को कवर करता है।",
     "official_url": "https://voters.eci.gov.in/",
