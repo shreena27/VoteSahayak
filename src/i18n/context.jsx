@@ -1,4 +1,4 @@
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
 const STORAGE_KEY = 'voteSahayak.lang'
 
@@ -29,6 +29,12 @@ export function LanguageProvider({ children }) {
       // works for the current session, it just won't persist across reloads.
     }
   }, [])
+
+  // Screen readers pick a voice from the document's declared language, so this
+  // has to track the active language, not stay hardcoded to index.html's "en".
+  useEffect(() => {
+    if (lang) document.documentElement.lang = lang
+  }, [lang])
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang])
 
