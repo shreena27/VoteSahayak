@@ -22,5 +22,29 @@
     "text_hi": "क्या आपके पास अपने नए पते का प्रमाण तैयार है?",
     "multi_select": false,
     "order": 1
+  },
+  {
+    "id": "q-newreg-have-proof",
+    "task_id": "new-registration",
+    "text_en": "Do you have proof of your date of birth and address ready?",
+    "text_hi": "क्या आपके पास अपनी जन्म तिथि और पते का प्रमाण तैयार है?",
+    "multi_select": false,
+    "order": 1
+  },
+  {
+    "id": "q-remove-why",
+    "task_id": "remove-name",
+    "text_en": "Why does this name need to be removed?",
+    "text_hi": "इस नाम को क्यों हटाना है?",
+    "multi_select": false,
+    "order": 1
+  },
+  {
+    "id": "q-nri-have-passport",
+    "task_id": "nri",
+    "text_en": "Do you have your Indian passport with you?",
+    "text_hi": "क्या आपके पास अपना भारतीय पासपोर्ट है?",
+    "multi_select": false,
+    "order": 1
   }
 ]

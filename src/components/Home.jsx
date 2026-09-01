@@ -41,7 +41,7 @@ export function Home({ onOpenPicker }) {
             <b>{activeLang === 'hi' ? update.headline_hi : update.headline_en}</b>
             {activeLang === 'hi' ? update.text_hi : update.text_en}
             <span className="verified">
-              {t('card.verified')} {formatDisplayDate(update.verified_on)}
+              {t('card.verified')} {formatDisplayDate(update.verified_on, activeLang)}
             </span>
           </div>
         </div>
