@@ -714,8 +714,8 @@
     "kind": "sir-outcome",
     "headline_en": "Your registration is marked inactive",
     "headline_hi": "आपका पंजीकरण निष्क्रिय (inactive) दिखा रहा है",
-    "meaning_en": "You can still vote. Voting itself moves your status back to active. But don't wait for election day — confirm with your local election office before then.",
-    "meaning_hi": "आप अब भी वोट डाल सकते हैं। वोट डालने से आपकी स्थिति अपने आप सक्रिय हो जाती है। लेकिन चुनाव के दिन तक इंतज़ार न करें — उससे पहले अपने स्थानीय चुनाव कार्यालय से पुष्टि कर लें।",
+    "meaning_en": "We can't tell you exactly what \"inactive\" means for your specific entry — that depends on your record, and only your election office can confirm it. Don't wait for election day: call your Booth Level Officer (BLO) or the helpline soon to find out what it means for you and what to do next.",
+    "meaning_hi": "हम यह पक्के तौर पर नहीं बता सकते कि आपकी एंट्री के लिए \"निष्क्रिय (inactive)\" का क्या मतलब है — यह आपके रिकॉर्ड पर निर्भर करता है, और इसकी पुष्टि सिर्फ आपका चुनाव कार्यालय कर सकता है। चुनाव के दिन तक इंतज़ार न करें — जल्द ही अपने बूथ लेवल ऑफिसर (BLO) या हेल्पलाइन से पुष्टि करें ताकि पता चल सके कि आपके लिए इसका क्या मतलब है और आगे क्या करना है।",
     "form_id": null,
     "timeline_en": "There's no fixed processing time for this — the sooner you confirm with your Booth Level Officer (BLO), the sooner it's sorted.",
     "timeline_hi": "इसके लिए कोई तय प्रक्रिया-समय नहीं है — जितनी जल्दी आप अपने बूथ लेवल ऑफिसर (BLO) से पुष्टि करेंगे, उतनी जल्दी यह ठीक हो जाएगा।",
@@ -780,15 +780,15 @@
     "verified_on": "2026-09-01"
   },
   {
-    "id": "card-sir-found-different-spelling",
+    "id": "card-sir-found-misspelled",
     "kind": "sir-outcome",
     "headline_en": "A similar name appeared, not an exact match",
     "headline_hi": "मिलता-जुलता नाम दिखा, पूरी तरह एक जैसा नहीं",
     "meaning_en": "This is common — small spelling differences between how your name was typed and how it's typed in the voter roll happen often, and don't always mean you're not registered. Look at the other details in the result: if the age, address area, or a relative's name shown matches you, this is likely your entry, just spelled differently.",
     "meaning_hi": "यह आम बात है — आपके नाम की स्पेलिंग और वोटर सूची में दर्ज स्पेलिंग में छोटा अंतर अक्सर होता है, और इसका मतलब यह नहीं कि आप पंजीकृत नहीं हैं। परिणाम में दी गई बाकी जानकारी देखें: अगर उम्र, पते का इलाका, या किसी रिश्तेदार का नाम आपसे मेल खाता है, तो यह संभवतः आपकी ही एंट्री है, बस स्पेलिंग अलग है।",
     "form_id": null,
-    "timeline_en": "No deadline here — this is just a matching check, not an application. Correcting the spelling for the future is optional, not urgent.",
-    "timeline_hi": "यहां कोई समय-सीमा नहीं है — यह सिर्फ मिलान की जांच है, कोई आवेदन नहीं। भविष्य के लिए स्पेलिंग सुधारना वैकल्पिक है, ज़रूरी नहीं।",
+    "timeline_en": "No deadline for this check itself — it's a matching check, not an application. But an uncorrected spelling can cause real problems later, so it's worth fixing when you get the chance rather than leaving it indefinitely.",
+    "timeline_hi": "इस जांच की खुद कोई समय-सीमा नहीं है — यह सिर्फ मिलान की जांच है, कोई आवेदन नहीं। लेकिन बिना सुधारी गई स्पेलिंग आगे चलकर असली दिक्कत बन सकती है, इसलिए मौका मिलते ही इसे ठीक करवा लेना बेहतर है, इसे यूं ही न छोड़ें।",
     "rejection_tags": [],
     "document_requirements": [],
     "steps": [
@@ -858,7 +858,7 @@
         "text_hi": "किसी नाम-वेरिएंट के साथ, या अपना ज़िला जोड़कर, आधिकारिक खोज दोबारा आज़माएं",
         "icon": "external-link",
         "action_kind": "url",
-        "action_value": "https://voters.eci.gov.in/"
+        "action_value": "https://voters.eci.gov.in/searchinsir/s2ua4dpdf-jk4qwodse"
       },
       {
         "id": "step-not-found-call",
@@ -891,7 +891,7 @@
     "verified_on": "2026-09-01"
   },
   {
-    "id": "card-sir-incomplete",
+    "id": "card-sir-could-not-complete",
     "kind": "sir-outcome",
     "headline_en": "Couldn't complete the check — that's okay",
     "headline_hi": "जांच पूरी नहीं हो पाई — कोई बात नहीं",
@@ -910,7 +910,7 @@
         "text_hi": "आधिकारिक खोज फिर से आज़माएं",
         "icon": "external-link",
         "action_kind": "url",
-        "action_value": "https://voters.eci.gov.in/"
+        "action_value": "https://voters.eci.gov.in/searchinsir/s2ua4dpdf-jk4qwodse"
       },
       {
         "id": "step-incomplete-call",

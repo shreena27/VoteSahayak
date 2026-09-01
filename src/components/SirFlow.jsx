@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { generateNameVariants } from '../lib/nameVariants.js'
+import { formatDisplayDate } from '../content/schema.js'
 import { trackFlowStarted, trackSirOutcomePicked, trackOfficialLinkTapped } from '../lib/analytics.js'
 import { ActionCard } from './ActionCard.jsx'
 import states from '../content/states.json'
@@ -18,25 +19,37 @@ import './SirFlow.css'
 // Full Name + CAPTCHA are actually required on the real form; everything
 // else on that page is optional narrowing), send them to the real site, and
 // hand back a calm, accurate explanation for whatever they saw there.
+// Outcome ids match the ERD's SIR_OUTCOME.id enum exactly (`found-active`,
+// `found-inactive`, `found-misspelled`, `not-found`, `could-not-complete`)
+// and are used verbatim as: this map's keys, each card's id suffix, the
+// i18n string key suffix, and the Mixpanel `sir_outcome_picked` payload
+// value — one vocabulary everywhere, not translated between layers, so a
+// funnel query can actually join outcome events to card views.
 const OUTCOME_TO_CARD_ID = {
-  active: 'card-sir-found-active',
-  inactive: 'card-sir-found-inactive',
-  spelling: 'card-sir-found-different-spelling',
-  notFound: 'card-sir-not-found',
-  incomplete: 'card-sir-incomplete',
+  'found-active': 'card-sir-found-active',
+  'found-inactive': 'card-sir-found-inactive',
+  'found-misspelled': 'card-sir-found-misspelled',
+  'not-found': 'card-sir-not-found',
+  'could-not-complete': 'card-sir-could-not-complete',
 }
 
-const OUTCOME_ORDER = ['active', 'inactive', 'spelling', 'notFound', 'incomplete']
-const OUTCOME_GLYPH = { active: '✓', inactive: '⚠', spelling: '✎', notFound: '✕', incomplete: '↻' }
+const OUTCOME_ORDER = ['found-active', 'found-inactive', 'found-misspelled', 'not-found', 'could-not-complete']
+const OUTCOME_GLYPH = { 'found-active': '✓', 'found-inactive': '⚠', 'found-misspelled': '✎', 'not-found': '✕', 'could-not-complete': '↻' }
 const OUTCOME_TONE_CLASS = {
-  active: 'ok',
-  inactive: 'accent',
-  spelling: 'amber',
-  notFound: 'danger',
-  incomplete: 'neutral',
+  'found-active': 'ok',
+  'found-inactive': 'accent',
+  'found-misspelled': 'amber',
+  'not-found': 'danger',
+  'could-not-complete': 'neutral',
 }
 
-const OFFICIAL_SIR_SEARCH_URL = 'https://voters.eci.gov.in/'
+// The real SIR search deep link (not just the base portal) — confirmed live
+// (200) directly, not assumed. There's no live API to keep this current
+// (re-confirmed elsewhere in this project's research), so it's a curated,
+// dated value like every other official URL in this app's content, not a
+// live-fetched one.
+const OFFICIAL_SIR_SEARCH_URL = 'https://voters.eci.gov.in/searchinsir/s2ua4dpdf-jk4qwodse'
+const OFFICIAL_SIR_SEARCH_URL_VERIFIED_ON = '2026-09-02'
 
 /**
  * The SIR (Special Intensive Revision) risk-check flow — Phase 2 step 9.
@@ -48,9 +61,13 @@ const OFFICIAL_SIR_SEARCH_URL = 'https://voters.eci.gov.in/'
  * `‹` steps back one screen at a time, same back/history pattern as Wizard;
  * only exits the whole flow (to Home) once there's no previous screen left.
  *
- * @param {{ onExitToHome: () => void }} props
+ * @param {{ onExitToHome: () => void, onStartTask: (taskId: string) => void }} props
+ *   `onStartTask` routes into the Wizard for a given task id — used from the
+ *   "found, spelled differently" outcome card to send the citizen straight
+ *   into the correction flow instead of leaving them with nowhere to act on
+ *   a confirmed spelling mismatch.
  */
-export function SirFlow({ onExitToHome }) {
+export function SirFlow({ onExitToHome, onStartTask }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
@@ -259,10 +276,27 @@ export function SirFlow({ onExitToHome }) {
             </div>
           </div>
           <p className="cheatsheet-note">{t('sir.cheatsheet.captchaNote')}</p>
+
+          {variants.length > 0 && (
+            <div className="variant-box">
+              <div className="lbl">{t('sir.variants.label')}</div>
+              <div className="variant-list">
+                {variants.map((v) => (
+                  <span className="variant-chip" key={v}>
+                    {v}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div style={{ marginTop: 18 }}>
             <button type="button" className="btn-primary" onClick={handleOpenOfficialSearch}>
               {t('sir.cheatsheet.openSearch')}
             </button>
+            <div className="cheatsheet-link-verified">
+              {t('sir.cheatsheet.linkVerified')} {formatDisplayDate(OFFICIAL_SIR_SEARCH_URL_VERIFIED_ON, activeLang)}
+            </div>
           </div>
           <div style={{ marginTop: 10 }}>
             <button type="button" className="btn-text" onClick={() => goTo('outcomes')}>
@@ -305,6 +339,13 @@ export function SirFlow({ onExitToHome }) {
               />
             )
           })()}
+          {outcomeId === 'found-misspelled' && (
+            <div className="back-home">
+              <button type="button" className="btn-text" onClick={() => onStartTask('correct-details')}>
+                {t('sir.outcomes.found-misspelled.fixLink')}
+              </button>
+            </div>
+          )}
           <div className="back-home">
             <button type="button" className="btn-text" onClick={onExitToHome}>
               {t('wizard.backToHome')}

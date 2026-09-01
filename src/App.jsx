@@ -71,7 +71,13 @@ function App() {
           onBack={() => setView('home')}
         />
       ) : view === 'sir' ? (
-        <SirFlow onExitToHome={() => setView('home')} />
+        <SirFlow
+          onExitToHome={() => setView('home')}
+          onStartTask={(taskId) => {
+            setActiveTaskId(taskId)
+            setView('wizard')
+          }}
+        />
       ) : (
         <Home onOpenPicker={() => setView('picker')} onOpenSir={() => setView('sir')} />
       )}
