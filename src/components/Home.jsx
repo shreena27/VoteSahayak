@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
+import { formatDisplayDate } from '../content/schema.js'
 import updates from '../content/updates.json'
 import './shared.css'
 import './Home.css'
@@ -17,9 +18,9 @@ import './Home.css'
  * shows an honest "not built yet" notice instead of doing nothing or
  * navigating somewhere broken.
  *
- * @param {{ onStartTask: (taskId: string) => void }} props
+ * @param {{ onOpenPicker: () => void }} props
  */
-export function Home({ onStartTask }) {
+export function Home({ onOpenPicker }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
@@ -29,14 +30,20 @@ export function Home({ onStartTask }) {
 
   return (
     <div className="home-screen">
-      <div className="home-title">{t('app.name')}</div>
+      <h1 className="home-title">{t('app.name')}</h1>
 
       {update && (
         <div className="urgency-strip">
           <div className="glyph" aria-hidden="true">
             📅
           </div>
-          <div className="txt">{activeLang === 'hi' ? update.text_hi : update.text_en}</div>
+          <div className="txt">
+            <b>{activeLang === 'hi' ? update.headline_hi : update.headline_en}</b>
+            {activeLang === 'hi' ? update.text_hi : update.text_en}
+            <span className="verified">
+              {t('card.verified')} {formatDisplayDate(update.verified_on)}
+            </span>
+          </div>
         </div>
       )}
 
@@ -54,7 +61,7 @@ export function Home({ onStartTask }) {
           🔍
         </div>
         <div className="txt">
-          <h3>{t('home.sirRow.title')}</h3>
+          <h2>{t('home.sirRow.title')}</h2>
           <p>{t('home.sirRow.subtitle')}</p>
         </div>
         <div className="chev" aria-hidden="true">
@@ -62,12 +69,12 @@ export function Home({ onStartTask }) {
         </div>
       </button>
 
-      <button type="button" className="menu-row" onClick={() => onStartTask('correct-details')}>
+      <button type="button" className="menu-row" onClick={onOpenPicker}>
         <div className="ico" aria-hidden="true">
           📝
         </div>
         <div className="txt">
-          <h3>{t('home.wizardRow.title')}</h3>
+          <h2>{t('home.wizardRow.title')}</h2>
           <p>{t('home.wizardRow.subtitle')}</p>
         </div>
         <div className="chev" aria-hidden="true">

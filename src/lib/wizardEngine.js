@@ -46,8 +46,14 @@ export function getOptionsForQuestion(questionId, options) {
  */
 export function resolveNext(nextId, questions, cards) {
   const question = questions.find((q) => q.id === nextId)
-  if (question) return { type: 'question', question }
   const card = cards.find((c) => c.id === nextId)
+  if (question && card) {
+    // validateWizardContent rejects this at content-authoring time; this is a
+    // defensive runtime guard so a collision fails loudly instead of the
+    // engine silently always picking the question and swallowing the card.
+    throw new Error(`wizardEngine.resolveNext: id "${nextId}" resolves to both a question and a card — content is malformed`)
+  }
+  if (question) return { type: 'question', question }
   if (card) return { type: 'card', card }
   return null
 }

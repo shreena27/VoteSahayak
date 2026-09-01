@@ -35,6 +35,8 @@
   "wizard.multiSelectHint": "Pick all that apply, then Continue",
   "wizard.singleSelectHint": "Tap an answer to continue",
   "wizard.taskPicker.title": "Find what I need",
+  "wizard.taskPicker.newReg.title": "New registration",
+  "wizard.taskPicker.newReg.subtitle": "18 or older, or turning 18 soon · Form 6",
   "wizard.preflight.label": "Keep ready",
   "wizard.preflight.body": "Aadhaar or other proof of the correct details, and your voter ID (EPIC) number if you have it.",
   "wizard.backToHome": "Back to home"

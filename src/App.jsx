@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import { useLanguage, useTranslation } from './i18n/hooks.js'
 import { Home } from './components/Home.jsx'
+import { TaskPicker } from './components/TaskPicker.jsx'
 import { Wizard } from './components/Wizard.jsx'
 
 function App() {
   const { lang, setLang } = useLanguage()
   const { t } = useTranslation()
+  // 'home' | 'picker' | 'wizard' — the picker is its own step between Home's
+  // wizard-entry row and the actual wizard, so Back from the wizard's first
+  // question returns to the picker (to try a different task), not all the
+  // way past it to Home.
+  const [view, setView] = useState('home')
   const [activeTaskId, setActiveTaskId] = useState(null)
 
   return (
@@ -48,10 +54,22 @@ function App() {
             {t('app.name')}
           </h1>
         </main>
-      ) : activeTaskId ? (
-        <Wizard taskId={activeTaskId} onExit={() => setActiveTaskId(null)} />
+      ) : view === 'wizard' ? (
+        <Wizard
+          taskId={activeTaskId}
+          onExit={() => setView('picker')}
+          onExitToHome={() => setView('home')}
+        />
+      ) : view === 'picker' ? (
+        <TaskPicker
+          onSelectTask={(taskId) => {
+            setActiveTaskId(taskId)
+            setView('wizard')
+          }}
+          onBack={() => setView('home')}
+        />
       ) : (
-        <Home onStartTask={setActiveTaskId} />
+        <Home onOpenPicker={() => setView('picker')} />
       )}
     </>
   )

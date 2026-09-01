@@ -40,5 +40,19 @@
     "label_en": "No, not yet",
     "label_hi": "नहीं, अभी नहीं",
     "next": "card-correct-gather-first"
+  },
+  {
+    "id": "opt-address-proof-yes",
+    "question_id": "q-address-have-proof",
+    "label_en": "Yes, I have it",
+    "label_hi": "हां, मेरे पास है",
+    "next": "card-address-update"
+  },
+  {
+    "id": "opt-address-proof-no",
+    "question_id": "q-address-have-proof",
+    "label_en": "No, not yet",
+    "label_hi": "नहीं, अभी नहीं",
+    "next": "card-address-gather-first"
   }
 ]

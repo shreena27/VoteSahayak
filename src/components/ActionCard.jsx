@@ -42,6 +42,7 @@ export function ActionCard({ card, forms = [] }) {
   const activeLang = lang ?? 'en'
   const cardRef = useRef(null)
   const shareFileRef = useRef(null)
+  const headlineRef = useRef(null)
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
   const [speaking, setSpeaking] = useState(false)
 
@@ -73,6 +74,16 @@ export function ActionCard({ card, forms = [] }) {
   useEffect(() => {
     trackCardViewed(card.kind)
   }, [card.id, card.kind])
+
+  // Moves focus to the card's own headline whenever a (new) card renders —
+  // this is the "new content just appeared" signal for the terminal wizard
+  // screen, the same role the question heading's focus plays on every
+  // question screen. Keyed on card.id (not mount-only) so this stays correct
+  // if a future screen ever reuses one ActionCard instance across cards
+  // without unmounting it.
+  useEffect(() => {
+    headlineRef.current?.focus()
+  }, [card.id])
 
   // Best-effort background render so Share can respond within the same
   // click's user-activation gesture — iOS Safari requires navigator.share()
@@ -139,7 +150,9 @@ export function ActionCard({ card, forms = [] }) {
     <div className="receipt" ref={cardRef}>
       <div className="receipt-inner">
         <span className="receipt-tag">{tag}</span>
-        <h3>{headline}</h3>
+        <h2 ref={headlineRef} tabIndex={-1}>
+          {headline}
+        </h2>
         {ttsAvailable && (
           <button type="button" className="listen-btn" onClick={handleListen} aria-pressed={speaking}>
             {speaking ? t('card.stopListening') : t('card.listen')}

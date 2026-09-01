@@ -123,8 +123,8 @@
     "kind": "wizard-result",
     "headline_en": "Use Form 8",
     "headline_hi": "फॉर्म 8 का उपयोग करें",
-    "meaning_en": "Form 8 fixes your name and your father's/mother's name in one application. No need to file separately.",
-    "meaning_hi": "फॉर्म 8 आपका नाम और आपके पिता/माता का नाम एक ही आवेदन में ठीक करता है। अलग से आवेदन करने की ज़रूरत नहीं।",
+    "meaning_en": "Form 8 covers detail corrections like your name, father's/mother's name, date of birth, or photo — you'll list exactly what needs fixing when you fill it in. No need to file separately for each one.",
+    "meaning_hi": "फॉर्म 8 में नाम, पिता/माता का नाम, जन्म तिथि, या फोटो जैसी जानकारी ठीक की जा सकती है — फॉर्म भरते समय आप बताएंगे कि वास्तव में क्या ठीक करना है। हर चीज़ के लिए अलग से आवेदन करने की ज़रूरत नहीं।",
     "form_id": "form-8",
     "timeline_en": "Usually a few weeks, up to 6 months in some cases.",
     "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है, कुछ मामलों में 6 महीने तक भी लग सकते हैं।",
@@ -206,6 +206,54 @@
         "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
         "icon": "share",
         "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-address-gather-first",
+    "kind": "gather-first",
+    "headline_en": "Get your proof ready first",
+    "headline_hi": "पहले अपना प्रमाण तैयार करें",
+    "meaning_en": "Form 8 needs proof of your new address before you apply. Getting this ready first, rather than applying without it, avoids one of the most common rejection reasons.",
+    "meaning_hi": "आवेदन करने से पहले फॉर्म 8 के लिए आपके नए पते का प्रमाण चाहिए। इसके बिना आवेदन करने की जगह पहले इसे तैयार कर लेना, आवेदन खारिज होने के सबसे आम कारणों में से एक से बचाता है।",
+    "form_id": "form-8",
+    "timeline_en": "Once you have your proof ready, the address update itself usually takes a few weeks.",
+    "timeline_hi": "प्रमाण तैयार होने के बाद, पता अपडेट में आमतौर पर कुछ हफ्ते लगते हैं।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-gather-address-proof",
+        "label_en": "Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement)",
+        "label_hi": "आपके नए पते का प्रमाण (अपडेटेड आधार, हाल का बिजली/पानी का बिल, या किराया अनुबंध)",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-gather-address-collect",
+        "order": 1,
+        "text_en": "Get one of the documents above showing your new address",
+        "text_hi": "ऊपर दिए गए दस्तावेज़ों में से एक, जिसमें आपका नया पता हो, प्राप्त करें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-gather-address-save",
+        "order": 2,
+        "text_en": "Save this card so you remember what's needed",
+        "text_hi": "इस कार्ड को सेव करें ताकि आपको याद रहे कि क्या चाहिए",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-gather-address-return",
+        "order": 3,
+        "text_en": "Come back to this wizard once you have it",
+        "text_hi": "जब आपके पास यह हो, तो वापस इस विज़ार्ड में आएं",
+        "icon": "info",
+        "action_kind": "none"
       }
     ],
     "source_line": "Source: ECI Form Inventory",

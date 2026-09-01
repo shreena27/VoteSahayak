@@ -35,6 +35,8 @@
   "wizard.multiSelectHint": "जो लागू हो वह चुनें, फिर आगे बढ़ें",
   "wizard.singleSelectHint": "आगे बढ़ने के लिए एक जवाब चुनें",
   "wizard.taskPicker.title": "मुझे क्या चाहिए",
+  "wizard.taskPicker.newReg.title": "नया पंजीकरण",
+  "wizard.taskPicker.newReg.subtitle": "18 वर्ष या उससे अधिक, या जल्द ही 18 के होने वाले · फॉर्म 6",
   "wizard.preflight.label": "तैयार रखें",
   "wizard.preflight.body": "आधार या सही जानकारी का अन्य प्रमाण, और अगर आपके पास है तो आपका वोटर ID (EPIC) नंबर।",
   "wizard.backToHome": "होम पर वापस जाएं"

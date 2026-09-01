@@ -14,5 +14,13 @@
     "text_hi": "क्या आपके पास सही जानकारी का प्रमाण है?",
     "multi_select": false,
     "order": 2
+  },
+  {
+    "id": "q-address-have-proof",
+    "task_id": "update-address",
+    "text_en": "Do you have proof of your new address ready?",
+    "text_hi": "क्या आपके पास अपने नए पते का प्रमाण तैयार है?",
+    "multi_select": false,
+    "order": 1
   }
 ]

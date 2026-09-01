@@ -65,6 +65,8 @@
  * @property {string} title_en
  * @property {string} title_hi
  * @property {string} icon
+ * @property {string} subtitle_en - one-line description shown on the task-picker row, e.g. "Wrong name, date of birth, or photo · Form 8"
+ * @property {string} subtitle_hi
  */
 
 /**
@@ -90,6 +92,8 @@
  * @typedef {Object} UpdateItem
  * @property {string} id
  * @property {string|null} state_id  - FK into a future STATE_INFO table; null = national-level update (state-scoped SIR updates are Phase 2 step 9's job, not this step's)
+ * @property {string} headline_en    - short bold lead-in shown above text_en in the urgency strip (matches the locked mockup's <b>SIR in progress</b> pattern), e.g. "SIR, Phase II"
+ * @property {string} headline_hi
  * @property {string} text_en
  * @property {string} text_hi
  * @property {string|null} last_date - ISO date; null when there's no pending deadline to show (a calm/settled update, not an active countdown) — never a countdown timer either way, per this project's locked "no fake urgency" rule
@@ -98,6 +102,21 @@
  */
 
 const STALE_AFTER_DAYS = 30;
+
+const DISPLAY_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/**
+ * Formats an already-validated "YYYY-MM-DD" date for display (e.g. "1 Sep
+ * 2026"). Shared by the Action Card footer and the Home screen's urgency
+ * strip so the two "last verified" displays never drift into two different
+ * formats.
+ * @param {string} isoDate
+ * @returns {string}
+ */
+export function formatDisplayDate(isoDate) {
+  const [y, m, d] = isoDate.split('-');
+  return `${Number(d)} ${DISPLAY_MONTHS[Number(m) - 1]} ${y}`;
+}
 
 /**
  * Rejects both malformed strings and impossible calendar dates (e.g.
@@ -323,13 +342,19 @@ export function validateCards(cards, forms) {
  * every question must have at least one option (a single-choice question
  * needs at least two, since one option offers no real choice).
  *
- * Multi-select routing note: this validator does not require every option on
- * a multi-select question to share the same `next` — the current wizard
- * engine's simplifying assumption (all options on a given multi-select
- * question point to the same next node, since Continue advances once
- * regardless of which combination was picked) is an engine-level behavior,
- * not a content-integrity rule, so a future task with genuinely
- * option-specific multi-select branching wouldn't be rejected here.
+ * Multi-select routing rule: the wizard engine's Continue button advances
+ * once, using whichever selected option's `next` it finds first — so every
+ * option on a given multi-select question MUST share one `next` value, or
+ * routing becomes dependent on tap order (a real bug this validator now
+ * catches at author time instead of at runtime).
+ *
+ * option.next is scoped per task: it must resolve to either a card, or a
+ * question belonging to the SAME task as the option's own question — this
+ * catches a typo'd `next` that would otherwise render a different task's
+ * question under the wrong task's title. Every question in a task must also
+ * be reachable by walking `next` from that task's first question, and no
+ * question id may collide with a card id (the engine resolves question-first
+ * and would otherwise silently swallow a same-id card).
  *
  * @param {Task[]} tasks
  * @param {Question[]} questions
@@ -345,7 +370,7 @@ export function validateWizardContent(tasks, questions, options, cards) {
 
   for (const task of tasks) {
     const label = task?.id ?? '(missing id)';
-    for (const field of ['id', 'title_en', 'title_hi', 'icon']) {
+    for (const field of ['id', 'title_en', 'title_hi', 'icon', 'subtitle_en', 'subtitle_hi']) {
       if (!task[field]) errors.push(`tasks.json: "${label}" is missing required field "${field}"`);
     }
     if (task.id) {
@@ -355,6 +380,7 @@ export function validateWizardContent(tasks, questions, options, cards) {
   }
 
   const questionsByTask = new Map();
+  const taskIdByQuestionId = new Map();
   for (const q of questions) {
     const label = q?.id ?? '(missing id)';
     for (const field of ['id', 'task_id', 'text_en', 'text_hi']) {
@@ -369,6 +395,9 @@ export function validateWizardContent(tasks, questions, options, cards) {
     if (q.id) {
       if (questionIds.has(q.id)) errors.push(`questions.json: duplicate id "${q.id}"`);
       questionIds.add(q.id);
+      if (cardIds.has(q.id)) {
+        errors.push(`questions.json: "${q.id}" collides with a cards.json id of the same value — ids must be unique across questions and cards`);
+      }
     }
     if (q.task_id && !taskIds.has(q.task_id)) {
       errors.push(`questions.json: "${label}" references unknown task_id "${q.task_id}"`);
@@ -376,6 +405,7 @@ export function validateWizardContent(tasks, questions, options, cards) {
     if (q.task_id) {
       if (!questionsByTask.has(q.task_id)) questionsByTask.set(q.task_id, []);
       questionsByTask.get(q.task_id).push(q);
+      if (q.id) taskIdByQuestionId.set(q.id, q.task_id);
     }
   }
   for (const task of tasks) {
@@ -393,8 +423,17 @@ export function validateWizardContent(tasks, questions, options, cards) {
     if (opt.question_id && !questionIds.has(opt.question_id)) {
       errors.push(`options.json: "${label}" references unknown question_id "${opt.question_id}"`);
     }
-    if (opt.next && !questionIds.has(opt.next) && !cardIds.has(opt.next)) {
-      errors.push(`options.json: "${label}".next ("${opt.next}") doesn't resolve to any known question or card`);
+    const ownTaskId = opt.question_id ? taskIdByQuestionId.get(opt.question_id) : undefined;
+    if (opt.next) {
+      const isQuestion = questionIds.has(opt.next);
+      const isCard = cardIds.has(opt.next);
+      if (!isQuestion && !isCard) {
+        errors.push(`options.json: "${label}".next ("${opt.next}") doesn't resolve to any known question or card`);
+      } else if (isQuestion && ownTaskId && taskIdByQuestionId.get(opt.next) !== ownTaskId) {
+        errors.push(
+          `options.json: "${label}".next ("${opt.next}") points to a question in a different task ("${taskIdByQuestionId.get(opt.next)}") than its own ("${ownTaskId}")`,
+        );
+      }
     }
     if (opt.question_id) {
       if (!optionsByQuestion.has(opt.question_id)) optionsByQuestion.set(opt.question_id, []);
@@ -407,6 +446,40 @@ export function validateWizardContent(tasks, questions, options, cards) {
       errors.push(`options.json: question "${q.id}" has no options`);
     } else if (!q.multi_select && opts.length < 2) {
       errors.push(`options.json: single-choice question "${q.id}" needs at least 2 options to be a real choice`);
+    } else if (q.multi_select) {
+      const distinctNext = new Set(opts.map((o) => o.next).filter(Boolean));
+      if (distinctNext.size > 1) {
+        errors.push(
+          `options.json: multi-select question "${q.id}" has options pointing at different "next" targets (${[...distinctNext].join(', ')}) — the wizard engine advances once on whichever selected option it finds first, so all options on a multi-select question must share one "next"`,
+        );
+      }
+    }
+  }
+
+  // Reachability: every question in a task must be reachable by walking
+  // `next` from that task's own first question (lowest `order`) — an
+  // orphaned question (nothing routes to it) would otherwise pass every
+  // other check while never actually being shown to a user.
+  for (const task of tasks) {
+    const taskQuestions = questionsByTask.get(task.id) ?? [];
+    if (taskQuestions.length === 0) continue;
+    const sorted = [...taskQuestions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const first = sorted[0];
+    const reachable = new Set([first.id]);
+    const queue = [first.id];
+    while (queue.length > 0) {
+      const qid = queue.pop();
+      for (const opt of optionsByQuestion.get(qid) ?? []) {
+        if (opt.next && questionIds.has(opt.next) && !reachable.has(opt.next)) {
+          reachable.add(opt.next);
+          queue.push(opt.next);
+        }
+      }
+    }
+    for (const q of sorted) {
+      if (!reachable.has(q.id)) {
+        errors.push(`questions.json: "${q.id}" in task "${task.id}" is unreachable — no option's "next" ever routes to it from that task's first question`);
+      }
     }
   }
 
@@ -427,7 +500,7 @@ export function validateUpdates(updates) {
 
   for (const update of updates) {
     const label = update?.id ?? '(missing id)';
-    for (const field of ['id', 'text_en', 'text_hi', 'verified_on', 'source_url']) {
+    for (const field of ['id', 'headline_en', 'headline_hi', 'text_en', 'text_hi', 'verified_on', 'source_url']) {
       if (!update[field]) errors.push(`updates.json: "${label}" is missing required field "${field}"`);
     }
     if (update.id) {

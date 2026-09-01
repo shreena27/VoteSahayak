@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { ActionCard } from './ActionCard.jsx'
 import { getTask, getQuestion, getFirstQuestion, getOptionsForQuestion, resolveNext } from '../lib/wizardEngine.js'
@@ -18,9 +18,15 @@ import './Wizard.css'
  * selections plus an explicit Continue. Ends by rendering the real
  * ActionCard for whichever card the chosen path resolves to.
  *
- * @param {{ taskId: string, onExit: () => void }} props
+ * `‹` behaves consistently on both the question screen and the terminal card
+ * screen: it steps back to the previous question (so an answer can be
+ * revised) rather than exiting the whole flow, and only exits (to the task
+ * picker) once there's no previous question left. "Back to home" is a
+ * separate, explicit escape hatch that always jumps straight to Home.
+ *
+ * @param {{ taskId: string, onExit: () => void, onExitToHome: () => void }} props
  */
-export function Wizard({ taskId, onExit }) {
+export function Wizard({ taskId, onExit, onExitToHome }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
@@ -30,10 +36,18 @@ export function Wizard({ taskId, onExit }) {
 
   // `screen` is either a question in progress or the terminal card. `history`
   // is the stack of prior question ids, so Back can retrace the path exactly
-  // (a `next` id alone doesn't tell you where you came FROM).
+  // (a `next` id alone doesn't tell you where you came FROM) — this now
+  // covers the card screen too, since Back from a card revises the last
+  // answer instead of exiting the flow.
   const [screen, setScreen] = useState(() => (firstQuestion ? { type: 'question', id: firstQuestion.id } : null))
   const [history, setHistory] = useState([])
   const [selected, setSelected] = useState([])
+  // What was actually picked at each question, keyed by question id — not
+  // just which `next` to follow. Lets Back restore a multi-select's previous
+  // selections instead of wiping them, and gives later steps a real record
+  // of the user's answers to condition content on (rather than the terminal
+  // card asserting specifics the user may not have picked).
+  const [answers, setAnswers] = useState({})
 
   // Fires once per task actually starting, not per re-render. Deliberately
   // scoped to `taskId` only — a stable dependency for the lifetime of one
@@ -50,15 +64,28 @@ export function Wizard({ taskId, onExit }) {
   const currentOptions = currentQuestion ? getOptionsForQuestion(currentQuestion.id, options) : []
   const stepNumber = currentQuestion ? history.length + 1 : history.length
 
-  // Fires once per question actually shown. `history.length` (which
-  // `stepNumber` is derived from) always changes together with `screen` in
-  // the same batched update — `goToQuestion`/`handleBack` both set them in
-  // one handler call — so `currentQuestionId` alone is a complete, correctly
-  // narrow trigger; this isn't a suppressed lint warning, `currentQuestion`
-  // and `stepNumber` are genuinely included via their own stable inputs.
+  // Fires once per question actually shown, ever — a ref (not state) tracks
+  // which question ids have already been counted for THIS wizard attempt, so
+  // going back and revisiting a question (or returning to it via a
+  // different path) never double-counts the funnel.
+  const trackedQuestionIds = useRef(new Set())
   useEffect(() => {
-    if (currentQuestion) trackWizardStep(taskId, stepNumber)
+    if (currentQuestion && !trackedQuestionIds.current.has(currentQuestion.id)) {
+      trackedQuestionIds.current.add(currentQuestion.id)
+      trackWizardStep(taskId, stepNumber)
+    }
   }, [currentQuestion, taskId, stepNumber])
+
+  // Move focus to the question heading on every question change, so
+  // keyboard/screen-reader users don't get stranded on <body> after an
+  // auto-advance or Continue click. The card screen's equivalent focus
+  // target is the Action Card's own headline — ActionCard manages that
+  // itself on mount, since it's the "new content" that just appeared there,
+  // the same way the question text (not the static task title) is here.
+  const questionHeadingRef = useRef(null)
+  useEffect(() => {
+    if (screen?.type === 'question') questionHeadingRef.current?.focus()
+  }, [screen])
 
   if (!task || !screen) {
     // Content is malformed (no questions for this task) — validate:content
@@ -66,7 +93,7 @@ export function Wizard({ taskId, onExit }) {
     // resort guard, not the expected path.
     return (
       <div className="wizard-screen">
-        <button type="button" className="btn-text" onClick={onExit}>
+        <button type="button" className="btn-text" onClick={onExitToHome}>
           {t('wizard.backToHome')}
         </button>
       </div>
@@ -75,11 +102,13 @@ export function Wizard({ taskId, onExit }) {
 
   function goToQuestion(questionId, fromQuestionId) {
     setHistory((h) => [...h, fromQuestionId])
-    setSelected([])
+    const nextQuestion = getQuestion(questionId, questions)
+    setSelected(nextQuestion?.multi_select ? (answers[questionId] ?? []) : [])
     setScreen({ type: 'question', id: questionId })
   }
 
-  function goToCard(cardId) {
+  function goToCard(cardId, fromQuestionId) {
+    setHistory((h) => [...h, fromQuestionId])
     setScreen({ type: 'card', id: cardId })
   }
 
@@ -87,10 +116,15 @@ export function Wizard({ taskId, onExit }) {
     const resolved = resolveNext(optionNext, questions, cards)
     if (!resolved) return
     if (resolved.type === 'question') goToQuestion(resolved.question.id, currentQuestion.id)
-    else goToCard(resolved.card.id)
+    else goToCard(resolved.card.id, currentQuestion.id)
+  }
+
+  function recordAnswer(questionId, optionIds) {
+    setAnswers((a) => ({ ...a, [questionId]: optionIds }))
   }
 
   function handleSingleChoice(option) {
+    recordAnswer(currentQuestion.id, [option.id])
     handleAdvance(option.next)
   }
 
@@ -99,14 +133,12 @@ export function Wizard({ taskId, onExit }) {
   }
 
   function handleMultiContinue() {
-    // All options on a given multi-select question share the same `next` in
-    // this content (see the wizard content validator's note on this) — take
-    // whichever selected option's `next` is available, falling back to the
-    // first option's if somehow nothing is selected yet (Continue is only
-    // reachable once something's picked, per the disabled state below, but
-    // this keeps the function itself correct in isolation).
-    const chosenId = selected[0] ?? currentOptions[0]?.id
-    const chosen = currentOptions.find((o) => o.id === chosenId)
+    // Content validation (validateWizardContent) now enforces that every
+    // option on a multi-select question shares one `next`, so routing is
+    // deterministic regardless of which combination was picked — this just
+    // needs any one of the selected options to read `next` from.
+    recordAnswer(currentQuestion.id, selected)
+    const chosen = currentOptions.find((o) => selected.includes(o.id))
     if (chosen) handleAdvance(chosen.next)
   }
 
@@ -116,8 +148,9 @@ export function Wizard({ taskId, onExit }) {
       return
     }
     const prevId = history[history.length - 1]
+    const prevQuestion = getQuestion(prevId, questions)
     setHistory((h) => h.slice(0, -1))
-    setSelected([])
+    setSelected(prevQuestion?.multi_select ? (answers[prevId] ?? []) : [])
     setScreen({ type: 'question', id: prevId })
   }
 
@@ -126,10 +159,10 @@ export function Wizard({ taskId, onExit }) {
     return (
       <div className="wizard-screen wizard-result">
         <div className="app-header">
-          <button type="button" className="back" onClick={onExit} aria-label={t('wizard.back')}>
+          <button type="button" className="back" onClick={handleBack} aria-label={t('wizard.back')}>
             ‹
           </button>
-          <div className="title">{activeLang === 'hi' ? task.title_hi : task.title_en}</div>
+          <h1 className="title">{activeLang === 'hi' ? task.title_hi : task.title_en}</h1>
         </div>
         {card ? (
           <ActionCard card={card} forms={forms} />
@@ -137,7 +170,7 @@ export function Wizard({ taskId, onExit }) {
           <p>{t('wizard.backToHome')}</p>
         )}
         <div className="back-home">
-          <button type="button" className="btn-text" onClick={onExit}>
+          <button type="button" className="btn-text" onClick={onExitToHome}>
             {t('wizard.backToHome')}
           </button>
         </div>
@@ -153,7 +186,7 @@ export function Wizard({ taskId, onExit }) {
         <button type="button" className="back" onClick={handleBack} aria-label={t('wizard.back')}>
           ‹
         </button>
-        <div className="title">{activeLang === 'hi' ? task.title_hi : task.title_en}</div>
+        <h1 className="title">{activeLang === 'hi' ? task.title_hi : task.title_en}</h1>
       </div>
 
       {isFirstQuestion && (
@@ -168,9 +201,21 @@ export function Wizard({ taskId, onExit }) {
         </div>
       )}
 
-      <h3 className="wizard-question wizard-slide" key={currentQuestion.id}>
+      <h2
+        className="wizard-question wizard-slide"
+        key={currentQuestion.id}
+        ref={questionHeadingRef}
+        tabIndex={-1}
+      >
         {activeLang === 'hi' ? currentQuestion.text_hi : currentQuestion.text_en}
-      </h3>
+      </h2>
+      {/* Visually-hidden live region so screen readers announce the new
+          question even for users who land here via something other than
+          focus (e.g. a screen reader's own "next heading" navigation,
+          which doesn't always trigger on a programmatic .focus() alone). */}
+      <div className="sr-only" aria-live="polite">
+        {activeLang === 'hi' ? currentQuestion.text_hi : currentQuestion.text_en}
+      </div>
 
       <div className={`chip-row${!currentQuestion.multi_select && currentOptions.length === 2 ? ' stacked' : ''}`}>
         {currentOptions.map((option) => (
@@ -178,6 +223,7 @@ export function Wizard({ taskId, onExit }) {
             key={option.id}
             type="button"
             className={`chip${selected.includes(option.id) ? ' sel' : ''}`}
+            aria-pressed={currentQuestion.multi_select ? selected.includes(option.id) : undefined}
             onClick={() => (currentQuestion.multi_select ? toggleMultiSelect(option.id) : handleSingleChoice(option))}
           >
             {activeLang === 'hi' ? option.label_hi : option.label_en}
