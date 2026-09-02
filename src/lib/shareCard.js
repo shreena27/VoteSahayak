@@ -68,6 +68,14 @@ function prepareLightClone(node) {
   // text stayed the live theme's color — invisible on a light background).
   clone.style.color = 'var(--ink)'
 
+  // Strip interactive-only controls — same exclusion list the print
+  // stylesheet already uses (ActionCard.css's `@media print`), reused here
+  // rather than invented fresh: Listen/Open/Save/Share buttons do nothing
+  // in a static image and shouldn't appear in one (confirmed live: a real
+  // share came back with the full "Open ↗ / Save / Share on WhatsApp"
+  // button stack baked into the picture).
+  clone.querySelectorAll('.listen-btn, .step-act, .receipt-actions').forEach((el) => el.remove())
+
   // .receipt's paper-grain texture is an SVG data-URL whose <rect> has no
   // fill and relies on filter="url(#n)" to become faint noise. Inside
   // html-to-image's own SVG-as-image render that filter reference does not
