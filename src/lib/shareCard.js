@@ -103,6 +103,21 @@ function withTimeout(promise, ms) {
  * hosted Devanagari webfont's load.
  * @returns {Promise<void>}
  */
+/**
+ * Rolling breadcrumb trail for `renderCardAsFile`, read by ActionCard's
+ * `?debug=1` overlay. Temporary diagnostic aid — the first fix attempt
+ * (waiting for fonts+paint) did not resolve a real-device black-image
+ * report, so this exists to see WHERE the render actually goes wrong on a
+ * device with no remote-debugging access, rather than guessing at fix #2.
+ * @type {{t: number, event: string, detail?: string}[]}
+ */
+export const shareRenderLog = []
+
+function logRender(event, detail) {
+  shareRenderLog.push({ t: Date.now(), event, detail })
+  if (shareRenderLog.length > 20) shareRenderLog.shift()
+}
+
 async function waitForPaintReady() {
   if (document.fonts?.ready) {
     await document.fonts.ready
@@ -122,14 +137,22 @@ async function waitForPaintReady() {
  */
 export async function renderCardAsFile(cardNode) {
   const clone = prepareLightClone(cardNode)
+  const start = Date.now()
+  const rect = clone.getBoundingClientRect()
+  logRender('start', `node=${Math.round(rect.width)}x${Math.round(rect.height)}`)
   try {
     const dataUrl = await withTimeout(
-      waitForPaintReady().then(() => toPng(clone, { pixelRatio: 2 })),
+      waitForPaintReady()
+        .then(() => logRender('paint-ready', `${Date.now() - start}ms`))
+        .then(() => toPng(clone, { pixelRatio: 2 })),
       RENDER_TIMEOUT_MS,
     )
+    logRender('toPng-ok', `dataUrlLen=${dataUrl.length} total=${Date.now() - start}ms`)
     const blob = await (await fetch(dataUrl)).blob()
+    logRender('blob-ok', `size=${blob.size}b`)
     return new File([blob], 'vote-sahayak-card.png', { type: 'image/png' })
-  } catch {
+  } catch (err) {
+    logRender('failed', `${err?.name || ''} ${err?.message || err} total=${Date.now() - start}ms`)
     return null
   } finally {
     clone.remove()

@@ -3,7 +3,7 @@ import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { isStale, formatDisplayDate } from '../content/schema.js'
 import { Seal } from './Seal.jsx'
 import { saveCard, isCardSaved } from '../lib/savedCards.js'
-import { shareCard, renderCardAsFile } from '../lib/shareCard.js'
+import { shareCard, renderCardAsFile, shareRenderLog } from '../lib/shareCard.js'
 import { speak, stopSpeaking, isSpeechSupported } from '../lib/speak.js'
 import {
   trackCardViewed,
@@ -57,6 +57,12 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const headlineRef = useRef(null)
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
   const [speaking, setSpeaking] = useState(false)
+  // Temporary diagnostic: ?debug=1 shows renderCardAsFile's breadcrumb log
+  // on-screen, so a real-device render failure can be read off the phone
+  // directly — there's no remote-debugging access to it. Remove once the
+  // share-image black-render bug is confirmed fixed.
+  const isDebugMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1'
+  const [debugTick, setDebugTick] = useState(0)
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -110,6 +116,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     let cancelled = false
     renderCardAsFile(cardRef.current).then((file) => {
       if (!cancelled) shareFileRef.current = file
+      if (!cancelled && isDebugMode) setDebugTick((n) => n + 1)
     })
     return () => {
       cancelled = true
@@ -159,6 +166,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   }
 
   return (
+    <>
     <div className="receipt" ref={cardRef}>
       <div className="receipt-inner">
         <span className="receipt-tag">{tagSuffix ? `${tag} · ${tagSuffix}` : tag}</span>
@@ -289,6 +297,31 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
         </div>
       </div>
     </div>
+    {isDebugMode && (
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          maxHeight: '40vh',
+          overflowY: 'auto',
+          background: 'rgba(0,0,0,0.85)',
+          color: '#0f0',
+          fontFamily: 'monospace',
+          fontSize: 11,
+          padding: 8,
+          zIndex: 9999,
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        share-render debug (tick {debugTick}):{'\n'}
+        {shareRenderLog.length === 0
+          ? '(no entries yet)'
+          : shareRenderLog.map((e, i) => `${i}. +${e.t - shareRenderLog[0].t}ms ${e.event}${e.detail ? ` — ${e.detail}` : ''}`).join('\n')}
+      </div>
+    )}
+    </>
   )
 }
 
