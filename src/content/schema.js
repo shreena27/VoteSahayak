@@ -605,3 +605,39 @@ export function validateUpdates(updates) {
     staleWarnings: staleWarnings.map((w) => `updates.json: ${w}`),
   };
 }
+
+/**
+ * Validates chatContent.js's hardcoded chip set — required fields, duplicate
+ * ids, and (only for chips that carry one) the same malformed/future/stale
+ * checks a card's verified_on gets, so a chip's "as of" claim can't quietly
+ * go stale forever the way cards.json's staleness warning already prevents.
+ * @param {ChatChip[]} chips
+ * @returns {{errors: string[], staleWarnings: string[]}}
+ */
+export function validateChatChips(chips) {
+  const errors = [];
+  const staleWarnings = [];
+  const seenIds = new Set();
+
+  for (const chip of chips) {
+    const label = chip?.id ?? '(missing id)';
+    for (const field of ['id', 'question_en', 'question_hi', 'answer_en', 'answer_hi']) {
+      if (!chip[field]) errors.push(`chatContent.js: "${label}" is missing required field "${field}"`);
+    }
+    if (chip.id) {
+      if (seenIds.has(chip.id)) errors.push(`chatContent.js: duplicate id "${chip.id}"`);
+      seenIds.add(chip.id);
+    }
+    if (chip.link_url && !/^https:\/\//.test(chip.link_url)) {
+      errors.push(`chatContent.js: "${label}".link_url must be an https:// URL ("${chip.link_url}")`);
+    }
+    if (chip.verified_on) {
+      checkVerifiedOnDate(label, 'verified_on', chip.verified_on, errors, staleWarnings);
+    }
+  }
+
+  return {
+    errors: errors.map((e) => (e.startsWith('chatContent.js') ? e : `chatContent.js: ${e}`)),
+    staleWarnings: staleWarnings.map((w) => `chatContent.js: ${w}`),
+  };
+}

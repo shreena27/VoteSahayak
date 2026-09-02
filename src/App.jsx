@@ -4,13 +4,14 @@ import { Home } from './components/Home.jsx'
 import { TaskPicker } from './components/TaskPicker.jsx'
 import { Wizard } from './components/Wizard.jsx'
 import { SirFlow } from './components/SirFlow.jsx'
+import { Chat } from './components/Chat.jsx'
 import { ActionCard } from './components/ActionCard.jsx'
 import forms from './content/forms.json'
 
 function App() {
   const { lang, setLang } = useLanguage()
   const { t } = useTranslation()
-  // 'home' | 'picker' | 'wizard' | 'sir' | 'savedCard' — the picker is its
+  // 'home' | 'picker' | 'wizard' | 'sir' | 'chat' | 'savedCard' — the picker is its
   // own step between Home's wizard-entry row and the actual wizard, so Back
   // from the wizard's first question returns to the picker (to try a
   // different task), not all the way past it to Home. 'sir' owns its own
@@ -85,6 +86,8 @@ function App() {
             setView('wizard')
           }}
         />
+      ) : view === 'chat' ? (
+        <Chat onClose={() => setView('home')} onOpenSir={() => setView('sir')} />
       ) : view === 'savedCard' && activeSavedCard ? (
         <div className="wizard-screen">
           <div className="app-header">
@@ -106,6 +109,7 @@ function App() {
         <Home
           onOpenPicker={() => setView('picker')}
           onOpenSir={() => setView('sir')}
+          onOpenChat={() => setView('chat')}
           onOpenSavedCard={(entry) => {
             setActiveSavedCard(entry)
             setView('savedCard')
