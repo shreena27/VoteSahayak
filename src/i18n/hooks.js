@@ -17,8 +17,8 @@ export function useTranslation() {
   const t = useCallback(
     (key) => {
       const active = lang ? STRINGS[lang] : null
-      if (active && key in active) return active[key]
-      if (key in STRINGS.en) return STRINGS.en[key]
+      if (active && Object.hasOwn(active, key)) return active[key]
+      if (Object.hasOwn(STRINGS.en, key)) return STRINGS.en[key]
       return key
     },
     [lang],

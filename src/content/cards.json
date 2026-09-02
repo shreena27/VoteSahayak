@@ -1,0 +1,115 @@
+[
+  {
+    "id": "card-address-update",
+    "kind": "wizard-result",
+    "headline_en": "Update your address — Form 8",
+    "headline_hi": "अपना पता अपडेट करें — फॉर्म 8",
+    "meaning_en": "You moved, so your voter registration needs to move with you. This is normal and common — Form 8 covers exactly this, no other form needed.",
+    "meaning_hi": "आप कहीं और रहने चले गए हैं, इसलिए आपका वोटर पंजीकरण भी वहीं होना चाहिए। यह सामान्य और आम बात है — फॉर्म 8 इसे पूरी तरह कवर करता है, किसी और फॉर्म की ज़रूरत नहीं।",
+    "form_id": "form-8",
+    "timeline_en": "Usually a few weeks. In some documented cases it has taken up to 6 months, so it helps to apply as early as you can.",
+    "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है। कुछ मामलों में 6 महीने तक भी लग सकते हैं, इसलिए जितनी जल्दी हो सके आवेदन करना बेहतर है।",
+    "rejection_tags": ["Not \"ordinarily resident\" — about 12–15% of cases"],
+    "document_requirements": [
+      {
+        "id": "doc-address-proof",
+        "label_en": "Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement)",
+        "label_hi": "आपके नए पते का प्रमाण (अपडेटेड आधार, हाल का बिजली/पानी का बिल, या किराया अनुबंध)",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-existing-epic",
+        "label_en": "Your existing Voter ID (EPIC) card, if you have one",
+        "label_hi": "आपका मौजूदा वोटर ID (EPIC) कार्ड, अगर आपके पास है",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-open-form",
+        "order": 1,
+        "text_en": "Open Form 8 on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 8 खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-fill-address",
+        "order": 2,
+        "text_en": "Fill in your new address exactly as it appears on your proof of address",
+        "text_hi": "अपना नया पता ठीक वैसे ही भरें जैसा आपके पते के प्रमाण में लिखा है",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-submit",
+        "order": 3,
+        "text_en": "Submit online, or hand it to your local Booth Level Officer (BLO)",
+        "text_hi": "ऑनलाइन जमा करें, या अपने स्थानीय बूथ लेवल ऑफिसर (BLO) को दें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: Election Commission of India",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-sir-found-active",
+    "kind": "sir-outcome",
+    "headline_en": "You're on the list — nothing to do right now",
+    "headline_hi": "आपका नाम सूची में है — अभी कुछ करने की ज़रूरत नहीं",
+    "meaning_en": "Your name showed up as active in the official search. That means you're registered and there's nothing you need to do right now. It's still a good habit to check again if there's ever a Special Intensive Revision (SIR) in your state.",
+    "meaning_hi": "आधिकारिक खोज में आपका नाम सक्रिय (active) दिखा। इसका मतलब है कि आप पंजीकृत हैं और अभी कुछ करने की ज़रूरत नहीं है। फिर भी, अगर आपके राज्य में कभी विशेष गहन पुनरीक्षण (SIR) हो, तो दोबारा जांच लेना अच्छी आदत है।",
+    "form_id": null,
+    "timeline_en": "Nothing to wait for. If your details ever change, come back and use the wizard.",
+    "timeline_hi": "इंतज़ार करने की कोई ज़रूरत नहीं। अगर कभी आपकी जानकारी बदले, तो वापस आकर विज़ार्ड का उपयोग करें।",
+    "rejection_tags": [],
+    "document_requirements": [],
+    "steps": [
+      {
+        "id": "step-save-proof",
+        "order": 1,
+        "text_en": "Save this card as a record that you checked",
+        "text_hi": "इस कार्ड को इस बात के प्रमाण के रूप में सेव करें कि आपने जांच की",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-recheck",
+        "order": 2,
+        "text_en": "If you're ever unsure again, check the official search directly",
+        "text_hi": "अगर आपको फिर कभी संदेह हो, तो सीधे आधिकारिक खोज देखें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-share-family",
+        "order": 3,
+        "text_en": "Share this with family so they know to check too",
+        "text_hi": "परिवार के साथ शेयर करें ताकि वे भी जांच लें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "verified_on": "2026-09-01"
+  }
+]
