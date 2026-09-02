@@ -77,16 +77,46 @@ const corpusById = new Map(corpus.map((entry) => [entry.qa_id, entry]));
 // across concurrent serverless instances, which is fine here — the goal is
 // blunting accidental/casual abuse during a small case-study demo, not
 // production-grade protection.
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 3;
+//
+// Two constraints, not one: a short burst window stops rapid-fire/double-tap
+// abuse, and a longer hourly window is what actually protects the 20/day
+// budget — the original 3-per-60s (180/hr) didn't meaningfully bound a
+// single IP's share of a 20-per-*day* quota.
+const BURST_WINDOW_MS = 15_000;
+const BURST_MAX_REQUESTS = 1;
+const HOURLY_WINDOW_MS = 60 * 60_000;
+const HOURLY_MAX_REQUESTS = 8;
 const requestLog = new Map(); // ip -> array of request timestamps (ms)
+
+// Sweep the whole map periodically (not on every call) so an IP that never
+// comes back doesn't sit in memory forever on a warm instance.
+const SWEEP_INTERVAL_MS = 10 * 60_000;
+let lastSweep = Date.now();
+
+function sweepStaleEntries(now) {
+  if (now - lastSweep < SWEEP_INTERVAL_MS) return;
+  lastSweep = now;
+  for (const [ip, timestamps] of requestLog) {
+    const fresh = timestamps.filter((t) => now - t < HOURLY_WINDOW_MS);
+    if (fresh.length === 0) {
+      requestLog.delete(ip);
+    } else if (fresh.length !== timestamps.length) {
+      requestLog.set(ip, fresh);
+    }
+  }
+}
 
 function isRateLimited(ip) {
   const now = Date.now();
-  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  sweepStaleEntries(now);
+
+  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < HOURLY_WINDOW_MS);
   timestamps.push(now);
   requestLog.set(ip, timestamps);
-  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
+
+  const inBurstWindow = timestamps.filter((t) => now - t < BURST_WINDOW_MS).length;
+  const inHourWindow = timestamps.length;
+  return inBurstWindow > BURST_MAX_REQUESTS || inHourWindow > HOURLY_MAX_REQUESTS;
 }
 
 export default async function handler(req, res) {
