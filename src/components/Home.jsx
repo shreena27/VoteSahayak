@@ -98,6 +98,7 @@ export function Home({ onOpenPicker, onOpenSir, onOpenChat, onOpenSavedCard }) {
             <b>{activeLang === 'hi' ? update.headline_hi : update.headline_en}</b>
             {activeLang === 'hi' ? update.text_hi : update.text_en}
             <span className="verified">
+              {activeLang === 'hi' ? update.source_line_hi : update.source_line} ·{' '}
               {t('card.verified')} {formatDisplayDate(update.verified_on, activeLang)}
             </span>
           </div>

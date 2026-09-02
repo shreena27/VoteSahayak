@@ -39,7 +39,7 @@ export const CHAT_CHIPS = [
     answer_en:
       'It\'s not about citizenship — "not ordinarily resident" is about where you currently live, not who you are. It usually means the record shows you\'ve moved away from the address you\'re registered at, which is common for migrants and students. If this is your situation, Form 8 can update your address.',
     answer_hi:
-      'यह नागरिकता का सवाल नहीं है — "सामान्य निवासी नहीं" का मतलब है कि आप अभी उस पते पर नहीं रहते जहां आप पंजीकृत हैं, यह इस बारे में नहीं कि आप कौन हैं। यह प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
+      'यह नागरिकता का सवाल नहीं है — "सामान्य निवासी नहीं" इस बारे में है कि आप अभी कहां रहते हैं, यह इस बारे में नहीं है कि आप कौन हैं। आमतौर पर इसका मतलब है कि रिकॉर्ड के अनुसार आप उस पते से जा चुके हैं जहां आप पंजीकृत हैं, जो प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
     source_en: 'Research finding, Moderate Confidence — not an official ECI definition',
     source_hi: 'शोध निष्कर्ष, मध्यम विश्वसनीयता — यह ECI की आधिकारिक परिभाषा नहीं है',
   },
@@ -48,9 +48,11 @@ export const CHAT_CHIPS = [
     question_en: 'How long does correction take?',
     question_hi: 'सुधार में कितना समय लगता है?',
     answer_en:
-      "There's no official guarantee. Some corrections clear in a few weeks; others take longer with no update in between. Apply as early as you can, and follow up with your BLO if you don't hear back.",
+      "There's no official guarantee. Some applicants report their status stays \"Submitted\" for a month or more with no update in between. Apply as early as you can, and follow up with your BLO if you don't hear back.",
     answer_hi:
-      'कोई आधिकारिक गारंटी नहीं है। कुछ सुधार कुछ हफ्तों में हो जाते हैं, कुछ में ज़्यादा समय लगता है और बीच में कोई अपडेट नहीं मिलता। जितनी जल्दी हो सके आवेदन करें, और अगर जवाब न मिले तो अपने BLO से संपर्क करें।',
+      'कोई आधिकारिक गारंटी नहीं है। कुछ आवेदकों के अनुसार स्थिति एक महीने या उससे ज़्यादा समय तक "Submitted" ही दिखती रहती है, बीच में कोई अपडेट नहीं मिलता। जितनी जल्दी हो सके आवेदन करें, और अगर जवाब न मिले तो अपने BLO से संपर्क करें।',
+    source_en: 'Reported citizen experience — not an official processing time',
+    source_hi: 'नागरिकों द्वारा बताया गया अनुभव — यह कोई आधिकारिक प्रक्रिया समय नहीं है',
   },
   {
     id: 'aadhaar-mismatch',
@@ -92,8 +94,8 @@ export const CHAT_CHIPS = [
       "SIR (Special Intensive Revision) is a periodic recheck of the voter list. Phase II finished around April 2026 — net 5.2 crore names were removed across 12 states and 3 union territories, and that figure already accounts for about 2 crore names added back on appeal. If you're not sure whether it affected you, you can check your name directly from the home screen.",
     answer_hi:
       'SIR (विशेष गहन पुनरीक्षण) वोटर सूची की एक समय-समय पर होने वाली जांच है। चरण II लगभग अप्रैल 2026 में पूरा हुआ — 12 राज्यों और 3 केंद्र शासित प्रदेशों में अंत में 5.2 करोड़ नाम हटाए गए, और अपील पर वापस जोड़े गए लगभग 2 करोड़ नाम इस संख्या में पहले से घटाए जा चुके हैं। अगर आपको यकीन नहीं है कि इसका असर आप पर पड़ा, तो होम स्क्रीन से सीधे अपना नाम जांच सकते हैं।',
-    source_en: 'Election Commission of India',
-    source_hi: 'भारत निर्वाचन आयोग',
+    source_en: 'Press reporting of ECI SIR Phase II figures (OpIndia, Deccan Herald)',
+    source_hi: 'ECI के SIR चरण II आंकड़ों की मीडिया रिपोर्टिंग (OpIndia, Deccan Herald)',
     verified_on: '2026-09-01',
   },
 ]

@@ -101,7 +101,9 @@
  * @property {string} text_hi
  * @property {string|null} last_date - ISO date; null when there's no pending deadline to show (a calm/settled update, not an active countdown) — never a countdown timer either way, per this project's locked "no fake urgency" rule
  * @property {string} verified_on    - ISO date
- * @property {string} source_url     - must be an official source; ECI notifications only, per this project's no-news decision
+ * @property {string} source_line    - e.g. "Source: Press reporting of ECI SIR Phase II figures (OpIndia, Deccan Herald)"; names where the FIGURES in text_en/text_hi actually come from, using cards.json's baked-in "Source: ..." convention. Must match the attribution the same fact carries elsewhere (e.g. the what-is-sir chat chip's source_en) — the same number must never be attributed to ECI in one surface and to press reporting in another.
+ * @property {string} source_line_hi
+ * @property {string} source_url     - where the citizen goes to act on this update (check their own name), NOT the provenance of the stated figures — that's source_line's job. Must be an official destination; ECI only, per this project's no-news decision (we never send a citizen to a news site to check their status).
  */
 
 const STALE_AFTER_DAYS = 30;
@@ -573,7 +575,9 @@ export function validateWizardContent(tasks, questions, options, cards) {
 /**
  * Checks updates.json against the ERD's UPDATE_ITEM shape. `last_date` and
  * `state_id` are both intentionally nullable (see the UpdateItem typedef);
- * `verified_on` and `source_url` are not.
+ * `verified_on`, `source_line`/`source_line_hi` and `source_url` are not — an
+ * update states hard national figures, so it must always say where those
+ * figures came from, in both languages.
  * @param {UpdateItem[]} updates
  * @returns {{errors: string[], staleWarnings: string[]}}
  */
@@ -584,7 +588,7 @@ export function validateUpdates(updates) {
 
   for (const update of updates) {
     const label = update?.id ?? '(missing id)';
-    for (const field of ['id', 'headline_en', 'headline_hi', 'text_en', 'text_hi', 'verified_on', 'source_url']) {
+    for (const field of ['id', 'headline_en', 'headline_hi', 'text_en', 'text_hi', 'verified_on', 'source_line', 'source_line_hi', 'source_url']) {
       if (!update[field]) errors.push(`updates.json: "${label}" is missing required field "${field}"`);
     }
     if (update.id) {
@@ -639,5 +643,36 @@ export function validateChatChips(chips) {
   return {
     errors: errors.map((e) => (e.startsWith('chatContent.js') ? e : `chatContent.js: ${e}`)),
     staleWarnings: staleWarnings.map((w) => `chatContent.js: ${w}`),
+  };
+}
+
+/**
+ * Validates qaBank.js's RAG-only QA_PAIR set — required fields and duplicate
+ * ids, same as chips, plus (per the ERD's own integrity rule, "every QA_PAIR
+ * answer must carry a source_line") a stricter requirement chips don't have:
+ * `source_en`/`source_hi` are required here, not optional the way an
+ * existing chip's "this app's own already-reviewed content" omission is.
+ * @param {QaBankEntry[]} entries
+ * @returns {{errors: string[], staleWarnings: string[]}}
+ */
+export function validateQaBank(entries) {
+  const errors = [];
+  const staleWarnings = [];
+  const seenIds = new Set();
+
+  for (const entry of entries) {
+    const label = entry?.id ?? '(missing id)';
+    for (const field of ['id', 'bucket_id', 'question_en', 'question_hi', 'answer_en', 'answer_hi', 'source_en', 'source_hi']) {
+      if (!entry[field]) errors.push(`qaBank.js: "${label}" is missing required field "${field}"`);
+    }
+    if (entry.id) {
+      if (seenIds.has(entry.id)) errors.push(`qaBank.js: duplicate id "${entry.id}"`);
+      seenIds.add(entry.id);
+    }
+  }
+
+  return {
+    errors: errors.map((e) => (e.startsWith('qaBank.js') ? e : `qaBank.js: ${e}`)),
+    staleWarnings: staleWarnings.map((w) => `qaBank.js: ${w}`),
   };
 }
