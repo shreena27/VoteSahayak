@@ -196,7 +196,7 @@ export function Wizard({ taskId, onExit, onExitToHome }) {
           </div>
           <div className="txt">
             <b>{t('wizard.preflight.label')}</b>
-            {t('wizard.preflight.body')}
+            {activeLang === 'hi' ? task.preflight_hi : task.preflight_en}
           </div>
         </div>
       )}

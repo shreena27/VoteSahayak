@@ -5,7 +5,9 @@
     "title_hi": "मेरी जानकारी ठीक करें",
     "icon": "✏️",
     "subtitle_en": "Wrong name, father's/mother's name, date of birth, or photo · Form 8",
-    "subtitle_hi": "ग़लत नाम, पिता/माता का नाम, जन्म तिथि, या फोटो · फॉर्म 8"
+    "subtitle_hi": "ग़लत नाम, पिता/माता का नाम, जन्म तिथि, या फोटो · फॉर्म 8",
+    "preflight_en": "Proof of your correct name, parent's name, date of birth, or photo (Aadhaar, passport, or birth certificate), and your existing voter ID (EPIC) number if you have it.",
+    "preflight_hi": "आपके सही नाम, माता-पिता के नाम, जन्म तिथि, या फोटो का प्रमाण (आधार, पासपोर्ट, या जन्म प्रमाण पत्र), और अगर आपके पास है तो आपका मौजूदा वोटर ID (EPIC) नंबर।"
   },
   {
     "id": "update-address",
@@ -13,6 +15,38 @@
     "title_hi": "अपना पता अपडेट करें",
     "icon": "🏠",
     "subtitle_en": "Moved to a new city or area · Form 8",
-    "subtitle_hi": "नए शहर या इलाके में शिफ्ट हुए · फॉर्म 8"
+    "subtitle_hi": "नए शहर या इलाके में शिफ्ट हुए · फॉर्म 8",
+    "preflight_en": "Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement), and your existing voter ID (EPIC) number if you have it.",
+    "preflight_hi": "आपके नए पते का प्रमाण (अपडेटेड आधार, हाल का बिजली/पानी का बिल, या किराया अनुबंध), और अगर आपके पास है तो आपका मौजूदा वोटर ID (EPIC) नंबर।"
+  },
+  {
+    "id": "new-registration",
+    "title_en": "New registration",
+    "title_hi": "नया पंजीकरण",
+    "icon": "🆕",
+    "subtitle_en": "18 or older, or turning 18 soon · Form 6",
+    "subtitle_hi": "18 वर्ष या उससे अधिक, या जल्द ही 18 के होने वाले · फॉर्म 6",
+    "preflight_en": "Proof of your date of birth and current address (Aadhaar, birth certificate, or similar), and one recent passport-size photo.",
+    "preflight_hi": "आपकी जन्म तिथि और मौजूदा पते का प्रमाण (आधार, जन्म प्रमाण पत्र, या समान), और एक हालिया पासपोर्ट साइज़ फोटो।"
+  },
+  {
+    "id": "remove-name",
+    "title_en": "Remove someone's name",
+    "title_hi": "किसी का नाम हटाएं",
+    "icon": "📋",
+    "subtitle_en": "After a death, or a permanent move away · Form 7",
+    "subtitle_hi": "मृत्यु के बाद, या स्थायी रूप से कहीं और चले जाने पर · फॉर्म 7",
+    "preflight_en": "Details of the person whose name needs to be removed, and proof of why — a death certificate, or any proof that they now live elsewhere permanently.",
+    "preflight_hi": "जिस व्यक्ति का नाम हटाना है उसकी जानकारी, और इसका कारण बताने वाला प्रमाण — मृत्यु प्रमाण पत्र, या इस बात का कोई प्रमाण कि वे अब स्थायी रूप से कहीं और रहते हैं।"
+  },
+  {
+    "id": "nri",
+    "title_en": "Register from abroad (NRI)",
+    "title_hi": "विदेश से पंजीकरण (NRI)",
+    "icon": "✈️",
+    "subtitle_en": "Indian citizen living outside India · Form 6A",
+    "subtitle_hi": "भारत के बाहर रह रहे भारतीय नागरिक · फॉर्म 6A",
+    "preflight_en": "Your Indian passport — it's the main document Form 6A needs, along with one recent passport-size photo.",
+    "preflight_hi": "आपका भारतीय पासपोर्ट — फॉर्म 6A के लिए यही मुख्य दस्तावेज़ चाहिए, साथ ही एक हालिया पासपोर्ट साइज़ फोटो।"
   }
 ]

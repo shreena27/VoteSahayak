@@ -54,5 +54,47 @@
     "label_en": "No, not yet",
     "label_hi": "नहीं, अभी नहीं",
     "next": "card-address-gather-first"
+  },
+  {
+    "id": "opt-newreg-proof-yes",
+    "question_id": "q-newreg-have-proof",
+    "label_en": "Yes, I have it",
+    "label_hi": "हां, मेरे पास है",
+    "next": "card-new-registration"
+  },
+  {
+    "id": "opt-newreg-proof-no",
+    "question_id": "q-newreg-have-proof",
+    "label_en": "No, not yet",
+    "label_hi": "नहीं, अभी नहीं",
+    "next": "card-new-registration-gather-first"
+  },
+  {
+    "id": "opt-remove-death",
+    "question_id": "q-remove-why",
+    "label_en": "They passed away",
+    "label_hi": "उनका निधन हो गया",
+    "next": "card-remove-name-death"
+  },
+  {
+    "id": "opt-remove-moved",
+    "question_id": "q-remove-why",
+    "label_en": "They moved away permanently",
+    "label_hi": "वे स्थायी रूप से कहीं और चले गए",
+    "next": "card-remove-name-moved"
+  },
+  {
+    "id": "opt-nri-passport-yes",
+    "question_id": "q-nri-have-passport",
+    "label_en": "Yes, I have it",
+    "label_hi": "हां, मेरे पास है",
+    "next": "card-nri"
+  },
+  {
+    "id": "opt-nri-passport-no",
+    "question_id": "q-nri-have-passport",
+    "label_en": "No, not yet",
+    "label_hi": "नहीं, अभी नहीं",
+    "next": "card-nri-gather-first"
   }
 ]

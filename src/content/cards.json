@@ -74,6 +74,7 @@
       }
     ],
     "source_line": "Source: Election Commission of India",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग",
     "verified_on": "2026-09-01"
   },
   {
@@ -116,6 +117,7 @@
       }
     ],
     "source_line": "Source: Election Commission of India (SIR search result you selected)",
+    "source_line_hi": "स्रोत: भारत निर्वाचन आयोग (आपके द्वारा चुना गया SIR खोज परिणाम)",
     "verified_on": "2026-09-01"
   },
   {
@@ -140,9 +142,9 @@
         "label_hi": "BLO पता सत्यापित नहीं कर सका (20–25%)"
       },
       {
-        "id": "reject-blurry-photo",
-        "label_en": "Blurry document photo",
-        "label_hi": "धुंधली दस्तावेज़ फोटो"
+        "id": "reject-photo-mismatch",
+        "label_en": "Photo mismatch (8–10% of cases, research estimate, not an official figure)",
+        "label_hi": "फोटो मेल न खाना (लगभग 8–10% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
       }
     ],
     "document_requirements": [
@@ -179,7 +181,7 @@
         "id": "step-correct-fill",
         "order": 2,
         "text_en": "Fill in the correct details exactly as shown on your proof",
-        "text_hi": "अपना प्रमाण में जैसा लिखा है, ठीक वैसे ही सही जानकारी भरें",
+        "text_hi": "अपने प्रमाण में जैसा लिखा है, ठीक वैसे ही सही जानकारी भरें",
         "icon": "edit",
         "action_kind": "none"
       },
@@ -209,6 +211,7 @@
       }
     ],
     "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
     "verified_on": "2026-09-01"
   },
   {
@@ -257,6 +260,7 @@
       }
     ],
     "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
     "verified_on": "2026-09-01"
   },
   {
@@ -305,6 +309,404 @@
       }
     ],
     "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-new-registration",
+    "kind": "wizard-result",
+    "headline_en": "Use Form 6",
+    "headline_hi": "फॉर्म 6 का उपयोग करें",
+    "meaning_en": "Form 6 registers you as a voter for the first time, at the address where you live now. It also covers citizens turning 18 soon — the form has a section for your date of birth so it's processed at the right time.",
+    "meaning_hi": "फॉर्म 6 आपको पहली बार वोटर के रूप में, आप अभी जहाँ रहते हैं वहाँ पंजीकृत करता है। यह उन नागरिकों को भी कवर करता है जो जल्द ही 18 वर्ष के होने वाले हैं — फॉर्म में आपकी जन्म तिथि के लिए जगह है ताकि इसे सही समय पर प्रोसेस किया जा सके।",
+    "form_id": "form-6",
+    "timeline_en": "Usually a few weeks after you submit, once your details are verified. Some applications take longer — treat that as a possibility, not a guarantee, and apply as early as you can.",
+    "timeline_hi": "जमा करने के बाद आमतौर पर कुछ हफ्तों में, आपकी जानकारी सत्यापित होने के बाद। कुछ आवेदनों में इससे ज़्यादा समय भी लग सकता है — इसे एक संभावना मानें, गारंटी नहीं, और जितनी जल्दी हो सके आवेदन करें।",
+    "rejection_tags": [
+      {
+        "id": "reject-newreg-age-proof",
+        "label_en": "Age or date-of-birth proof issue (10–12% of cases, research estimate, not an official figure)",
+        "label_hi": "उम्र या जन्म तिथि प्रमाण से जुड़ी समस्या (लगभग 10–12% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      },
+      {
+        "id": "reject-newreg-photo-mismatch",
+        "label_en": "Photo mismatch (8–10% of cases, research estimate, not an official figure)",
+        "label_hi": "फोटो मेल न खाना (लगभग 8–10% मामलों में, शोध अनुमान, आधिकारिक आँकड़ा नहीं)"
+      }
+    ],
+    "document_requirements": [
+      {
+        "id": "doc-newreg-age-proof",
+        "label_en": "Proof of date of birth (Aadhaar, birth certificate, or 10th-class marksheet)",
+        "label_hi": "जन्म तिथि का प्रमाण (आधार, जन्म प्रमाण पत्र, या 10वीं की मार्कशीट)",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-newreg-address-proof",
+        "label_en": "Proof of your current address (Aadhaar, utility bill, or rent agreement)",
+        "label_hi": "आपके मौजूदा पते का प्रमाण (आधार, बिजली/पानी का बिल, या किराया अनुबंध)",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-newreg-photo",
+        "label_en": "One recent passport-size photo",
+        "label_hi": "एक हालिया पासपोर्ट साइज़ फोटो",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-newreg-open-form",
+        "order": 1,
+        "text_en": "Open Form 6 on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 6 खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-newreg-fill",
+        "order": 2,
+        "text_en": "Fill in your details exactly as shown on your proof documents",
+        "text_hi": "अपने प्रमाण दस्तावेज़ों में जैसा लिखा है, ठीक वैसे ही अपनी जानकारी भरें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-newreg-submit",
+        "order": 3,
+        "text_en": "Submit online, or hand it to your local Booth Level Officer (BLO)",
+        "text_hi": "ऑनलाइन जमा करें, या अपने स्थानीय बूथ लेवल ऑफिसर (BLO) को दें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-newreg-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-newreg-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-new-registration-gather-first",
+    "kind": "gather-first",
+    "headline_en": "Get your proof ready first",
+    "headline_hi": "पहले अपना प्रमाण तैयार करें",
+    "meaning_en": "Form 6 needs proof of your date of birth and address before you apply. Getting this ready first, rather than applying without it, avoids one of the most common rejection reasons.",
+    "meaning_hi": "आवेदन करने से पहले फॉर्म 6 के लिए आपकी जन्म तिथि और पते का प्रमाण चाहिए। इसके बिना आवेदन करने की जगह पहले इसे तैयार कर लेना, आवेदन खारिज होने के सबसे आम कारणों में से एक से बचाता है।",
+    "form_id": "form-6",
+    "timeline_en": "Once you have your proof ready, registration itself usually takes a few weeks.",
+    "timeline_hi": "प्रमाण तैयार होने के बाद, पंजीकरण में आमतौर पर कुछ हफ्ते लगते हैं।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-gather-newreg-proof",
+        "label_en": "Proof of your date of birth and current address (Aadhaar, birth certificate, or similar)",
+        "label_hi": "आपकी जन्म तिथि और मौजूदा पते का प्रमाण (आधार, जन्म प्रमाण पत्र, या समान)",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-gather-newreg-collect",
+        "order": 1,
+        "text_en": "Get one of the documents above showing your date of birth and address",
+        "text_hi": "ऊपर दिए गए दस्तावेज़ों में से एक, जिसमें आपकी जन्म तिथि और पता हो, प्राप्त करें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-gather-newreg-save",
+        "order": 2,
+        "text_en": "Save this card so you remember what's needed",
+        "text_hi": "इस कार्ड को सेव करें ताकि आपको याद रहे कि क्या चाहिए",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-gather-newreg-return",
+        "order": 3,
+        "text_en": "Come back here once you have it",
+        "text_hi": "जब यह आपके पास हो, तो यहां वापस आएं",
+        "icon": "info",
+        "action_kind": "none"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-remove-name-death",
+    "kind": "wizard-result",
+    "headline_en": "Use Form 7",
+    "headline_hi": "फॉर्म 7 का उपयोग करें",
+    "meaning_en": "Form 7 removes a name from the voter list after someone has passed away. A family member, or another voter registered in the same constituency, can file this so the record stays accurate.",
+    "meaning_hi": "फॉर्म 7 से किसी की मृत्यु के बाद उसका नाम वोटर सूची से हटाया जाता है। परिवार का कोई सदस्य, या उसी निर्वाचन क्षेत्र में पंजीकृत कोई अन्य मतदाता, यह भर सकता है ताकि रिकॉर्ड सही बना रहे।",
+    "form_id": "form-7",
+    "timeline_en": "Usually a few weeks, after the local Booth Level Officer (BLO) verifies the details — though it can take longer in some cases, so it helps to apply as soon as you can.",
+    "timeline_hi": "स्थानीय बूथ लेवल ऑफिसर (BLO) द्वारा जानकारी सत्यापित करने के बाद, आमतौर पर कुछ हफ्तों में हो जाता है — कुछ मामलों में इसमें ज़्यादा समय भी लग सकता है, इसलिए जितनी जल्दी हो सके आवेदन करना बेहतर है।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-remove-death-cert",
+        "label_en": "Death certificate",
+        "label_hi": "मृत्यु प्रमाण पत्र",
+        "any_one_of": false
+      },
+      {
+        "id": "doc-remove-death-epic",
+        "label_en": "The deceased person's voter ID (EPIC) card, if available",
+        "label_hi": "मृतक का वोटर ID (EPIC) कार्ड, अगर उपलब्ध हो",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-remove-death-open-form",
+        "order": 1,
+        "text_en": "Open Form 7 on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 7 खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-remove-death-fill",
+        "order": 2,
+        "text_en": "Fill in the deceased person's details exactly as shown on their voter ID",
+        "text_hi": "मृतक की जानकारी उनके वोटर ID में जैसी लिखी है, ठीक वैसे ही भरें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-remove-death-submit",
+        "order": 3,
+        "text_en": "Submit online, or hand it to your local Booth Level Officer (BLO)",
+        "text_hi": "ऑनलाइन जमा करें, या अपने स्थानीय बूथ लेवल ऑफिसर (BLO) को दें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-remove-death-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-remove-death-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-remove-name-moved",
+    "kind": "wizard-result",
+    "headline_en": "Use Form 7",
+    "headline_hi": "फॉर्म 7 का उपयोग करें",
+    "meaning_en": "Form 7 also covers someone who has permanently moved away and won't be living at this address again. This keeps the voter list accurate for everyone at that address.",
+    "meaning_hi": "फॉर्म 7 उस स्थिति को भी कवर करता है जब कोई व्यक्ति स्थायी रूप से कहीं और चला गया हो और अब इस पते पर नहीं रहेगा। इससे उस पते पर सभी के लिए वोटर सूची सही बनी रहती है।",
+    "form_id": "form-7",
+    "timeline_en": "Usually a few weeks, after the local Booth Level Officer (BLO) verifies the details — though it can take longer in some cases, so it helps to apply as soon as you can.",
+    "timeline_hi": "स्थानीय बूथ लेवल ऑफिसर (BLO) द्वारा जानकारी सत्यापित करने के बाद, आमतौर पर कुछ हफ्तों में हो जाता है — कुछ मामलों में इसमें ज़्यादा समय भी लग सकता है, इसलिए जितनी जल्दी हो सके आवेदन करना बेहतर है।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-remove-moved-proof",
+        "label_en": "Any proof that the person now lives elsewhere, if you have it (their new address, or their new voter ID)",
+        "label_hi": "इस बात का कोई भी प्रमाण कि व्यक्ति अब कहीं और रहता है, अगर आपके पास हो (उनका नया पता, या उनका नया वोटर ID)",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-remove-moved-open-form",
+        "order": 1,
+        "text_en": "Open Form 7 on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 7 खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-remove-moved-fill",
+        "order": 2,
+        "text_en": "Fill in the details of the person who moved, as best you know them",
+        "text_hi": "जो व्यक्ति चला गया है, उसकी जानकारी आपको जितनी पता है उतनी भरें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-remove-moved-submit",
+        "order": 3,
+        "text_en": "Submit online, or hand it to your local Booth Level Officer (BLO)",
+        "text_hi": "ऑनलाइन जमा करें, या अपने स्थानीय बूथ लेवल ऑफिसर (BLO) को दें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-remove-moved-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-remove-moved-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-nri",
+    "kind": "wizard-result",
+    "headline_en": "Use Form 6A",
+    "headline_hi": "फॉर्म 6A का उपयोग करें",
+    "meaning_en": "Form 6A registers Indian citizens living abroad to vote from their home constituency in India — you're recorded on that constituency's own roll, tied to the address on your passport, not a separate NRI list. One thing to know before you register: NRI voters must vote in person at their constituency on election day. There's currently no postal or online voting for NRIs, so registering doesn't mean you'll be able to vote from abroad.",
+    "meaning_hi": "फॉर्म 6A विदेश में रह रहे भारतीय नागरिकों को उनके भारत के गृह निर्वाचन क्षेत्र से वोट देने के लिए पंजीकृत करता है — आप उसी निर्वाचन क्षेत्र की सूची में, अपने पासपोर्ट पर दर्ज पते के आधार पर दर्ज होते हैं, किसी अलग NRI सूची में नहीं। पंजीकरण से पहले एक ज़रूरी बात जान लें: NRI मतदाताओं को चुनाव के दिन अपने निर्वाचन क्षेत्र में व्यक्तिगत रूप से जाकर वोट देना होता है। फिलहाल NRI के लिए डाक या ऑनलाइन वोटिंग की सुविधा नहीं है, यानी पंजीकरण होने का मतलब यह नहीं कि आप विदेश से वोट दे पाएंगे।",
+    "form_id": "form-6a",
+    "timeline_en": "Usually a few weeks. Some applications take longer — treat that as a possibility, not a guarantee, and apply as early as you can.",
+    "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है। कुछ आवेदनों में इससे ज़्यादा समय भी लग सकता है — इसे एक संभावना मानें, गारंटी नहीं, और जितनी जल्दी हो सके आवेदन करें।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-nri-passport",
+        "label_en": "Valid Indian passport",
+        "label_hi": "मान्य भारतीय पासपोर्ट",
+        "any_one_of": false
+      },
+      {
+        "id": "doc-nri-photo",
+        "label_en": "One recent passport-size photo",
+        "label_hi": "एक हालिया पासपोर्ट साइज़ फोटो",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-nri-open-form",
+        "order": 1,
+        "text_en": "Open Form 6A on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 6A खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-nri-fill",
+        "order": 2,
+        "text_en": "Fill in your passport and current overseas address details",
+        "text_hi": "अपने पासपोर्ट और मौजूदा विदेशी पते की जानकारी भरें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-nri-submit",
+        "order": 3,
+        "text_en": "Submit online through the official portal",
+        "text_hi": "आधिकारिक पोर्टल के ज़रिए ऑनलाइन जमा करें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-nri-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-nri-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-nri-gather-first",
+    "kind": "gather-first",
+    "headline_en": "Get your proof ready first",
+    "headline_hi": "पहले अपना प्रमाण तैयार करें",
+    "meaning_en": "Form 6A needs your Indian passport before you apply — it's the main proof of your identity and address for NRI registration. Getting it ready first avoids delays.",
+    "meaning_hi": "आवेदन करने से पहले फॉर्म 6A के लिए आपका भारतीय पासपोर्ट चाहिए — यह NRI पंजीकरण के लिए आपकी पहचान और पते का मुख्य प्रमाण है। इसे पहले तैयार कर लेना देरी से बचाता है।",
+    "form_id": "form-6a",
+    "timeline_en": "Once you have your passport ready, registration itself usually takes a few weeks.",
+    "timeline_hi": "पासपोर्ट तैयार होने के बाद, पंजीकरण में आमतौर पर कुछ हफ्ते लगते हैं।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-gather-nri-passport",
+        "label_en": "Your Indian passport",
+        "label_hi": "आपका भारतीय पासपोर्ट",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-gather-nri-collect",
+        "order": 1,
+        "text_en": "Get your passport ready — check it isn't expired",
+        "text_hi": "अपना पासपोर्ट तैयार रखें — जांच लें कि उसकी अवधि समाप्त तो नहीं हुई",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-gather-nri-save",
+        "order": 2,
+        "text_en": "Save this card so you remember what's needed",
+        "text_hi": "इस कार्ड को सेव करें ताकि आपको याद रहे कि क्या चाहिए",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-gather-nri-return",
+        "order": 3,
+        "text_en": "Come back here once you have it",
+        "text_hi": "जब यह आपके पास हो, तो यहां वापस आएं",
+        "icon": "info",
+        "action_kind": "none"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "source_line_hi": "स्रोत: ECI फॉर्म सूची",
     "verified_on": "2026-09-01"
   }
 ]

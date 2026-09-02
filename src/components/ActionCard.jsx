@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
-import { isStale } from '../content/schema.js'
+import { isStale, formatDisplayDate } from '../content/schema.js'
 import { Seal } from './Seal.jsx'
 import { saveCard, isCardSaved } from '../lib/savedCards.js'
 import { shareCard, renderCardAsFile } from '../lib/shareCard.js'
@@ -167,13 +167,16 @@ export function ActionCard({ card, forms = [] }) {
         </div>
 
         {card.rejection_tags.length > 0 && (
-          <div className="receipt-rejects">
-            {card.rejection_tags.map((tagItem) => (
-              <span key={tagItem.id} className="reject-tag">
-                {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
-              </span>
-            ))}
-          </div>
+          <>
+            <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
+            <div className="receipt-rejects">
+              {card.rejection_tags.map((tagItem) => (
+                <span key={tagItem.id} className="reject-tag">
+                  {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
+                </span>
+              ))}
+            </div>
+          </>
         )}
 
         {card.document_requirements.length > 0 && (
@@ -243,7 +246,7 @@ export function ActionCard({ card, forms = [] }) {
 
         <div className="receipt-footer">
           <span>
-            {card.source_line} · {t('card.verified')} {formatFooterDate(card.verified_on)}
+            {activeLang === 'hi' ? card.source_line_hi : card.source_line} · {t('card.verified')} {formatDisplayDate(card.verified_on, activeLang)}
             {stale && <span className="stale-flag">{t('card.stale')}</span>}
           </span>
           <span>{t('card.helpline')}</span>
@@ -266,11 +269,4 @@ function WhatsAppIcon() {
       <path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3 0 .1 0 .5-.2 1.1z" />
     </svg>
   )
-}
-
-/** "2026-09-01" -> "1 Sep 2026", matching the mockup's footer date format. */
-function formatFooterDate(isoDate) {
-  const [y, m, d] = isoDate.split('-')
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return `${Number(d)} ${months[Number(m) - 1]} ${y}`
 }

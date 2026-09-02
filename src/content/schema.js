@@ -56,6 +56,7 @@
  * @property {DocumentReq[]} document_requirements - denormalized here (not a separate top-level array) since each card authors its own document list; field names still match the ERD's DOCUMENT_REQ entity minus the redundant card_id FK
  * @property {Step[]} steps         - denormalized for the same reason as document_requirements; matches the ERD's STEP entity minus card_id
  * @property {string} source_line   - e.g. "Source: Election Commission of India"; shown in the UI's permanent trust footer. Names the card's primary authoritative source — a claim inside the card that comes from elsewhere (a press account, a research estimate) is attributed inline in that claim's own text instead, not folded into this single line.
+ * @property {string} source_line_hi - the same trust-footer line in Hindi; must not fall back to the English string in Hindi mode, same rule this project already applies to form names and dates
  * @property {string} verified_on   - ISO date "YYYY-MM-DD"
  */
 
@@ -67,6 +68,8 @@
  * @property {string} icon
  * @property {string} subtitle_en - one-line description shown on the task-picker row, e.g. "Wrong name, date of birth, or photo · Form 8"
  * @property {string} subtitle_hi
+ * @property {string} preflight_en - "keep ready before you start" copy shown on the task's first question screen; per-task (not global) since what to keep ready genuinely differs by task — a shared string here previously showed "correct details" proof guidance on every task, including Update-address, which needs address proof instead
+ * @property {string} preflight_hi
  */
 
 /**
@@ -103,19 +106,33 @@
 
 const STALE_AFTER_DAYS = 30;
 
-const DISPLAY_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DISPLAY_MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Hindi doesn't abbreviate month names the way English does, so these are
+// full names rather than 3-letter forms — matches how the rest of this
+// project's Hindi UI copy reads (never truncated/transliterated shorthand).
+const DISPLAY_MONTHS_HI = [
+  'जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
+  'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर',
+];
 
 /**
  * Formats an already-validated "YYYY-MM-DD" date for display (e.g. "1 Sep
- * 2026"). Shared by the Action Card footer and the Home screen's urgency
- * strip so the two "last verified" displays never drift into two different
- * formats.
+ * 2026" / "1 सितंबर 2026"). Shared by the Action Card footer and the Home
+ * screen's urgency strip so the two "last verified" displays never drift
+ * into two different formats — and so neither one silently shows an English
+ * month name inside otherwise-Hindi text (the same class of bug already
+ * fixed once for form names, see Form.name_hi).
  * @param {string} isoDate
+ * @param {"en"|"hi"} [lang] - defaults to "en" when omitted/unset (matches
+ *   this project's other lang-optional call sites, e.g. before a language
+ *   choice is made)
  * @returns {string}
  */
-export function formatDisplayDate(isoDate) {
+export function formatDisplayDate(isoDate, lang) {
   const [y, m, d] = isoDate.split('-');
-  return `${Number(d)} ${DISPLAY_MONTHS[Number(m) - 1]} ${y}`;
+  const months = lang === 'hi' ? DISPLAY_MONTHS_HI : DISPLAY_MONTHS_EN;
+  return `${Number(d)} ${months[Number(m) - 1]} ${y}`;
 }
 
 /**
@@ -252,7 +269,7 @@ export function validateCards(cards, forms) {
 
   for (const card of cards) {
     const label = card?.id ?? '(missing id)';
-    for (const field of ['id', 'kind', 'headline_en', 'headline_hi', 'meaning_en', 'meaning_hi', 'timeline_en', 'timeline_hi', 'source_line', 'verified_on']) {
+    for (const field of ['id', 'kind', 'headline_en', 'headline_hi', 'meaning_en', 'meaning_hi', 'timeline_en', 'timeline_hi', 'source_line', 'source_line_hi', 'verified_on']) {
       if (!card[field]) errors.push(`"${label}" is missing required field "${field}"`);
     }
     if (card.id) {
@@ -370,7 +387,7 @@ export function validateWizardContent(tasks, questions, options, cards) {
 
   for (const task of tasks) {
     const label = task?.id ?? '(missing id)';
-    for (const field of ['id', 'title_en', 'title_hi', 'icon', 'subtitle_en', 'subtitle_hi']) {
+    for (const field of ['id', 'title_en', 'title_hi', 'icon', 'subtitle_en', 'subtitle_hi', 'preflight_en', 'preflight_hi']) {
       if (!task[field]) errors.push(`tasks.json: "${label}" is missing required field "${field}"`);
     }
     if (task.id) {
@@ -447,6 +464,15 @@ export function validateWizardContent(tasks, questions, options, cards) {
     } else if (!q.multi_select && opts.length < 2) {
       errors.push(`options.json: single-choice question "${q.id}" needs at least 2 options to be a real choice`);
     } else if (q.multi_select) {
+      if (opts.length < 2) {
+        // A multi-select with only one possible option offers no real
+        // "select some of these" choice — it's a single-choice question
+        // wearing the wrong UI (Continue button, no auto-advance) for no
+        // reason. Author it as single-choice instead.
+        errors.push(
+          `options.json: multi-select question "${q.id}" has only 1 option — a multi-select needs at least 2 real choices, otherwise author it as single-choice`,
+        );
+      }
       const distinctNext = new Set(opts.map((o) => o.next).filter(Boolean));
       if (distinctNext.size > 1) {
         errors.push(
@@ -456,15 +482,35 @@ export function validateWizardContent(tasks, questions, options, cards) {
     }
   }
 
-  // Reachability: every question in a task must be reachable by walking
-  // `next` from that task's own first question (lowest `order`) — an
-  // orphaned question (nothing routes to it) would otherwise pass every
-  // other check while never actually being shown to a user.
+  // Reachability, duplicate-order, and termination checks all walk each
+  // task's own question set, so they share one loop.
   for (const task of tasks) {
     const taskQuestions = questionsByTask.get(task.id) ?? [];
     if (taskQuestions.length === 0) continue;
+
+    // Duplicate `order`: leaves "which question is first" ambiguous between
+    // this validator (which picks the lowest `order`) and a future author
+    // eyeballing the file — a silent authoring mistake, not a runtime crash,
+    // so it's cheap to let slip through without this check.
+    const seenOrders = new Map();
+    for (const q of taskQuestions) {
+      if (typeof q.order !== 'number') continue; // already flagged above
+      if (seenOrders.has(q.order)) {
+        errors.push(
+          `questions.json: "${q.id}" and "${seenOrders.get(q.order)}" in task "${task.id}" both have order ${q.order} — question order must be unique within a task`,
+        );
+      } else {
+        seenOrders.set(q.order, q.id);
+      }
+    }
+
     const sorted = [...taskQuestions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     const first = sorted[0];
+
+    // Reachability: every question in a task must be reachable by walking
+    // `next` from that task's own first question (lowest `order`) — an
+    // orphaned question (nothing routes to it) would otherwise pass every
+    // other check while never actually being shown to a user.
     const reachable = new Set([first.id]);
     const queue = [first.id];
     while (queue.length > 0) {
@@ -479,6 +525,44 @@ export function validateWizardContent(tasks, questions, options, cards) {
     for (const q of sorted) {
       if (!reachable.has(q.id)) {
         errors.push(`questions.json: "${q.id}" in task "${task.id}" is unreachable — no option's "next" ever routes to it from that task's first question`);
+      }
+    }
+
+    // Termination: every option's `next`, followed all the way to its end,
+    // must reach a card — no dead ends (a question whose every path stops
+    // short of a card) and no cycles (e.g. q1 -> q2 -> q1) that let a user
+    // loop forever without ever finishing. `visiting` marks nodes on the
+    // current DFS path; revisiting one of those is a cycle, which never
+    // terminates through that edge. `terminates` is memoized per question
+    // since the graph is static for the length of one validation run.
+    const terminates = new Map();
+    const visiting = new Set();
+    function questionTerminates(questionId) {
+      if (terminates.has(questionId)) return terminates.get(questionId);
+      if (visiting.has(questionId)) return false; // cycle: this edge never resolves
+      visiting.add(questionId);
+      const opts = optionsByQuestion.get(questionId) ?? [];
+      let ok = opts.length > 0;
+      for (const opt of opts) {
+        if (!opt.next) {
+          ok = false;
+        } else if (cardIds.has(opt.next)) {
+          // terminates immediately via this option
+        } else if (questionIds.has(opt.next)) {
+          if (!questionTerminates(opt.next)) ok = false;
+        } else {
+          ok = false; // unresolvable next, already reported above
+        }
+      }
+      visiting.delete(questionId);
+      terminates.set(questionId, ok);
+      return ok;
+    }
+    for (const q of sorted) {
+      if (reachable.has(q.id) && !questionTerminates(q.id)) {
+        errors.push(
+          `options.json: task "${task.id}" has a question ("${q.id}") where at least one path never reaches a card — either a dead end or a routing cycle (e.g. "next" pointing back to an earlier question) that a user could get stuck in`,
+        );
       }
     }
   }
