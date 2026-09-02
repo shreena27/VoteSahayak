@@ -47,12 +47,20 @@ export const QA_BANK = [
     bucket_id: 'real-questions',
     question_en: 'I moved to a new city. Which form do I use to update my address?',
     question_hi: 'मैं नए शहर में शिफ्ट हो गया/गई हूं। पता अपडेट करने के लिए कौन सा फॉर्म भरूं?',
+    // The real interview answer was exactly "Use Form 8." — the 3-step
+    // procedure below is real (it matches card-address-update's own
+    // ECI-sourced steps), but it's not what Kanchan herself said, so it
+    // can't share her citation. Split the source line instead of
+    // over-attributing the procedure to the interview (caught in the PR #9
+    // review — same class of issue as the correction-timeline entry below).
     answer_en:
       'Use Form 8 — it updates your address on the electoral roll.\n1. Fill Form 8 on the NVSP website.\n2. Attach proof of your new address.\n3. Submit it.',
     answer_hi:
       'Form 8 भरें — यह आपका पता वोटर सूची में अपडेट करता है।\n1. NVSP वेबसाइट पर Form 8 भरें।\n2. अपने नए पते का प्रमाण जोड़ें।\n3. इसे जमा करें।',
-    source_en: "This project's own primary research (real interview)",
-    source_hi: 'इस प्रोजेक्ट का अपना प्राथमिक शोध (असली इंटरव्यू)',
+    source_en:
+      "\"Use Form 8\" — this project's own primary research (real interview). The submission steps are the general Election Commission of India process, not part of that interview.",
+    source_hi:
+      '"Form 8 भरें" — इस प्रोजेक्ट का अपना प्राथमिक शोध (असली इंटरव्यू)। जमा करने के सामान्य चरण भारत निर्वाचन आयोग की प्रक्रिया से हैं, इंटरव्यू का हिस्सा नहीं।',
   },
   {
     id: 'ram-double-mismatch',
@@ -83,12 +91,20 @@ export const QA_BANK = [
     bucket_id: 'real-questions',
     question_en: 'How long will fixing my name/DOB actually take?',
     question_hi: 'नाम/जन्मतिथि ठीक कराने में असल में कितना समय लगेगा?',
+    // "Usually a few weeks" is real, established house style (matches
+    // card-address-update's own approved timeline wording) — but the old
+    // source line here attributed the WHOLE sentence to Navdeep Suri's
+    // account, when his account only documents the 6-month outlier, not a
+    // general "usually" baseline. Fixed to attribute only what he actually
+    // supports (caught in the PR #9 review).
     answer_en:
-      "There's no official guarantee. Usually a few weeks — but in one documented case (a former diplomat's public account) it took up to 6 months. Apply as early as you can, especially before a SIR deadline, and track your status on NVSP.",
+      "There's no official guarantee. Usually a few weeks — but in one documented case (a former diplomat's public account) it took up to 6 months, so treat that as a possibility, not a guarantee. Apply as early as you can, especially before a SIR deadline, and track your status on NVSP.",
     answer_hi:
-      'कोई आधिकारिक गारंटी नहीं है। आमतौर पर कुछ हफ्तों में हो जाता है — लेकिन एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार) इसमें 6 महीने तक लग गए। जितनी जल्दी हो सके आवेदन करें, खासकर SIR की समय-सीमा से पहले, और NVSP पर अपनी स्थिति ट्रैक करें।',
-    source_en: "Documented case: former diplomat Navdeep Suri's public account (WION) · Moderate Confidence",
-    source_hi: 'दर्ज मामला: पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता',
+      'कोई आधिकारिक गारंटी नहीं है। आमतौर पर कुछ हफ्तों में हो जाता है — लेकिन एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार) इसमें 6 महीने तक लगे, इसलिए इसे एक संभावना मानें, गारंटी नहीं। जितनी जल्दी हो सके आवेदन करें, खासकर SIR की समय-सीमा से पहले, और NVSP पर अपनी स्थिति ट्रैक करें।',
+    source_en:
+      "General timeline: this project's own primary research. The 6-month outlier specifically: former diplomat Navdeep Suri's public account (WION) · Moderate Confidence",
+    source_hi:
+      'सामान्य समय-सीमा: इस प्रोजेक्ट का अपना प्राथमिक शोध। 6 महीने वाला मामला विशेष रूप से: पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता',
   },
   {
     id: 'correction-not-always-reliable',

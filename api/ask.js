@@ -34,12 +34,19 @@ const GENERATE_ENDPOINT = (apiKey) =>
 
 // Cosine similarity threshold below which we never call the generation model
 // at all — a genuine "we don't have this" is a fallback, not a low-confidence
-// guess. Gemini's embedding model puts a real semantic match comfortably
-// above this for short civic Q&A text; tuned empirically against this
-// project's own corpus during step 14's verification pass (see the PR
-// description for the actual test questions/scores this was checked
-// against), not picked arbitrarily.
-const SIMILARITY_THRESHOLD = 0.55;
+// guess. This is a hard trust-architecture requirement, not a soft one: the
+// system prompt alone is not sufficient protection against off-scope/
+// adversarial generation, this threshold is.
+//
+// 0.55 (the original value) was wrong — it sat barely above the ~0.50 noise
+// floor unrelated English text scores against this corpus, so 5 of 6 tested
+// adversarial questions (including a prompt-injection attempt) crossed it
+// and reached the generation model. Re-measured directly against gemini-
+// embedding-001 and this corpus: adversarial questions ("ignore previous
+// instructions...", off-topic chitchat, partisan/legal-opinion bait) top out
+// at 0.7044; genuine in-corpus questions score 0.88-0.90. 0.78 sits with
+// real margin on both sides of that gap.
+const SIMILARITY_THRESHOLD = 0.78;
 const TOP_K = 3;
 const MAX_QUERY_LENGTH = 500;
 

@@ -48,6 +48,11 @@ export function Chat({ onClose, onOpenSir }) {
   const [messages, setMessages] = useState(() => buildInitialMessages(update))
   const [inputValue, setInputValue] = useState('')
   const [listening, setListening] = useState(false)
+  // Guards against a double-tap on Send firing two /api/ask requests — worth
+  // having regardless, but especially now that Gemini's free-tier generation
+  // quota is a scarce, accepted-as-permanent resource (20 calls/day,
+  // project-wide) rather than something to burn on an accidental double-fire.
+  const [isAsking, setIsAsking] = useState(false)
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -79,7 +84,8 @@ export function Chat({ onClose, onOpenSir }) {
 
   async function askFreeText(rawText) {
     const text = rawText.trim()
-    if (!text) return
+    if (!text || isAsking) return
+    setIsAsking(true)
     trackChatAsked({ chip: null })
     setInputValue('')
     const userMsgId = nextMessageId()
@@ -102,16 +108,20 @@ export function Chat({ onClose, onOpenSir }) {
       result = { matched: false }
     }
 
+    // trackChatFallback() lives outside the setMessages updater on purpose —
+    // React (StrictMode in dev) can invoke an updater function twice, which
+    // would double-count the event; the updater itself must stay a pure
+    // function of its previous state.
+    if (!result.matched) trackChatFallback()
     setMessages((prev) =>
       prev.map((m) => {
         if (m.id !== pendingId) return m
-        if (result.matched) {
-          return { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
-        }
-        trackChatFallback()
-        return { id: pendingId, type: 'honest' }
+        return result.matched
+          ? { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
+          : { id: pendingId, type: 'honest' }
       }),
     )
+    setIsAsking(false)
   }
 
   function handleSubmit(e) {
@@ -199,7 +209,7 @@ export function Chat({ onClose, onOpenSir }) {
               <MicIcon />
             </button>
           )}
-          <button type="submit" className="send-btn" aria-label={t('chat.send')} disabled={!inputValue.trim()}>
+          <button type="submit" className="send-btn" aria-label={t('chat.send')} disabled={!inputValue.trim() || isAsking}>
             <SendIcon />
           </button>
         </form>
