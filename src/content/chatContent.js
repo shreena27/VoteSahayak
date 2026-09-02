@@ -57,11 +57,11 @@ export const CHAT_CHIPS = [
     question_en: 'My name has a small difference from my Aadhaar, like a missing hyphen. Does that matter?',
     question_hi: 'मेरे नाम में आधार से थोड़ा फर्क है, जैसे हाइफ़न छूटा हुआ। क्या इससे फर्क पड़ता है?',
     answer_en:
-      "Yes, it can — even a small mismatch can block your SIR registration. The Supreme Court has directed ECI to also accept Aadhaar, EPIC, and Ration Card as valid ID during SIR, but the name still has to match your voter roll entry.\n1. Compare your voter ID name to your Aadhaar name.\n2. If they differ, fill Form 8 on the NVSP website.",
+      "Yes, it can — even a small mismatch can block your SIR registration. The Supreme Court has pushed ECI to also consider Aadhaar, EPIC, and Ration Card as ID during SIR, but ECI hasn't guaranteed it accepts them, and the name still has to match your voter roll entry.\n1. Compare your voter ID name to your Aadhaar name.\n2. If they differ, fill Form 8 on the NVSP website.",
     answer_hi:
-      'हां, फर्क पड़ सकता है — छोटा सा मेल न होना भी SIR पंजीकरण में रुकावट डाल सकता है। सुप्रीम कोर्ट ने ECI को SIR के दौरान आधार, EPIC और राशन कार्ड को भी मान्य ID के रूप में स्वीकार करने का निर्देश दिया है, लेकिन नाम आपके वोटर रोल की एंट्री से मेल खाना चाहिए।\n1. अपने वोटर ID के नाम की तुलना आधार के नाम से करें।\n2. अगर फर्क है, तो NVSP वेबसाइट पर Form 8 भरें।',
-    source_en: 'Supreme Court directive, Association for Democratic Reforms v. ECI',
-    source_hi: 'सुप्रीम कोर्ट का निर्देश, एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI',
+      'हां, फर्क पड़ सकता है — छोटा सा मेल न होना भी SIR पंजीकरण में रुकावट डाल सकता है। सुप्रीम कोर्ट ने ECI से आधार, EPIC और राशन कार्ड को भी ID के रूप में मानने पर विचार करने को कहा है, पर ECI ने इन्हें स्वीकार करने की गारंटी नहीं दी है, और नाम आपके वोटर रोल की एंट्री से मेल खाना चाहिए।\n1. अपने वोटर ID के नाम की तुलना आधार के नाम से करें।\n2. अगर फर्क है, तो NVSP वेबसाइट पर Form 8 भरें।',
+    source_en: 'Supreme Court urged ECI to consider (not a binding acceptance mandate), Association for Democratic Reforms v. ECI',
+    source_hi: 'सुप्रीम कोर्ट ने ECI से विचार करने को कहा (मानने की बाध्यता नहीं), एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI',
   },
   {
     id: 'panchayat',
