@@ -8,6 +8,7 @@ import { Chat } from './components/Chat.jsx'
 import { ActionCard } from './components/ActionCard.jsx'
 import { UpdatePrompt } from './components/UpdatePrompt.jsx'
 import forms from './content/forms.json'
+import './App.css'
 
 function App() {
   const { lang, setLang } = useLanguage()
@@ -26,103 +27,110 @@ function App() {
   const [activeSavedCard, setActiveSavedCard] = useState(null)
 
   return (
-    <>
-      {/* Temporary: proves the i18n plumbing end-to-end and lets both
-          languages be reviewed on the real Home/Wizard screens below. The
-          real language-picker screen (a later build step) replaces this. */}
-      <div className="flex justify-center gap-2 py-2" data-testid="lang-toggle" style={{ borderBottom: '1px solid var(--border)' }}>
-        <button
-          type="button"
-          onClick={() => setLang('en')}
-          style={{
-            padding: '4px 12px',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border)',
-            background: lang === 'en' ? 'var(--accent-soft)' : 'var(--surface)',
-            fontSize: '12px',
-          }}
-        >
-          English
-        </button>
-        <button
-          type="button"
-          onClick={() => setLang('hi')}
-          style={{
-            padding: '4px 12px',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border)',
-            background: lang === 'hi' ? 'var(--accent-soft)' : 'var(--surface)',
-            fontSize: '12px',
-          }}
-        >
-          हिन्दी
-        </button>
-      </div>
-
-      {!lang ? (
-        <main className="min-h-screen flex items-center justify-center">
-          <h1 className="text-2xl font-semibold" style={{ color: 'var(--accent-ink)' }}>
-            {t('app.name')}
-          </h1>
-        </main>
-      ) : view === 'wizard' ? (
-        <Wizard
-          taskId={activeTaskId}
-          onExit={() => setView('picker')}
-          onExitToHome={() => setView('home')}
-        />
-      ) : view === 'picker' ? (
-        <TaskPicker
-          onSelectTask={(taskId) => {
-            setActiveTaskId(taskId)
-            setView('wizard')
-          }}
-          onBack={() => setView('home')}
-        />
-      ) : view === 'sir' ? (
-        <SirFlow
-          onExitToHome={() => setView('home')}
-          onStartTask={(taskId) => {
-            setActiveTaskId(taskId)
-            setView('wizard')
-          }}
-        />
-      ) : view === 'chat' ? (
-        <Chat onClose={() => setView('home')} onOpenSir={() => setView('sir')} />
-      ) : view === 'savedCard' && activeSavedCard ? (
-        <div className="wizard-screen">
-          <div className="app-header">
-            <button type="button" className="back" onClick={() => setView('home')} aria-label={t('wizard.back')}>
-              ‹
+    <div className="app-frame-backdrop">
+      <div className="app-frame">
+        <div className="app-frame-scroll">
+          {/* Temporary: proves the i18n plumbing end-to-end and lets both
+              languages be reviewed on the real Home/Wizard screens below. The
+              real language-picker screen (a later build step) replaces this. */}
+          <div className="flex justify-center gap-2 py-2" data-testid="lang-toggle" style={{ borderBottom: '1px solid var(--border)' }}>
+            <button
+              type="button"
+              onClick={() => setLang('en')}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border)',
+                background: lang === 'en' ? 'var(--accent-soft)' : 'var(--surface)',
+                fontSize: '12px',
+              }}
+            >
+              English
             </button>
-            <h1 className="title">{t('offline.savedCardsHeading')}</h1>
+            <button
+              type="button"
+              onClick={() => setLang('hi')}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border)',
+                background: lang === 'hi' ? 'var(--accent-soft)' : 'var(--surface)',
+                fontSize: '12px',
+              }}
+            >
+              हिन्दी
+            </button>
           </div>
-          <div className="wizard-result">
-            <ActionCard card={activeSavedCard.payload_snapshot} forms={forms} />
-            <div className="back-home">
-              <button type="button" className="btn-text" onClick={() => setView('home')}>
-                {t('wizard.backToHome')}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <Home
-          onOpenPicker={() => setView('picker')}
-          onOpenSir={() => setView('sir')}
-          onOpenChat={() => setView('chat')}
-          onOpenSavedCard={(entry) => {
-            setActiveSavedCard(entry)
-            setView('savedCard')
-          }}
-        />
-      )}
 
-      {/* Rendered last, not first: the toast's own container always exists
-          in the DOM (see UpdatePrompt.jsx) so its buttons don't sit ahead
-          of the real screen's content in tab order while invisible. */}
-      <UpdatePrompt />
-    </>
+          {!lang ? (
+            <main className="min-h-screen flex items-center justify-center">
+              <h1 className="text-2xl font-semibold" style={{ color: 'var(--accent-ink)' }}>
+                {t('app.name')}
+              </h1>
+            </main>
+          ) : view === 'wizard' ? (
+            <Wizard
+              taskId={activeTaskId}
+              onExit={() => setView('picker')}
+              onExitToHome={() => setView('home')}
+            />
+          ) : view === 'picker' ? (
+            <TaskPicker
+              onSelectTask={(taskId) => {
+                setActiveTaskId(taskId)
+                setView('wizard')
+              }}
+              onBack={() => setView('home')}
+            />
+          ) : view === 'sir' ? (
+            <SirFlow
+              onExitToHome={() => setView('home')}
+              onStartTask={(taskId) => {
+                setActiveTaskId(taskId)
+                setView('wizard')
+              }}
+            />
+          ) : view === 'chat' ? (
+            <Chat onClose={() => setView('home')} onOpenSir={() => setView('sir')} />
+          ) : view === 'savedCard' && activeSavedCard ? (
+            <div className="wizard-screen">
+              <div className="app-header">
+                <button type="button" className="back" onClick={() => setView('home')} aria-label={t('wizard.back')}>
+                  ‹
+                </button>
+                <h1 className="title">{t('offline.savedCardsHeading')}</h1>
+              </div>
+              <div className="wizard-result">
+                <ActionCard card={activeSavedCard.payload_snapshot} forms={forms} />
+                <div className="back-home">
+                  <button type="button" className="btn-text" onClick={() => setView('home')}>
+                    {t('wizard.backToHome')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Home
+              onOpenPicker={() => setView('picker')}
+              onOpenSir={() => setView('sir')}
+              onOpenChat={() => setView('chat')}
+              onOpenSavedCard={(entry) => {
+                setActiveSavedCard(entry)
+                setView('savedCard')
+              }}
+            />
+          )}
+        </div>
+
+        {/* Rendered last, not first: the toast's own container always exists
+            in the DOM (see UpdatePrompt.jsx) so its buttons don't sit ahead
+            of the real screen's content in tab order while invisible.
+            Sibling of .app-frame-scroll, not inside it — it's position:fixed
+            and anchors to .app-frame itself (see App.css), so it must stay
+            out of the scrollable content or it'd scroll away with it. */}
+        <UpdatePrompt />
+      </div>
+    </div>
   )
 }
 
