@@ -85,6 +85,7 @@
   "sir.outcomes.found-misspelled.fixLink": "स्पेलिंग ठीक करनी है? यहां से शुरू करें →",
   "sir.outcomes.not-found.title": "नहीं मिला",
   "sir.outcomes.not-found.desc": "कोई मिलता-जुलता नाम नहीं दिखा",
+  "sir.outcomes.not-found.registerLink": "BLO ने पुष्टि की कि आपका नाम सूची में नहीं है? यहां पंजीकरण करें →",
   "sir.outcomes.could-not-complete.title": "जांच पूरी नहीं हो पाई",
   "sir.outcomes.could-not-complete.desc": "साइट बंद थी, या कैप्चा लोड नहीं हुआ",
   "sir.nameChecked": "जांचा गया नाम",
