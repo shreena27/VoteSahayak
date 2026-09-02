@@ -117,5 +117,194 @@
     ],
     "source_line": "Source: Election Commission of India (SIR search result you selected)",
     "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-correct-details",
+    "kind": "wizard-result",
+    "headline_en": "Use Form 8",
+    "headline_hi": "फॉर्म 8 का उपयोग करें",
+    "meaning_en": "Form 8 covers detail corrections like your name, father's/mother's name, date of birth, or photo — you'll list exactly what needs fixing when you fill it in. No need to file separately for each one.",
+    "meaning_hi": "फॉर्म 8 में नाम, पिता/माता का नाम, जन्म तिथि, या फोटो जैसी जानकारी ठीक की जा सकती है — फॉर्म भरते समय आप बताएंगे कि वास्तव में क्या ठीक करना है। हर चीज़ के लिए अलग से आवेदन करने की ज़रूरत नहीं।",
+    "form_id": "form-8",
+    "timeline_en": "Usually a few weeks, up to 6 months in some cases.",
+    "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है, कुछ मामलों में 6 महीने तक भी लग सकते हैं।",
+    "rejection_tags": [
+      {
+        "id": "reject-duplicate-entry",
+        "label_en": "Duplicate entry (30–35%)",
+        "label_hi": "डुप्लीकेट एंट्री (30–35%)"
+      },
+      {
+        "id": "reject-blo-verify",
+        "label_en": "BLO couldn't verify address (20–25%)",
+        "label_hi": "BLO पता सत्यापित नहीं कर सका (20–25%)"
+      },
+      {
+        "id": "reject-blurry-photo",
+        "label_en": "Blurry document photo",
+        "label_hi": "धुंधली दस्तावेज़ फोटो"
+      }
+    ],
+    "document_requirements": [
+      {
+        "id": "doc-correct-name-proof",
+        "label_en": "Proof of correct name (Aadhaar, passport, or similar)",
+        "label_hi": "सही नाम का प्रमाण (आधार, पासपोर्ट, या समान)",
+        "any_one_of": true
+      },
+      {
+        "id": "doc-existing-epic-correction",
+        "label_en": "Existing voter ID (EPIC) card",
+        "label_hi": "मौजूदा वोटर ID (EPIC) कार्ड",
+        "any_one_of": false
+      },
+      {
+        "id": "doc-passport-photo",
+        "label_en": "One recent passport-size photo",
+        "label_hi": "एक हालिया पासपोर्ट साइज़ फोटो",
+        "any_one_of": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-correct-open-form",
+        "order": 1,
+        "text_en": "Open Form 8 on the official portal",
+        "text_hi": "आधिकारिक पोर्टल पर फॉर्म 8 खोलें",
+        "icon": "external-link",
+        "action_kind": "url",
+        "action_value": "https://voters.eci.gov.in/"
+      },
+      {
+        "id": "step-correct-fill",
+        "order": 2,
+        "text_en": "Fill in the correct details exactly as shown on your proof",
+        "text_hi": "अपना प्रमाण में जैसा लिखा है, ठीक वैसे ही सही जानकारी भरें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-correct-submit",
+        "order": 3,
+        "text_en": "Submit online, or hand it to your local Booth Level Officer (BLO)",
+        "text_hi": "ऑनलाइन जमा करें, या अपने स्थानीय बूथ लेवल ऑफिसर (BLO) को दें",
+        "icon": "send",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-correct-save",
+        "order": 4,
+        "text_en": "Save this card so you have everything in one place",
+        "text_hi": "इस कार्ड को सेव करें ताकि सब कुछ एक जगह रहे",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-correct-share",
+        "order": 5,
+        "text_en": "Share this card with anyone helping you",
+        "text_hi": "जो कोई आपकी मदद कर रहा है, उसके साथ यह कार्ड शेयर करें",
+        "icon": "share",
+        "action_kind": "share"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-address-gather-first",
+    "kind": "gather-first",
+    "headline_en": "Get your proof ready first",
+    "headline_hi": "पहले अपना प्रमाण तैयार करें",
+    "meaning_en": "Form 8 needs proof of your new address before you apply. Getting this ready first, rather than applying without it, avoids one of the most common rejection reasons.",
+    "meaning_hi": "आवेदन करने से पहले फॉर्म 8 के लिए आपके नए पते का प्रमाण चाहिए। इसके बिना आवेदन करने की जगह पहले इसे तैयार कर लेना, आवेदन खारिज होने के सबसे आम कारणों में से एक से बचाता है।",
+    "form_id": "form-8",
+    "timeline_en": "Once you have your proof ready, the address update itself usually takes a few weeks.",
+    "timeline_hi": "प्रमाण तैयार होने के बाद, पता अपडेट में आमतौर पर कुछ हफ्ते लगते हैं।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-gather-address-proof",
+        "label_en": "Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement)",
+        "label_hi": "आपके नए पते का प्रमाण (अपडेटेड आधार, हाल का बिजली/पानी का बिल, या किराया अनुबंध)",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-gather-address-collect",
+        "order": 1,
+        "text_en": "Get one of the documents above showing your new address",
+        "text_hi": "ऊपर दिए गए दस्तावेज़ों में से एक, जिसमें आपका नया पता हो, प्राप्त करें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-gather-address-save",
+        "order": 2,
+        "text_en": "Save this card so you remember what's needed",
+        "text_hi": "इस कार्ड को सेव करें ताकि आपको याद रहे कि क्या चाहिए",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-gather-address-return",
+        "order": 3,
+        "text_en": "Come back to this wizard once you have it",
+        "text_hi": "जब आपके पास यह हो, तो वापस इस विज़ार्ड में आएं",
+        "icon": "info",
+        "action_kind": "none"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "verified_on": "2026-09-01"
+  },
+  {
+    "id": "card-correct-gather-first",
+    "kind": "gather-first",
+    "headline_en": "Get your proof ready first",
+    "headline_hi": "पहले अपना प्रमाण तैयार करें",
+    "meaning_en": "Form 8 needs proof of your correct details before you apply. Getting this ready first, rather than applying without it, avoids one of the most common rejection reasons.",
+    "meaning_hi": "आवेदन करने से पहले फॉर्म 8 के लिए सही जानकारी का प्रमाण चाहिए। इसके बिना आवेदन करने की जगह पहले इसे तैयार कर लेना, आवेदन खारिज होने के सबसे आम कारणों में से एक से बचाता है।",
+    "form_id": "form-8",
+    "timeline_en": "Once you have your proof ready, the correction itself usually takes a few weeks.",
+    "timeline_hi": "प्रमाण तैयार होने के बाद, सुधार में आमतौर पर कुछ हफ्ते लगते हैं।",
+    "rejection_tags": [],
+    "document_requirements": [
+      {
+        "id": "doc-gather-proof",
+        "label_en": "Proof of your correct name (Aadhaar, passport, or birth certificate)",
+        "label_hi": "आपके सही नाम का प्रमाण (आधार, पासपोर्ट, या जन्म प्रमाण पत्र)",
+        "any_one_of": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-gather-collect",
+        "order": 1,
+        "text_en": "Get one of the documents above with your correct name spelling",
+        "text_hi": "ऊपर दिए गए दस्तावेज़ों में से एक, अपने सही नाम की स्पेलिंग के साथ प्राप्त करें",
+        "icon": "edit",
+        "action_kind": "none"
+      },
+      {
+        "id": "step-gather-save",
+        "order": 2,
+        "text_en": "Save this card so you remember what's needed",
+        "text_hi": "इस कार्ड को सेव करें ताकि आपको याद रहे कि क्या चाहिए",
+        "icon": "bookmark",
+        "action_kind": "save"
+      },
+      {
+        "id": "step-gather-return",
+        "order": 3,
+        "text_en": "Come back to this wizard once you have it",
+        "text_hi": "जब आपके पास यह हो, तो वापस इस विज़ार्ड में आएं",
+        "icon": "info",
+        "action_kind": "none"
+      }
+    ],
+    "source_line": "Source: ECI Form Inventory",
+    "verified_on": "2026-09-01"
   }
 ]

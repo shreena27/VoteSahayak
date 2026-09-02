@@ -1,0 +1,18 @@
+[
+  {
+    "id": "correct-details",
+    "title_en": "Correct my details",
+    "title_hi": "मेरी जानकारी ठीक करें",
+    "icon": "✏️",
+    "subtitle_en": "Wrong name, father's/mother's name, date of birth, or photo · Form 8",
+    "subtitle_hi": "ग़लत नाम, पिता/माता का नाम, जन्म तिथि, या फोटो · फॉर्म 8"
+  },
+  {
+    "id": "update-address",
+    "title_en": "Update my address",
+    "title_hi": "अपना पता अपडेट करें",
+    "icon": "🏠",
+    "subtitle_en": "Moved to a new city or area · Form 8",
+    "subtitle_hi": "नए शहर या इलाके में शिफ्ट हुए · फॉर्म 8"
+  }
+]

@@ -3,6 +3,21 @@
   "plugins": ["react", "oxc"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "name": "mixpanel-browser",
+        "message": "Import from src/lib/analytics.js instead — it's the only place allowed to call mixpanel-browser directly, so every tracked event stays on the Implementation Plan's fixed allowlist."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/lib/analytics.js"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
 }

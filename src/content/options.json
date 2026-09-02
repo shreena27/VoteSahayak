@@ -1,0 +1,58 @@
+[
+  {
+    "id": "opt-wrong-name",
+    "question_id": "q-correct-what-wrong",
+    "label_en": "My name",
+    "label_hi": "मेरा नाम",
+    "next": "q-correct-have-proof"
+  },
+  {
+    "id": "opt-wrong-parent-name",
+    "question_id": "q-correct-what-wrong",
+    "label_en": "Father's/mother's name",
+    "label_hi": "पिता/माता का नाम",
+    "next": "q-correct-have-proof"
+  },
+  {
+    "id": "opt-wrong-dob",
+    "question_id": "q-correct-what-wrong",
+    "label_en": "Date of birth",
+    "label_hi": "जन्म तिथि",
+    "next": "q-correct-have-proof"
+  },
+  {
+    "id": "opt-wrong-photo",
+    "question_id": "q-correct-what-wrong",
+    "label_en": "Photo",
+    "label_hi": "फोटो",
+    "next": "q-correct-have-proof"
+  },
+  {
+    "id": "opt-proof-yes",
+    "question_id": "q-correct-have-proof",
+    "label_en": "Yes, I have it",
+    "label_hi": "हां, मेरे पास है",
+    "next": "card-correct-details"
+  },
+  {
+    "id": "opt-proof-no",
+    "question_id": "q-correct-have-proof",
+    "label_en": "No, not yet",
+    "label_hi": "नहीं, अभी नहीं",
+    "next": "card-correct-gather-first"
+  },
+  {
+    "id": "opt-address-proof-yes",
+    "question_id": "q-address-have-proof",
+    "label_en": "Yes, I have it",
+    "label_hi": "हां, मेरे पास है",
+    "next": "card-address-update"
+  },
+  {
+    "id": "opt-address-proof-no",
+    "question_id": "q-address-have-proof",
+    "label_en": "No, not yet",
+    "label_hi": "नहीं, अभी नहीं",
+    "next": "card-address-gather-first"
+  }
+]

@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { validateForms, validateCards } from '../src/content/schema.js';
+import { validateForms, validateCards, validateWizardContent, validateUpdates } from '../src/content/schema.js';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const contentDir = path.join(rootDir, '..', 'src', 'content');
@@ -15,12 +15,18 @@ function readJson(fileName) {
 
 const forms = readJson('forms.json');
 const cards = readJson('cards.json');
+const tasks = readJson('tasks.json');
+const questions = readJson('questions.json');
+const options = readJson('options.json');
+const updates = readJson('updates.json');
 
 const formResult = validateForms(forms);
 const cardResult = validateCards(cards, forms);
+const wizardResult = validateWizardContent(tasks, questions, options, cards);
+const updateResult = validateUpdates(updates);
 
-const errors = [...formResult.errors, ...cardResult.errors];
-const staleWarnings = [...formResult.staleWarnings, ...cardResult.staleWarnings];
+const errors = [...formResult.errors, ...cardResult.errors, ...wizardResult.errors, ...updateResult.errors];
+const staleWarnings = [...formResult.staleWarnings, ...cardResult.staleWarnings, ...updateResult.staleWarnings];
 
 for (const warning of staleWarnings) {
   console.warn(`STALE: ${warning}`);
@@ -34,4 +40,6 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Content OK: ${forms.length} form(s), ${cards.length} card(s), 0 errors, ${staleWarnings.length} stale warning(s).`);
+console.log(
+  `Content OK: ${forms.length} form(s), ${cards.length} card(s), ${tasks.length} task(s), ${questions.length} question(s), ${options.length} option(s), ${updates.length} update(s), 0 errors, ${staleWarnings.length} stale warning(s).`,
+);

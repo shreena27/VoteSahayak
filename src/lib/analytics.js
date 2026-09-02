@@ -59,7 +59,12 @@ if (enabled) {
         // SDK still attaches to every track() call below, which include the
         // current URL and referrer. Those aren't in the event allowlist and
         // must never leave the device, so they're blacklisted explicitly
-        // rather than trusted to the options above.
+        // rather than trusted to the options above. Also matters for the
+        // wizard (Phase 2): it's exactly the kind of UI that could put step
+        // state in a query string later, which would then reach Mixpanel
+        // with no code change and no review — this stays a no-op
+        // belt-and-braces check even though the wizard itself is also built
+        // to keep that state out of the URL in the first place.
         property_blacklist: [
           '$current_url',
           '$referrer',

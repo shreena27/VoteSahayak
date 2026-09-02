@@ -19,5 +19,25 @@
   "card.tag.sirOutcome": "SIR Risk Check",
   "card.tag.sirNotice": "SIR Notice · Response",
   "card.tag.wizardResult": "Your Result",
-  "card.tag.gatherFirst": "Before You Start"
+  "card.tag.gatherFirst": "Before You Start",
+
+  "chat.name": "Chunav Saathi",
+
+  "home.sirRow.title": "Am I still on the voter list?",
+  "home.sirRow.subtitle": "Check if the recent list revision affected you",
+  "home.wizardRow.title": "My details are wrong, or I've moved.",
+  "home.wizardRow.subtitle": "Get the exact form for your situation, in plain language",
+  "home.sirComingSoon": "This is being built next — check back soon.",
+  "home.chatComingSoon": "Chunav Saathi is coming soon — check back soon.",
+
+  "wizard.back": "Back",
+  "wizard.continue": "Continue",
+  "wizard.multiSelectHint": "Pick all that apply, then Continue",
+  "wizard.singleSelectHint": "Tap an answer to continue",
+  "wizard.taskPicker.title": "Find what I need",
+  "wizard.taskPicker.newReg.title": "New registration",
+  "wizard.taskPicker.newReg.subtitle": "18 or older, or turning 18 soon · Form 6",
+  "wizard.preflight.label": "Keep ready",
+  "wizard.preflight.body": "Aadhaar or other proof of the correct details, and your voter ID (EPIC) number if you have it.",
+  "wizard.backToHome": "Back to home"
 }
