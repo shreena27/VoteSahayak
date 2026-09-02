@@ -108,7 +108,13 @@
   position: fixed;
   left: 14px;
   right: 14px;
-  bottom: 14px;
+  /* 76px, not 14px: Home's floating chat bubble (48px tall, bottom:16px)
+     and Chat's own bottom-hugging input row both live in this same strip.
+     At 14px the toast's ~124px height fully covers the bubble at a much
+     higher z-index, making the chat entry point untappable until dismissed
+     — verified this actually happens at 360/390/412px widths, not a
+     theoretical worry. 76px clears the bubble's 16-64px band with margin. */
+  bottom: 76px;
   z-index: 40;
   max-width: 420px;
   margin: 0 auto;
@@ -156,7 +162,7 @@
   background: var(--accent);
   color: var(--on-accent);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius);
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;

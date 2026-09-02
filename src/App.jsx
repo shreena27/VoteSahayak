@@ -27,8 +27,6 @@ function App() {
 
   return (
     <>
-      <UpdatePrompt />
-
       {/* Temporary: proves the i18n plumbing end-to-end and lets both
           languages be reviewed on the real Home/Wizard screens below. The
           real language-picker screen (a later build step) replaces this. */}
@@ -119,6 +117,11 @@ function App() {
           }}
         />
       )}
+
+      {/* Rendered last, not first: the toast's own container always exists
+          in the DOM (see UpdatePrompt.jsx) so its buttons don't sit ahead
+          of the real screen's content in tab order while invisible. */}
+      <UpdatePrompt />
     </>
   )
 }
