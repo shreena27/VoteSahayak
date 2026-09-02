@@ -51,12 +51,50 @@
     transform: translateZ(0);
   }
 
+  /* Dynamic-Island-style notch. Fixed hardware-black, not a theme token —
+     same reasoning as .app-frame's own border. pointer-events:none so it
+     never intercepts a tap meant for the content underneath it. */
+  .app-frame::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 26px;
+    background: #100d09;
+    border-radius: 16px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* Home indicator. Themed off --ink-muted (not fixed black) so it stays
+     visibly-but-subtly on top of the app's own light/dark background,
+     same as a real device's indicator adapting to light/dark content. */
+  .app-frame::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--ink-muted);
+    opacity: 0.45;
+    z-index: 5;
+    pointer-events: none;
+  }
+
   .app-frame-scroll {
     height: 100%;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--border-strong) transparent;
+    /* Clears the notch above — real content (starting with the lang
+       toggle) shouldn't render underneath it. */
+    padding-top: 34px;
   }
   .app-frame-scroll::-webkit-scrollbar {
     width: 8px;
