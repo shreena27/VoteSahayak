@@ -48,6 +48,11 @@ export function Chat({ onClose, onOpenSir }) {
   const [messages, setMessages] = useState(() => buildInitialMessages(update))
   const [inputValue, setInputValue] = useState('')
   const [listening, setListening] = useState(false)
+  // Guards against a double-tap on Send firing two /api/ask requests — worth
+  // having regardless, but especially now that Gemini's free-tier generation
+  // quota is a scarce, accepted-as-permanent resource (20 calls/day,
+  // project-wide) rather than something to burn on an accidental double-fire.
+  const [isAsking, setIsAsking] = useState(false)
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -77,22 +82,58 @@ export function Chat({ onClose, onOpenSir }) {
     ])
   }
 
-  function askFallback(rawText) {
+  async function askFreeText(rawText) {
     const text = rawText.trim()
-    if (!text) return
-    trackChatAsked({ chip: null })
-    trackChatFallback()
-    setMessages((prev) => [
-      ...prev,
-      { id: nextMessageId(), type: 'user-text', text },
-      { id: nextMessageId(), type: 'honest' },
-    ])
-    setInputValue('')
+    if (!text || isAsking) return
+    setIsAsking(true)
+    // The whole body runs under try/finally so isAsking always resets, even
+    // if trackChatAsked (or anything else here) throws — without this, one
+    // thrown error would leave Send permanently disabled for the rest of the
+    // session (caught in the PR #9 review).
+    try {
+      trackChatAsked({ chip: null })
+      setInputValue('')
+      const userMsgId = nextMessageId()
+      const pendingId = nextMessageId()
+      setMessages((prev) => [...prev, { id: userMsgId, type: 'user-text', text }, { id: pendingId, type: 'pending' }])
+
+      let result
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text, lang: activeLang }),
+        })
+        result = res.ok ? await res.json() : { matched: false }
+      } catch {
+        // Network/endpoint failure behaves exactly like a genuine below-
+        // threshold miss — RAG is additive, never load-bearing (Implementation
+        // Plan's own risk mitigation), so this must never surface as an error
+        // state, only the same honest fallback a real miss produces.
+        result = { matched: false }
+      }
+
+      // trackChatFallback() lives outside the setMessages updater on purpose —
+      // React (StrictMode in dev) can invoke an updater function twice, which
+      // would double-count the event; the updater itself must stay a pure
+      // function of its previous state.
+      if (!result.matched) trackChatFallback()
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id !== pendingId) return m
+          return result.matched
+            ? { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
+            : { id: pendingId, type: 'honest' }
+        }),
+      )
+    } finally {
+      setIsAsking(false)
+    }
   }
 
   function handleSubmit(e) {
     e.preventDefault()
-    askFallback(inputValue)
+    askFreeText(inputValue)
   }
 
   function handleMic() {
@@ -175,7 +216,7 @@ export function Chat({ onClose, onOpenSir }) {
               <MicIcon />
             </button>
           )}
-          <button type="submit" className="send-btn" aria-label={t('chat.send')} disabled={!inputValue.trim()}>
+          <button type="submit" className="send-btn" aria-label={t('chat.send')} disabled={!inputValue.trim() || isAsking}>
             <SendIcon />
           </button>
         </form>
@@ -245,6 +286,29 @@ function ChatMessage({ message, onMiniAct }) {
       <div className="msg-honest">
         {t('chat.honestFallback')}
         <span className="src honest-note">{t('chat.honestFallbackNote')}</span>
+      </div>
+    )
+  }
+
+  if (message.type === 'pending') {
+    return (
+      <div className="msg-bot msg-pending" role="status" aria-label={t('chat.thinking')}>
+        <span className="dot" />
+        <span className="dot" />
+        <span className="dot" />
+      </div>
+    )
+  }
+
+  if (message.type === 'rag-answer') {
+    return (
+      <div className="msg-bot">
+        {message.answer}
+        {message.source && (
+          <span className="src">
+            {t('chat.sourcePrefix')} {message.source}
+          </span>
+        )}
       </div>
     )
   }

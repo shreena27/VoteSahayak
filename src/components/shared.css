@@ -98,3 +98,93 @@
     transition: none;
   }
 }
+
+/* Phase 3 step 16 — the "new version available" toast (UpdatePrompt.jsx).
+   Fixed to the viewport so it can surface over any screen; card-language
+   (border, not shadow+border, matching this project's own settled
+   border-vs-shadow rule) keeps it from reading as another AI-slop floating
+   panel. */
+.update-toast {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  /* 76px, not 14px: Home's floating chat bubble (48px tall, bottom:16px)
+     and Chat's own bottom-hugging input row both live in this same strip.
+     At 14px the toast's ~124px height fully covers the bubble at a much
+     higher z-index, making the chat entry point untappable until dismissed
+     — verified this actually happens at 360/390/412px widths, not a
+     theoretical worry. 76px clears the bubble's 16-64px band with margin. */
+  bottom: 76px;
+  z-index: 40;
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: update-toast-in 220ms ease-out;
+}
+.update-toast .txt {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+.update-toast .txt b {
+  display: block;
+  color: var(--ink);
+  font-size: 13.5px;
+  margin-bottom: 3px;
+}
+.update-toast .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.update-toast .dismiss {
+  background: none;
+  border: none;
+  color: var(--ink-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  /* 44px min touch target (Android's 48dp guidance) — this is a phone-
+     first, low-literacy audience, not just a WCAG-minimum bar. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.update-toast .reload {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@keyframes update-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .update-toast {
+    animation: none;
+  }
+}

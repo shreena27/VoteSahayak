@@ -35,6 +35,7 @@
   "chat.micStop": "Stop listening",
   "chat.send": "Send",
   "chat.sourcePrefix": "Source:",
+  "chat.thinking": "Chunav Saathi is looking that up",
   "chat.honestFallback": "I don't know the answer to that for certain, and I'd rather not guess on something like this.",
   "chat.honestFallbackNote": "Outside the topics I'm built to answer right now — call the ECI helpline: 1950, or check the official page directly.",
 
@@ -94,5 +95,10 @@
   "offline.retry": "Retry",
   "offline.savedCardsHeading": "Saved cards",
   "offline.savedCardsEmpty": "You haven't saved any cards yet. Once you're back online, use the Save button on an Action Card to keep it here for offline access.",
-  "offline.savedOn": "Saved"
+  "offline.savedOn": "Saved",
+
+  "update.title": "New version available",
+  "update.body": "Tap to reload and get the latest fixes.",
+  "update.reload": "Reload",
+  "update.dismiss": "Later"
 }

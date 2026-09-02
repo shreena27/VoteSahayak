@@ -35,6 +35,7 @@
   "chat.micStop": "सुनना बंद करें",
   "chat.send": "भेजें",
   "chat.sourcePrefix": "स्रोत:",
+  "chat.thinking": "चुनाव साथी जांच रहा है",
   "chat.honestFallback": "मुझे इसका पक्का जवाब नहीं पता, और मैं ऐसी बात पर अंदाज़ा नहीं लगाना चाहूंगा/चाहूंगी।",
   "chat.honestFallbackNote": "यह उन विषयों से बाहर है जिनका जवाब मैं अभी दे सकता/सकती हूं — ECI हेल्पलाइन पर कॉल करें: 1950, या सीधे आधिकारिक पेज देखें।",
 
@@ -94,5 +95,10 @@
   "offline.retry": "फिर कोशिश करें",
   "offline.savedCardsHeading": "सेव किए गए कार्ड",
   "offline.savedCardsEmpty": "आपने अभी तक कोई कार्ड सेव नहीं किया है। दोबारा ऑनलाइन आने पर, किसी Action Card पर सेव बटन दबाकर उसे यहां ऑफ़लाइन के लिए रखें।",
-  "offline.savedOn": "सेव किया गया"
+  "offline.savedOn": "सेव किया गया",
+
+  "update.title": "नया वर्शन उपलब्ध है",
+  "update.body": "नए सुधार पाने के लिए रीलोड करें।",
+  "update.reload": "रीलोड करें",
+  "update.dismiss": "बाद में"
 }
