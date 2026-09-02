@@ -55,7 +55,7 @@
   "sir.title": "Check my SIR risk",
   "sir.result.title": "Your result",
   "sir.preflight.title": "Keep ready · 2 minutes",
-  "sir.preflight.body": "Just your name and which state you vote in. Nothing else is needed.",
+  "sir.preflight.body": "Just your name and which state you vote in. We'll help you check on the official Election Commission site, and explain what the result means.",
   "sir.name.label": "What's your full name?",
   "sir.name.helper": "As printed on your voter ID, or as close as you remember.",
   "sir.variants.label": "Try these too, in case your name is spelled differently there",
