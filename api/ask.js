@@ -68,9 +68,41 @@ const MAX_QUERY_LENGTH = 500;
 const corpus = buildCorpus(CHAT_CHIPS, QA_BANK);
 const corpusById = new Map(corpus.map((entry) => [entry.qa_id, entry]));
 
+// Simple in-memory per-IP rate limit. Gemini's free-tier generation quota
+// is shared across every visitor (20 calls/day, project-wide, accepted as a
+// real constraint for this 9-day build rather than upgraded) — without this,
+// one person repeatedly hitting the endpoint (by hand or a stray double-tap)
+// can silently exhaust the day's quota for everyone else. Deliberately not
+// sophisticated: an in-memory Map resets on cold start and isn't shared
+// across concurrent serverless instances, which is fine here — the goal is
+// blunting accidental/casual abuse during a small case-study demo, not
+// production-grade protection.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 3;
+const requestLog = new Map(); // ip -> array of request timestamps (ms)
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  timestamps.push(now);
+  requestLog.set(ip, timestamps);
+  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method not allowed' });
+    return;
+  }
+
+  const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown')
+    .toString()
+    .split(',')[0]
+    .trim();
+  if (isRateLimited(ip)) {
+    // Same honest-fallback shape as a below-threshold miss — the citizen
+    // sees "I don't know" either way, never a rate-limit error message.
+    res.status(200).json({ matched: false });
     return;
   }
 
@@ -104,7 +136,16 @@ export default async function handler(req, res) {
       return;
     }
 
+    // Every passage handed to the generation model must individually clear
+    // the threshold, not just the top one — the top-K slice above is a
+    // candidate list, not a vetted one. A prior version fed all TOP_K
+    // candidates into generation while only threshold-checking the first;
+    // caught in review (measured real intra-corpus similarity up to 0.86
+    // between differently-sourced entries), since an unvetted passage could
+    // both leak into the generated answer and get misattributed to
+    // retrieved[0]'s source.
     const retrieved = scored
+      .filter((s) => s.score >= SIMILARITY_THRESHOLD)
       .map((s) => corpusById.get(s.qa_id))
       .filter(Boolean)
       .map((entry) => ({

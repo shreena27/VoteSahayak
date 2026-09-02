@@ -91,20 +91,25 @@ export const QA_BANK = [
     bucket_id: 'real-questions',
     question_en: 'How long will fixing my name/DOB actually take?',
     question_hi: 'नाम/जन्मतिथि ठीक कराने में असल में कितना समय लगेगा?',
-    // "Usually a few weeks" is real, established house style (matches
-    // card-address-update's own approved timeline wording) — but the old
-    // source line here attributed the WHOLE sentence to Navdeep Suri's
-    // account, when his account only documents the 6-month outlier, not a
-    // general "usually" baseline. Fixed to attribute only what he actually
-    // supports (caught in the PR #9 review).
+    // "Usually a few weeks" is established house style, matching
+    // card-address-update's own approved timeline wording, which frames the
+    // same general timeline under the card's ECI process source rather than
+    // as a specific research finding. The old source line here instead
+    // attributed the WHOLE sentence to Navdeep Suri's account, when his
+    // account only documents the 6-month outlier, not a general "usually"
+    // baseline — and a follow-up review found the replacement attribution
+    // ("this project's own primary research") was equally unsupported: no
+    // sheet in the tracker mentions "a few weeks". Fixed to match cards.json's
+    // own pattern: general timeline under ECI process guidance, the outlier
+    // under its real source (caught in the second PR #9 review).
     answer_en:
       "There's no official guarantee. Usually a few weeks — but in one documented case (a former diplomat's public account) it took up to 6 months, so treat that as a possibility, not a guarantee. Apply as early as you can, especially before a SIR deadline, and track your status on NVSP.",
     answer_hi:
       'कोई आधिकारिक गारंटी नहीं है। आमतौर पर कुछ हफ्तों में हो जाता है — लेकिन एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार) इसमें 6 महीने तक लगे, इसलिए इसे एक संभावना मानें, गारंटी नहीं। जितनी जल्दी हो सके आवेदन करें, खासकर SIR की समय-सीमा से पहले, और NVSP पर अपनी स्थिति ट्रैक करें।',
     source_en:
-      "General timeline: this project's own primary research. The 6-month outlier specifically: former diplomat Navdeep Suri's public account (WION) · Moderate Confidence",
+      "General timeline: Election Commission of India process guidance. The 6-month outlier specifically: former diplomat Navdeep Suri's public account (WION) · Moderate Confidence",
     source_hi:
-      'सामान्य समय-सीमा: इस प्रोजेक्ट का अपना प्राथमिक शोध। 6 महीने वाला मामला विशेष रूप से: पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता',
+      'सामान्य समय-सीमा: भारत निर्वाचन आयोग की प्रक्रिया के अनुसार। 6 महीने वाला मामला विशेष रूप से: पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता',
   },
   {
     id: 'correction-not-always-reliable',

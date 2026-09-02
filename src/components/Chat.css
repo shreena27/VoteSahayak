@@ -73,6 +73,11 @@
   font-size: 13px;
   line-height: 1.55;
   max-width: 88%;
+  /* Chip/QA-bank answers embed real \n line breaks for numbered steps
+     ("1. Fill Form 8... 2. Attach proof..."); without this they collapse
+     into one run-on line — a real readability problem for this app's
+     stated low-literacy audience. */
+  white-space: pre-line;
 }
 .msg-bot .src {
   display: block;

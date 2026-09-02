@@ -86,42 +86,49 @@ export function Chat({ onClose, onOpenSir }) {
     const text = rawText.trim()
     if (!text || isAsking) return
     setIsAsking(true)
-    trackChatAsked({ chip: null })
-    setInputValue('')
-    const userMsgId = nextMessageId()
-    const pendingId = nextMessageId()
-    setMessages((prev) => [...prev, { id: userMsgId, type: 'user-text', text }, { id: pendingId, type: 'pending' }])
-
-    let result
+    // The whole body runs under try/finally so isAsking always resets, even
+    // if trackChatAsked (or anything else here) throws — without this, one
+    // thrown error would leave Send permanently disabled for the rest of the
+    // session (caught in the PR #9 review).
     try {
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text, lang: activeLang }),
-      })
-      result = res.ok ? await res.json() : { matched: false }
-    } catch {
-      // Network/endpoint failure behaves exactly like a genuine below-
-      // threshold miss — RAG is additive, never load-bearing (Implementation
-      // Plan's own risk mitigation), so this must never surface as an error
-      // state, only the same honest fallback a real miss produces.
-      result = { matched: false }
-    }
+      trackChatAsked({ chip: null })
+      setInputValue('')
+      const userMsgId = nextMessageId()
+      const pendingId = nextMessageId()
+      setMessages((prev) => [...prev, { id: userMsgId, type: 'user-text', text }, { id: pendingId, type: 'pending' }])
 
-    // trackChatFallback() lives outside the setMessages updater on purpose —
-    // React (StrictMode in dev) can invoke an updater function twice, which
-    // would double-count the event; the updater itself must stay a pure
-    // function of its previous state.
-    if (!result.matched) trackChatFallback()
-    setMessages((prev) =>
-      prev.map((m) => {
-        if (m.id !== pendingId) return m
-        return result.matched
-          ? { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
-          : { id: pendingId, type: 'honest' }
-      }),
-    )
-    setIsAsking(false)
+      let result
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text, lang: activeLang }),
+        })
+        result = res.ok ? await res.json() : { matched: false }
+      } catch {
+        // Network/endpoint failure behaves exactly like a genuine below-
+        // threshold miss — RAG is additive, never load-bearing (Implementation
+        // Plan's own risk mitigation), so this must never surface as an error
+        // state, only the same honest fallback a real miss produces.
+        result = { matched: false }
+      }
+
+      // trackChatFallback() lives outside the setMessages updater on purpose —
+      // React (StrictMode in dev) can invoke an updater function twice, which
+      // would double-count the event; the updater itself must stay a pure
+      // function of its previous state.
+      if (!result.matched) trackChatFallback()
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id !== pendingId) return m
+          return result.matched
+            ? { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
+            : { id: pendingId, type: 'honest' }
+        }),
+      )
+    } finally {
+      setIsAsking(false)
+    }
   }
 
   function handleSubmit(e) {
