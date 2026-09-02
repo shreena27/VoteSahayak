@@ -98,3 +98,80 @@
     transition: none;
   }
 }
+
+/* Phase 3 step 16 — the "new version available" toast (UpdatePrompt.jsx).
+   Fixed to the viewport so it can surface over any screen; card-language
+   (border, not shadow+border, matching this project's own settled
+   border-vs-shadow rule) keeps it from reading as another AI-slop floating
+   panel. */
+.update-toast {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 40;
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: update-toast-in 220ms ease-out;
+}
+.update-toast .txt {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+.update-toast .txt b {
+  display: block;
+  color: var(--ink);
+  font-size: 13.5px;
+  margin-bottom: 3px;
+}
+.update-toast .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.update-toast .dismiss {
+  background: none;
+  border: none;
+  color: var(--ink-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+.update-toast .reload {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 14px;
+}
+
+@keyframes update-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .update-toast {
+    animation: none;
+  }
+}

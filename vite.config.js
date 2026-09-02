@@ -9,7 +9,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt', not 'autoUpdate': a fix round after Friday's test must
+      // actually reach phones that installed earlier that day, which means
+      // the app has to visibly ask before taking over — a silently
+      // auto-activated new SW can leave stale content queued behind a tab
+      // the user never refreshes (Implementation Plan step 16).
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],

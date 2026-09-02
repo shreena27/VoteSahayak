@@ -6,6 +6,7 @@ import { Wizard } from './components/Wizard.jsx'
 import { SirFlow } from './components/SirFlow.jsx'
 import { Chat } from './components/Chat.jsx'
 import { ActionCard } from './components/ActionCard.jsx'
+import { UpdatePrompt } from './components/UpdatePrompt.jsx'
 import forms from './content/forms.json'
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
 
   return (
     <>
+      <UpdatePrompt />
+
       {/* Temporary: proves the i18n plumbing end-to-end and lets both
           languages be reviewed on the real Home/Wizard screens below. The
           real language-picker screen (a later build step) replaces this. */}

@@ -95,5 +95,10 @@
   "offline.retry": "Retry",
   "offline.savedCardsHeading": "Saved cards",
   "offline.savedCardsEmpty": "You haven't saved any cards yet. Once you're back online, use the Save button on an Action Card to keep it here for offline access.",
-  "offline.savedOn": "Saved"
+  "offline.savedOn": "Saved",
+
+  "update.title": "New version available",
+  "update.body": "Tap to reload and get the latest fixes.",
+  "update.reload": "Reload",
+  "update.dismiss": "Later"
 }
