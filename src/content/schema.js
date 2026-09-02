@@ -641,3 +641,34 @@ export function validateChatChips(chips) {
     staleWarnings: staleWarnings.map((w) => `chatContent.js: ${w}`),
   };
 }
+
+/**
+ * Validates qaBank.js's RAG-only QA_PAIR set — required fields and duplicate
+ * ids, same as chips, plus (per the ERD's own integrity rule, "every QA_PAIR
+ * answer must carry a source_line") a stricter requirement chips don't have:
+ * `source_en`/`source_hi` are required here, not optional the way an
+ * existing chip's "this app's own already-reviewed content" omission is.
+ * @param {QaBankEntry[]} entries
+ * @returns {{errors: string[], staleWarnings: string[]}}
+ */
+export function validateQaBank(entries) {
+  const errors = [];
+  const staleWarnings = [];
+  const seenIds = new Set();
+
+  for (const entry of entries) {
+    const label = entry?.id ?? '(missing id)';
+    for (const field of ['id', 'bucket_id', 'question_en', 'question_hi', 'answer_en', 'answer_hi', 'source_en', 'source_hi']) {
+      if (!entry[field]) errors.push(`qaBank.js: "${label}" is missing required field "${field}"`);
+    }
+    if (entry.id) {
+      if (seenIds.has(entry.id)) errors.push(`qaBank.js: duplicate id "${entry.id}"`);
+      seenIds.add(entry.id);
+    }
+  }
+
+  return {
+    errors: errors.map((e) => (e.startsWith('qaBank.js') ? e : `qaBank.js: ${e}`)),
+    staleWarnings: staleWarnings.map((w) => `qaBank.js: ${w}`),
+  };
+}

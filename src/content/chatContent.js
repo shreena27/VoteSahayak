@@ -39,7 +39,7 @@ export const CHAT_CHIPS = [
     answer_en:
       'It\'s not about citizenship — "not ordinarily resident" is about where you currently live, not who you are. It usually means the record shows you\'ve moved away from the address you\'re registered at, which is common for migrants and students. If this is your situation, Form 8 can update your address.',
     answer_hi:
-      'यह नागरिकता का सवाल नहीं है — "सामान्य निवासी नहीं" का मतलब है कि आप अभी उस पते पर नहीं रहते जहां आप पंजीकृत हैं, यह इस बारे में नहीं कि आप कौन हैं। यह प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
+      'यह नागरिकता का सवाल नहीं है — "सामान्य निवासी नहीं" इस बारे में है कि आप अभी कहां रहते हैं, यह इस बारे में नहीं है कि आप कौन हैं। आमतौर पर इसका मतलब है कि रिकॉर्ड के अनुसार आप उस पते से जा चुके हैं जहां आप पंजीकृत हैं, जो प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
     source_en: 'Research finding, Moderate Confidence — not an official ECI definition',
     source_hi: 'शोध निष्कर्ष, मध्यम विश्वसनीयता — यह ECI की आधिकारिक परिभाषा नहीं है',
   },

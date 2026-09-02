@@ -35,6 +35,7 @@
   "chat.micStop": "Stop listening",
   "chat.send": "Send",
   "chat.sourcePrefix": "Source:",
+  "chat.thinking": "Chunav Saathi is looking that up",
   "chat.honestFallback": "I don't know the answer to that for certain, and I'd rather not guess on something like this.",
   "chat.honestFallbackNote": "Outside the topics I'm built to answer right now — call the ECI helpline: 1950, or check the official page directly.",
 

@@ -4,8 +4,9 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { validateForms, validateCards, validateWizardContent, validateUpdates, validateChatChips } from '../src/content/schema.js';
+import { validateForms, validateCards, validateWizardContent, validateUpdates, validateChatChips, validateQaBank } from '../src/content/schema.js';
 import { CHAT_CHIPS } from '../src/content/chatContent.js';
+import { QA_BANK } from '../src/content/qaBank.js';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const contentDir = path.join(rootDir, '..', 'src', 'content');
@@ -26,13 +27,31 @@ const cardResult = validateCards(cards, forms);
 const wizardResult = validateWizardContent(tasks, questions, options, cards);
 const updateResult = validateUpdates(updates);
 const chatResult = validateChatChips(CHAT_CHIPS);
+const qaResult = validateQaBank(QA_BANK);
 
-const errors = [...formResult.errors, ...cardResult.errors, ...wizardResult.errors, ...updateResult.errors, ...chatResult.errors];
+// CHAT_CHIPS and QA_BANK share one qa_id namespace once embed.mjs merges them
+// into a single corpus (a chip is retrievable by free text too, per step 13's
+// design) — a collision would make /api/ask's lookup ambiguous.
+const chipIds = new Set(CHAT_CHIPS.map((c) => c.id));
+const corpusIdErrors = QA_BANK.filter((e) => chipIds.has(e.id)).map(
+  (e) => `qaBank.js: "${e.id}" collides with a chatContent.js chip id — the embed corpus needs one shared id namespace`,
+);
+
+const errors = [
+  ...formResult.errors,
+  ...cardResult.errors,
+  ...wizardResult.errors,
+  ...updateResult.errors,
+  ...chatResult.errors,
+  ...qaResult.errors,
+  ...corpusIdErrors,
+];
 const staleWarnings = [
   ...formResult.staleWarnings,
   ...cardResult.staleWarnings,
   ...updateResult.staleWarnings,
   ...chatResult.staleWarnings,
+  ...qaResult.staleWarnings,
 ];
 
 for (const warning of staleWarnings) {
@@ -48,5 +67,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Content OK: ${forms.length} form(s), ${cards.length} card(s), ${tasks.length} task(s), ${questions.length} question(s), ${options.length} option(s), ${updates.length} update(s), ${CHAT_CHIPS.length} chat chip(s), 0 errors, ${staleWarnings.length} stale warning(s).`,
+  `Content OK: ${forms.length} form(s), ${cards.length} card(s), ${tasks.length} task(s), ${questions.length} question(s), ${options.length} option(s), ${updates.length} update(s), ${CHAT_CHIPS.length} chat chip(s), ${QA_BANK.length} QA bank entries, 0 errors, ${staleWarnings.length} stale warning(s).`,
 );

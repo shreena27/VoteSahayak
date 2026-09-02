@@ -77,22 +77,46 @@ export function Chat({ onClose, onOpenSir }) {
     ])
   }
 
-  function askFallback(rawText) {
+  async function askFreeText(rawText) {
     const text = rawText.trim()
     if (!text) return
     trackChatAsked({ chip: null })
-    trackChatFallback()
-    setMessages((prev) => [
-      ...prev,
-      { id: nextMessageId(), type: 'user-text', text },
-      { id: nextMessageId(), type: 'honest' },
-    ])
     setInputValue('')
+    const userMsgId = nextMessageId()
+    const pendingId = nextMessageId()
+    setMessages((prev) => [...prev, { id: userMsgId, type: 'user-text', text }, { id: pendingId, type: 'pending' }])
+
+    let result
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: text, lang: activeLang }),
+      })
+      result = res.ok ? await res.json() : { matched: false }
+    } catch {
+      // Network/endpoint failure behaves exactly like a genuine below-
+      // threshold miss — RAG is additive, never load-bearing (Implementation
+      // Plan's own risk mitigation), so this must never surface as an error
+      // state, only the same honest fallback a real miss produces.
+      result = { matched: false }
+    }
+
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.id !== pendingId) return m
+        if (result.matched) {
+          return { id: pendingId, type: 'rag-answer', answer: result.answer, source: result.source }
+        }
+        trackChatFallback()
+        return { id: pendingId, type: 'honest' }
+      }),
+    )
   }
 
   function handleSubmit(e) {
     e.preventDefault()
-    askFallback(inputValue)
+    askFreeText(inputValue)
   }
 
   function handleMic() {
@@ -245,6 +269,29 @@ function ChatMessage({ message, onMiniAct }) {
       <div className="msg-honest">
         {t('chat.honestFallback')}
         <span className="src honest-note">{t('chat.honestFallbackNote')}</span>
+      </div>
+    )
+  }
+
+  if (message.type === 'pending') {
+    return (
+      <div className="msg-bot msg-pending" role="status" aria-label={t('chat.thinking')}>
+        <span className="dot" />
+        <span className="dot" />
+        <span className="dot" />
+      </div>
+    )
+  }
+
+  if (message.type === 'rag-answer') {
+    return (
+      <div className="msg-bot">
+        {message.answer}
+        {message.source && (
+          <span className="src">
+            {t('chat.sourcePrefix')} {message.source}
+          </span>
+        )}
       </div>
     )
   }
