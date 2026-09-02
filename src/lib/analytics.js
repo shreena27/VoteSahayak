@@ -42,33 +42,51 @@ let client = null
 let queue = []
 
 if (enabled) {
-  import('mixpanel-browser').then(({ default: mixpanel }) => {
-    mixpanel.init(token, {
-      // No user identifiers beyond Mixpanel's own anonymous distinct_id —
-      // this product's whole trust thesis rests on not collecting more than
-      // it needs. autocapture off is what actually enforces "nothing else
-      // gets tracked" at the SDK level, not just at the call-site level
-      // below.
-      autocapture: false,
-      track_pageview: false,
-      ip: false,
-      persistence: 'localStorage',
-      // `autocapture:false`/`ip:false` alone don't stop Mixpanel's default
-      // super-properties ($current_url, $referrer, etc.) from riding along
-      // on every event — confirmed on the wire in the Phase 1 step 5 review.
-      // Harmless while the app is a single "/" route, but the wizard this
-      // step adds is exactly the kind of UI that could put state in a query
-      // string later, which would then reach Mixpanel with no code change
-      // and no review. Blacklisted here as defense in depth (the wizard
-      // itself is also built to keep step/answer state out of the URL in
-      // the first place, so this should stay a no-op belt-and-braces check,
-      // not the only thing standing between user state and analytics).
-      property_blacklist: ['$current_url', '$referrer', '$referring_domain', '$initial_referrer', '$initial_referring_domain'],
+  import('mixpanel-browser')
+    .then(({ default: mixpanel }) => {
+      mixpanel.init(token, {
+        // No user identifiers beyond Mixpanel's own anonymous distinct_id —
+        // this product's whole trust thesis rests on not collecting more than
+        // it needs. autocapture off is what actually enforces "nothing else
+        // gets tracked" at the SDK level, not just at the call-site level
+        // below.
+        autocapture: false,
+        track_pageview: false,
+        ip: false,
+        persistence: 'localStorage',
+        // autocapture/track_pageview/ip only turn off Mixpanel's *own*
+        // collection paths — they do nothing to the default properties the
+        // SDK still attaches to every track() call below, which include the
+        // current URL and referrer. Those aren't in the event allowlist and
+        // must never leave the device, so they're blacklisted explicitly
+        // rather than trusted to the options above. Also matters for the
+        // wizard (Phase 2): it's exactly the kind of UI that could put step
+        // state in a query string later, which would then reach Mixpanel
+        // with no code change and no review — this stays a no-op
+        // belt-and-braces check even though the wizard itself is also built
+        // to keep that state out of the URL in the first place.
+        property_blacklist: [
+          '$current_url',
+          '$referrer',
+          '$referring_domain',
+          '$initial_referrer',
+          '$initial_referring_domain',
+        ],
+        save_referrer: false,
+        stop_utm_persistence: true,
+      })
+      client = mixpanel
+      for (const [eventName, props] of queue) client.track(eventName, props)
+      queue = []
     })
-    client = mixpanel
-    for (const [eventName, props] of queue) client.track(eventName, props)
-    queue = []
-  })
+    .catch(() => {
+      // The SDK chunk is deliberately excluded from the PWA precache (see
+      // vite.config.js) so it can fail to load on a flaky/offline
+      // connection. Analytics must degrade to a no-op, not an unhandled
+      // rejection and an ever-growing queue.
+      client = null
+      queue = []
+    })
 } else if (import.meta.env.DEV) {
   console.debug('[analytics] no VITE_MIXPANEL_TOKEN configured — tracking is a no-op')
 }
