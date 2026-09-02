@@ -109,13 +109,19 @@ export function isFutureDate(isoDate) {
  * The ERD's rule: "any date older than 30 days renders with a visible stale
  * flag in the UI." Exported so the Action Card component applies exactly
  * the same staleness math as the content validator, not a second copy of it.
+ *
+ * Compares calendar-date values (both `isoDate` and today's IST date parsed
+ * at UTC midnight), not a raw `Date.now()` instant — the same IST-vs-UTC
+ * mismatch `isFutureDate` was fixed for otherwise makes a same-day-verified
+ * card go stale ~18.5 hours early. See `todayIsoDateIST` above.
  * @param {string} isoDate - must already be a valid, non-future ISO date; caller checks that first
  * @returns {boolean}
  */
 export function isStale(isoDate) {
-  const verified = new Date(isoDate);
-  const ageMs = Date.now() - verified.getTime();
-  return ageMs > STALE_AFTER_DAYS * 24 * 60 * 60 * 1000;
+  const verifiedMs = new Date(isoDate).getTime();
+  const todayMs = new Date(todayIsoDateIST()).getTime();
+  const ageDays = (todayMs - verifiedMs) / (24 * 60 * 60 * 1000);
+  return ageDays > STALE_AFTER_DAYS;
 }
 
 /**

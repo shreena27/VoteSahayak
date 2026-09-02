@@ -5,6 +5,7 @@ import { Seal } from './Seal.jsx'
 import { saveCard, isCardSaved } from '../lib/savedCards.js'
 import { shareCard, renderCardAsFile } from '../lib/shareCard.js'
 import { speak, stopSpeaking, isSpeechSupported } from '../lib/speak.js'
+import { trackCardViewed, trackCardSaved, trackCardShared, trackCardListened } from '../lib/analytics.js'
 import './ActionCard.css'
 
 const STEP_ICON_MAP = {
@@ -65,6 +66,13 @@ export function ActionCard({ card, forms = [] }) {
 
   const orderedSteps = useMemo(() => [...card.steps].sort((a, b) => a.order - b.order), [card.steps])
 
+  // Fires once per card actually rendering, not per language toggle
+  // re-render — card.kind never changes without card.id also changing, so
+  // this can't double-count a view on a language switch.
+  useEffect(() => {
+    trackCardViewed(card.kind)
+  }, [card.id, card.kind])
+
   // Best-effort background render so Share can respond within the same
   // click's user-activation gesture — iOS Safari requires navigator.share()
   // to be called with no `await` ahead of it in the handler, so we can't
@@ -100,16 +108,25 @@ export function ActionCard({ card, forms = [] }) {
     const stepLines = orderedSteps.map((step) => (activeLang === 'hi' ? step.text_hi : step.text_en))
     const spokenText = [headline, meaning, timeline, ...docLines, ...stepLines].filter(Boolean).join('. ')
     const started = speak(spokenText, activeLang, () => setSpeaking(false))
-    if (started) setSpeaking(true)
+    if (started) {
+      setSpeaking(true)
+      trackCardListened(card.id)
+    }
   }
 
   function handleSave() {
-    setSaveState(saveCard(card) ? 'saved' : 'failed')
+    const saved = saveCard(card)
+    setSaveState(saved ? 'saved' : 'failed')
+    if (saved) trackCardSaved(card.id)
   }
 
   async function handleShare() {
     const officialLink = card.steps.find((s) => s.action_kind === 'url')?.action_value
     const waText = `${headline}\n\n${meaning}${officialLink ? `\n\n${officialLink}` : ''}`
+    // Tracked on attempt, not on confirmed completion — JS can't observe
+    // whether the native share sheet or the WhatsApp fallback actually
+    // finished, only that the user triggered one of them.
+    trackCardShared(card.id)
     // No `await` before this call — shareCard's first action is calling
     // navigator.share() synchronously off shareFileRef's already-resolved
     // value (or a text-only share if it isn't ready yet), which is what iOS
