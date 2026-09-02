@@ -7,6 +7,7 @@ import { ActionCard } from './ActionCard.jsx'
 import states from '../content/states.json'
 import cards from '../content/cards.json'
 import forms from '../content/forms.json'
+import updates from '../content/updates.json'
 import './shared.css'
 import './Wizard.css'
 import './SirFlow.css'
@@ -91,6 +92,7 @@ export function SirFlow({ onExitToHome, onStartTask }) {
     if (screen !== 'card') headingRef.current?.focus()
   }, [screen])
 
+  const update = updates[0] ?? null
   const variants = name.trim() ? generateNameVariants(name) : []
   const selectedState = states.find((s) => s.code === stateCode) ?? null
   const stateName = selectedState ? (activeLang === 'hi' ? selectedState.name_hi : selectedState.name_en) : ''
@@ -155,6 +157,27 @@ export function SirFlow({ onExitToHome, onStartTask }) {
 
       {screen === 'name' && (
         <div className="wizard-slide">
+          {/* Full figures + citation, moved here from Home's urgency strip
+              (which now only shows the short teaser_en/teaser_hi) — this
+              screen is reached only by someone who already tapped "Check my
+              SIR risk", so the detail is wanted here, not a glance-only
+              distraction on Home. */}
+          {update && (
+            <div className="urgency-strip">
+              <div className="glyph" aria-hidden="true">
+                📅
+              </div>
+              <div className="txt">
+                <b>{activeLang === 'hi' ? update.headline_hi : update.headline_en}</b>
+                {activeLang === 'hi' ? update.text_hi : update.text_en}
+                <span className="verified">
+                  {activeLang === 'hi' ? update.source_line_hi : update.source_line} ·{' '}
+                  {t('card.verified')} {formatDisplayDate(update.verified_on, activeLang)}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="preflight">
             <div className="glyph" aria-hidden="true">
               🗂️

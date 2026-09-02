@@ -3,6 +3,47 @@
    components" block (app-header/back/title, btn-primary/secondary/text),
    not redesigned. Imported once per screen component that needs it. */
 
+/* .urgency-strip — originally Home-only (ported from the locked mockup's
+   Home section), moved here once the SIR flow's name screen started reusing
+   the same visual for the full figures+citation version of an update; Home
+   itself only ever shows the short teaser variant. Same markup shape in
+   both places: <b> headline, then body text, optional trailing .verified
+   citation line. */
+.urgency-strip {
+  background: var(--amber-soft);
+  border: 1px solid var(--amber);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.urgency-strip .glyph {
+  color: var(--amber-ink);
+  font-size: 17px;
+  flex: none;
+  line-height: 1.3;
+}
+.urgency-strip .txt {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.urgency-strip .txt b {
+  color: var(--amber-ink);
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.urgency-strip .verified {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
 .app-header {
   padding: 6px 0 14px;
   display: flex;
