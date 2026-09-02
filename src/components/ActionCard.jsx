@@ -63,6 +63,10 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   // share-image black-render bug is confirmed fixed.
   const isDebugMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1'
   const [debugTick, setDebugTick] = useState(0)
+  // Object URL of the last rendered share image, shown inline in the debug
+  // overlay so the pipeline's own raw output can be checked on the phone
+  // without going through WhatsApp's re-encode.
+  const [debugImgUrl, setDebugImgUrl] = useState(null)
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -116,7 +120,13 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     let cancelled = false
     renderCardAsFile(cardRef.current).then((file) => {
       if (!cancelled) shareFileRef.current = file
-      if (!cancelled && isDebugMode) setDebugTick((n) => n + 1)
+      if (!cancelled && isDebugMode) {
+        setDebugTick((n) => n + 1)
+        setDebugImgUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev)
+          return file ? URL.createObjectURL(file) : null
+        })
+      }
     })
     return () => {
       cancelled = true
@@ -319,6 +329,12 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
         {shareRenderLog.length === 0
           ? '(no entries yet)'
           : shareRenderLog.map((e, i) => `${i}. +${e.t - shareRenderLog[0].t}ms ${e.event}${e.detail ? ` — ${e.detail}` : ''}`).join('\n')}
+        {debugImgUrl && (
+          <>
+            {'\n\nrendered share image (raw pipeline output, pre-WhatsApp):\n'}
+            <img src={debugImgUrl} alt="rendered share card" style={{ width: 160, border: '1px solid #0f0', display: 'block' }} />
+          </>
+        )}
       </div>
     )}
     </>
