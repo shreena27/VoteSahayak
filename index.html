@@ -8,9 +8,114 @@
     <meta name="theme-color" content="#4A2E8C" />
     <meta name="description" content="Voter ID help, in plain words." />
     <title>Vote Sahayak</title>
+    <!-- Boot state: paints before the JS bundle arrives (2G/3G first loads
+         showed a blank cream/white flash for a couple of seconds). React's
+         createRoot().render() replaces everything inside #root on mount, so
+         nothing here survives into the app. Self-contained by design: the
+         only tokens the app needs at this instant are duplicated inline from
+         src/tokens.css, no font/image/CSS fetch. No spinner, no progress bar,
+         no timer motif (project rule) — the monogram lands hard and settles
+         once, like an ink stamp striking paper (echoes the seal on Action
+         Cards, see src/components/Seal.jsx), then the name reveals right
+         after impact. A single deliberate motion, not a repeating loop, so
+         it never reads as a "still working" indicator. Stops under
+         reduced-motion. -->
+    <style>
+      html { background: #F7F2E7; }
+      body { margin: 0; background: #F7F2E7; color: #211C15; }
+      @media (prefers-color-scheme: dark) {
+        html, body { background: #161310; }
+        body { color: #F3EEE1; }
+      }
+      .vs-boot {
+        --boot-bg: #F7F2E7;
+        --boot-ink: #211C15;
+        --boot-ink-2: #57503E;
+        --boot-accent: #4A2E8C;
+        --boot-on-accent: #FFFFFF;
+        box-sizing: border-box;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 24px;
+        background: var(--boot-bg);
+        color: var(--boot-ink);
+        font-family: 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', Roboto, 'Nirmala UI', sans-serif;
+        text-align: center;
+        opacity: 0;
+        animation: vs-boot-in .45s ease-out .15s forwards;
+      }
+      @media (prefers-color-scheme: dark) {
+        .vs-boot {
+          --boot-bg: #161310;
+          --boot-ink: #F3EEE1;
+          --boot-ink-2: #C7BEA6;
+          --boot-accent: #A48DEE;
+          --boot-on-accent: #1B1430;
+        }
+      }
+      .vs-boot svg {
+        width: 60px;
+        height: 60px;
+        display: block;
+        animation: vs-boot-stamp .6s cubic-bezier(.22, 1, .36, 1) .1s backwards;
+      }
+      .vs-boot-name {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: .01em;
+        line-height: 1.25;
+        margin: 0;
+        opacity: 0;
+        animation: vs-boot-reveal .3s ease-out .35s forwards;
+      }
+      .vs-boot-name-hi {
+        display: block;
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--boot-ink-2);
+      }
+      .vs-boot-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @keyframes vs-boot-in { to { opacity: 1; } }
+      @keyframes vs-boot-stamp {
+        0% { transform: scale(1.65); }
+        55% { transform: scale(.82); }
+        100% { transform: scale(1); }
+      }
+      @keyframes vs-boot-reveal { to { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        .vs-boot { opacity: 1; animation: none; }
+        .vs-boot svg { animation: none; }
+        .vs-boot-name { opacity: 1; animation: none; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="vs-boot" role="status" aria-live="polite">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect width="32" height="32" rx="6" fill="var(--boot-accent)" />
+          <text x="50%" y="53%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="var(--boot-on-accent)">VS</text>
+        </svg>
+        <p class="vs-boot-name" lang="en">Vote Sahayak<span class="vs-boot-name-hi" lang="hi">वोट सहायक</span></p>
+        <span class="vs-boot-sr">Loading. <span lang="hi">लोड हो रहा है।</span></span>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
