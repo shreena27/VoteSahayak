@@ -15,6 +15,7 @@ const STEP_ICON_MAP = {
   bookmark: '🔖',
   share: '📤',
   info: 'ℹ️',
+  phone: '📞',
 }
 
 // The seal's own text is a fixed English "stamp engraving" (see Seal.jsx),
@@ -34,9 +35,14 @@ const SEAL_LABEL_BY_KIND = {
  * Payload-driven: every visible row, step, document, and rejection tag
  * comes from `card`, nothing is hardcoded to one example.
  *
- * @param {{ card: object, forms?: object[] }} props
+ * @param {{ card: object, forms?: object[], extraRows?: {k: string, v: string}[], tagSuffix?: string }} props
+ *   `extraRows`/`tagSuffix` exist for the SIR flow's dynamically-generated
+ *   cards (Phase 2 step 9) — the outcome content itself is static authored
+ *   content (`kind: "sir-outcome"` in cards.json), but "Name checked" and
+ *   "State" vary per user session and aren't part of CARD_PAYLOAD, so they're
+ *   passed in rather than stored. Unused by every other card kind.
  */
-export function ActionCard({ card, forms = [] }) {
+export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
@@ -149,7 +155,7 @@ export function ActionCard({ card, forms = [] }) {
   return (
     <div className="receipt" ref={cardRef}>
       <div className="receipt-inner">
-        <span className="receipt-tag">{tag}</span>
+        <span className="receipt-tag">{tagSuffix ? `${tag} · ${tagSuffix}` : tag}</span>
         <h2 ref={headlineRef} tabIndex={-1}>
           {headline}
         </h2>
@@ -160,6 +166,13 @@ export function ActionCard({ card, forms = [] }) {
         )}
 
         <div className="receipt-meaning">{meaning}</div>
+
+        {extraRows.map((row) => (
+          <div className="receipt-row" key={row.k}>
+            <span className="k">{row.k}</span>
+            <span className="v">{row.v}</span>
+          </div>
+        ))}
 
         <div className="receipt-row stack">
           <span className="k">{t('card.timeline')}</span>

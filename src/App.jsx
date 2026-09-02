@@ -3,14 +3,16 @@ import { useLanguage, useTranslation } from './i18n/hooks.js'
 import { Home } from './components/Home.jsx'
 import { TaskPicker } from './components/TaskPicker.jsx'
 import { Wizard } from './components/Wizard.jsx'
+import { SirFlow } from './components/SirFlow.jsx'
 
 function App() {
   const { lang, setLang } = useLanguage()
   const { t } = useTranslation()
-  // 'home' | 'picker' | 'wizard' — the picker is its own step between Home's
-  // wizard-entry row and the actual wizard, so Back from the wizard's first
-  // question returns to the picker (to try a different task), not all the
-  // way past it to Home.
+  // 'home' | 'picker' | 'wizard' | 'sir' — the picker is its own step between
+  // Home's wizard-entry row and the actual wizard, so Back from the wizard's
+  // first question returns to the picker (to try a different task), not all
+  // the way past it to Home. 'sir' owns its own internal screen stack
+  // (SirFlow), same as 'wizard' does for Wizard.
   const [view, setView] = useState('home')
   const [activeTaskId, setActiveTaskId] = useState(null)
 
@@ -68,8 +70,16 @@ function App() {
           }}
           onBack={() => setView('home')}
         />
+      ) : view === 'sir' ? (
+        <SirFlow
+          onExitToHome={() => setView('home')}
+          onStartTask={(taskId) => {
+            setActiveTaskId(taskId)
+            setView('wizard')
+          }}
+        />
       ) : (
-        <Home onOpenPicker={() => setView('picker')} />
+        <Home onOpenPicker={() => setView('picker')} onOpenSir={() => setView('sir')} />
       )}
     </>
   )
