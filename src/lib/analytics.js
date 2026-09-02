@@ -1,11 +1,10 @@
 // The Implementation Plan's full event allowlist (Phase 1 step 5) — nothing
 // else gets tracked, ever. Each entry below is the only way to fire that
 // event, so a typo'd event name is an import error, not a silent bad string
-// reaching Mixpanel. Only the chat events have no real trigger point yet
-// (Chunav Saathi doesn't exist until Phase 3) — see the "not yet wired"
-// comment on each for exactly which later step wires it up. Everything else
-// is wired: lang_selected/card_*/flow_started/wizard_step (Wizard.jsx),
-// sir_outcome_picked/official_link_tapped/flow_started (SirFlow.jsx).
+// reaching Mixpanel. All 12 are wired to a real trigger as of Phase 3 step
+// 12: lang_selected/card_*/flow_started/wizard_step (Wizard.jsx),
+// sir_outcome_picked/official_link_tapped/flow_started (SirFlow.jsx),
+// chat_opened/chat_asked/chat_fallback (Chat.jsx).
 const EVENT_NAMES = /** @type {const} */ ([
   'lang_selected',
   'flow_started',
@@ -144,22 +143,26 @@ export function trackOfficialLinkTapped(which) {
   track('official_link_tapped', { which })
 }
 
-// --- Defined now, not yet wired — each function below is fully correct and
-// ready to call, but has no real caller yet: the Chunav Saathi chat UI
-// doesn't exist in the codebase until Phase 3 builds it. Import and call
-// these directly when that step lands, rather than re-defining the event. ---
+// --- Wired up now (Phase 3 step 12) — Chat.jsx's real trigger points ---
 
-/** Phase 3 step 12 (Chunav Saathi chat UI). */
+/** Fired once when the Chunav Saathi panel opens. */
 export function trackChatOpened() {
   track('chat_opened', {})
 }
 
-/** Phase 3 step 14 (/api/ask). */
-export function trackChatAsked() {
-  track('chat_asked', {})
+/**
+ * @param {{ chip: string | null }} props - `chip` is a CHAT_CHIPS id when a
+ * prompt chip was tapped, or `null` for free-text/voice input — "asking"
+ * happens either way, even before real RAG (steps 13-14) exists to answer
+ * the free-text case with anything beyond the honest fallback.
+ */
+export function trackChatAsked({ chip }) {
+  track('chat_asked', { chip })
 }
 
-/** Phase 3 step 14 (/api/ask's below-threshold fallback path). */
+/** Fired whenever a question can't be answered — every free-text/voice
+ * question right now (no RAG yet), plus step 14's real below-threshold
+ * retrieval miss once RAG lands; both paths share this one event. */
 export function trackChatFallback() {
   track('chat_fallback', {})
 }

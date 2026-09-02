@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { formatDisplayDate } from '../content/schema.js'
 import { useOnlineStatus } from '../lib/useOnlineStatus.js'
@@ -15,25 +14,23 @@ import './Home.css'
  *
  * The SIR-check row and the chat bubble are both real, fully-styled per the
  * locked design (not dimmed — dimming one row would itself violate the
- * "equal peer" decision). The SIR flow is real as of Phase 2 step 9; Chunav
- * Saathi is still Phase 3 step 12, so its bubble still shows an honest "not
- * built yet" notice rather than doing nothing or navigating somewhere
- * broken.
+ * "equal peer" decision). Chunav Saathi is real as of Phase 3 step 12 —
+ * tapping the bubble opens the actual chat, not a stub.
  *
  * While offline, this swaps the urgency strip + menu rows for the locked
  * mockup's "6a · Offline / slow connection" state: an offline banner plus
  * the list of saved Action Cards (device-local, so they render with zero
  * network) — per the PRD's own offline edge case ("offline renders saved
- * cards"). The chat bubble still shows (it's just an honest stub either
- * way, nothing there depends on connectivity).
+ * cards"). The chat bubble still shows and still opens — Chunav Saathi's
+ * hardcoded chip answers (this step; real RAG is later) need no network
+ * either, so there's no honest reason to hide it while offline.
  *
- * @param {{ onOpenPicker: () => void, onOpenSir: () => void, onOpenSavedCard: (entry: {id: string, payload_snapshot: object, saved_on: string}) => void }} props
+ * @param {{ onOpenPicker: () => void, onOpenSir: () => void, onOpenChat: () => void, onOpenSavedCard: (entry: {id: string, payload_snapshot: object, saved_on: string}) => void }} props
  */
-export function Home({ onOpenPicker, onOpenSir, onOpenSavedCard }) {
+export function Home({ onOpenPicker, onOpenSir, onOpenChat, onOpenSavedCard }) {
   const { lang } = useLanguage()
   const { t } = useTranslation()
   const activeLang = lang ?? 'en'
-  const [comingSoon, setComingSoon] = useState(null)
   const online = useOnlineStatus()
 
   const update = updates[0] ?? null
@@ -78,20 +75,12 @@ export function Home({ onOpenPicker, onOpenSir, onOpenSavedCard }) {
           })
         )}
 
-        <button type="button" className="chat-bubble" onClick={() => setComingSoon(t('home.chatComingSoon'))}>
+        <button type="button" className="chat-bubble" onClick={onOpenChat}>
           <span className="avi" aria-hidden="true">
             🗳️
           </span>
           {t('chat.name')}
         </button>
-        {comingSoon && (
-          <div className="urgency-strip" style={{ background: 'var(--surface-alt)', borderColor: 'var(--border-strong)' }} role="status">
-            <div className="glyph" aria-hidden="true">
-              🚧
-            </div>
-            <div className="txt">{comingSoon}</div>
-          </div>
-        )}
       </div>
     )
   }
@@ -112,15 +101,6 @@ export function Home({ onOpenPicker, onOpenSir, onOpenSavedCard }) {
               {t('card.verified')} {formatDisplayDate(update.verified_on, activeLang)}
             </span>
           </div>
-        </div>
-      )}
-
-      {comingSoon && (
-        <div className="urgency-strip" style={{ background: 'var(--surface-alt)', borderColor: 'var(--border-strong)' }} role="status">
-          <div className="glyph" aria-hidden="true">
-            🚧
-          </div>
-          <div className="txt">{comingSoon}</div>
         </div>
       )}
 
@@ -150,7 +130,7 @@ export function Home({ onOpenPicker, onOpenSir, onOpenSavedCard }) {
         </div>
       </button>
 
-      <button type="button" className="chat-bubble" onClick={() => setComingSoon(t('home.chatComingSoon'))}>
+      <button type="button" className="chat-bubble" onClick={onOpenChat}>
         <span className="avi" aria-hidden="true">
           🗳️
         </span>
