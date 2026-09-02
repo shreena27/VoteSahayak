@@ -5,7 +5,13 @@ import { Seal } from './Seal.jsx'
 import { saveCard, isCardSaved } from '../lib/savedCards.js'
 import { shareCard, renderCardAsFile } from '../lib/shareCard.js'
 import { speak, stopSpeaking, isSpeechSupported } from '../lib/speak.js'
-import { trackCardViewed, trackCardSaved, trackCardShared, trackCardListened } from '../lib/analytics.js'
+import {
+  trackCardViewed,
+  trackCardSaved,
+  trackCardShared,
+  trackCardListened,
+  trackOfficialLinkTapped,
+} from '../lib/analytics.js'
 import './ActionCard.css'
 
 const STEP_ICON_MAP = {
@@ -218,12 +224,22 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
                 {activeLang === 'hi' ? step.text_hi : step.text_en}
                 <br />
                 {step.action_kind === 'tel' && (
-                  <a className="step-act" href={step.action_value}>
+                  <a
+                    className="step-act"
+                    href={step.action_value}
+                    onClick={() => trackOfficialLinkTapped(step.id)}
+                  >
                     {step.action_value.replace('tel:', '')}
                   </a>
                 )}
                 {step.action_kind === 'url' && (
-                  <a className="step-act" href={step.action_value} target="_blank" rel="noopener noreferrer">
+                  <a
+                    className="step-act"
+                    href={step.action_value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackOfficialLinkTapped(step.id)}
+                  >
                     {t('card.open')}
                   </a>
                 )}
