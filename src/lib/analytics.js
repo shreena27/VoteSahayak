@@ -1,9 +1,11 @@
 // The Implementation Plan's full event allowlist (Phase 1 step 5) — nothing
 // else gets tracked, ever. Each entry below is the only way to fire that
 // event, so a typo'd event name is an import error, not a silent bad string
-// reaching Mixpanel. Some of these have no real trigger point yet (the
-// wizard, SIR flow, and chat don't exist until Phase 2/3) — see the
-// "not yet wired" comment on each for exactly which later step wires it up.
+// reaching Mixpanel. Only the chat events have no real trigger point yet
+// (Chunav Saathi doesn't exist until Phase 3) — see the "not yet wired"
+// comment on each for exactly which later step wires it up. Everything else
+// is wired: lang_selected/card_*/flow_started/wizard_step (Wizard.jsx),
+// sir_outcome_picked/official_link_tapped/flow_started (SirFlow.jsx).
 const EVENT_NAMES = /** @type {const} */ ([
   'lang_selected',
   'flow_started',
@@ -118,13 +120,7 @@ export function trackCardListened(cardId) {
   track('card_listened', { card_id: cardId })
 }
 
-// --- Defined now, not yet wired — each function below is fully correct and
-// ready to call, but has no real caller yet: the UI it belongs to (wizard,
-// SIR flow, chat) doesn't exist in the codebase until the listed later step
-// builds it. Import and call these directly when that step lands, rather
-// than re-defining the event. ---
-
-/** @param {string} flowName — Phase 2 step 9 (SIR flow) / step 7 (wizard engine) */
+/** @param {string} flowName — wired in Wizard.jsx (task id) and SirFlow.jsx ('sir-check'/'sir-notice') */
 export function trackFlowStarted(flowName) {
   track('flow_started', { flow: flowName })
 }
@@ -132,16 +128,26 @@ export function trackFlowStarted(flowName) {
 /**
  * @param {string} task
  * @param {number} step
- * Phase 2 step 11 (wizard funnel events).
+ * Wired in Wizard.jsx, fired on every question screen shown.
  */
 export function trackWizardStep(task, step) {
   track('wizard_step', { task, step })
 }
 
-/** @param {string} outcome — Phase 2 step 9 (SIR flow's 5-outcome picker) */
+/** @param {string} outcome — wired in SirFlow.jsx's 5-outcome picker */
 export function trackSirOutcomePicked(outcome) {
   track('sir_outcome_picked', { outcome })
 }
+
+/** @param {string} which — wired in SirFlow.jsx, fired when the outbound official SIR-search link is tapped */
+export function trackOfficialLinkTapped(which) {
+  track('official_link_tapped', { which })
+}
+
+// --- Defined now, not yet wired — each function below is fully correct and
+// ready to call, but has no real caller yet: the Chunav Saathi chat UI
+// doesn't exist in the codebase until Phase 3 builds it. Import and call
+// these directly when that step lands, rather than re-defining the event. ---
 
 /** Phase 3 step 12 (Chunav Saathi chat UI). */
 export function trackChatOpened() {
@@ -156,9 +162,4 @@ export function trackChatAsked() {
 /** Phase 3 step 14 (/api/ask's below-threshold fallback path). */
 export function trackChatFallback() {
   track('chat_fallback', {})
-}
-
-/** @param {string} which — Phase 2 step 9, wherever the SIR flow's outbound official link lands */
-export function trackOfficialLinkTapped(which) {
-  track('official_link_tapped', { which })
 }

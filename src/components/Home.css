@@ -152,6 +152,85 @@
   }
 }
 
+/* Offline state — ported from the mockup's "6a · Offline / slow connection"
+   screen (.offline-banner rule + the saved-cards list markup below it). */
+.offline-banner {
+  background: var(--neutral-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 13px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.offline-banner .glyph {
+  font-size: 17px;
+}
+.offline-banner .txt {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+.offline-banner .txt b {
+  display: block;
+  color: var(--ink);
+  font-size: 13.5px;
+  margin-bottom: 3px;
+}
+
+.saved-cards-heading {
+  margin-top: 18px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.saved-cards-empty {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.saved-card-summary {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 14px;
+}
+.saved-card-summary .receipt-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 3px 9px;
+  margin-bottom: 8px;
+}
+.saved-card-summary h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.saved-card-summary .saved-on {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .menu-row,
   .chat-bubble {
