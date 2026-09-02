@@ -41,11 +41,26 @@ const GENERATE_ENDPOINT = (apiKey) =>
 // 0.55 (the original value) was wrong — it sat barely above the ~0.50 noise
 // floor unrelated English text scores against this corpus, so 5 of 6 tested
 // adversarial questions (including a prompt-injection attempt) crossed it
-// and reached the generation model. Re-measured directly against gemini-
-// embedding-001 and this corpus: adversarial questions ("ignore previous
-// instructions...", off-topic chitchat, partisan/legal-opinion bait) top out
-// at 0.7044; genuine in-corpus questions score 0.88-0.90. 0.78 sits with
-// real margin on both sides of that gap.
+// and reached the generation model.
+//
+// There is no single threshold that cleanly separates "adversarial" from
+// "legitimate" in this corpus — measured directly against gemini-embedding-
+// 001: near-verbatim legitimate questions score 0.88-0.90, but *realistic
+// paraphrases* a real user would actually type range 0.67-0.85, and the
+// worst adversarial question found (0.7044) scores HIGHER than the worst
+// realistic legitimate paraphrase tested (0.6741). No cutoff admits every
+// genuine paraphrase while excluding every adversarial question; that
+// overlap is real, not a measurement error.
+//
+// Given that overlap, this threshold is deliberately set high (0.78),
+// trading recall for safety: a wrongly-gated legitimate question just gets
+// the honest "I don't know" fallback (harmless, and exactly what this app's
+// trust architecture already treats as a correct outcome for anything it's
+// unsure about) — an ungated adversarial question reaching generation is not
+// harmless. This is consistent with the Implementation Plan's own framing
+// (RAG is additive, never load-bearing; the prompt chips are the reliable
+// primary path) — free-text answers close paraphrases well, and honestly
+// declines everything else rather than guessing.
 const SIMILARITY_THRESHOLD = 0.78;
 const TOP_K = 3;
 const MAX_QUERY_LENGTH = 500;
