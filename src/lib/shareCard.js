@@ -126,20 +126,6 @@ function withTimeout(promise, ms) {
 }
 
 /**
- * Rolling breadcrumb trail for `renderCardAsFile`, read by ActionCard's
- * `?debug=1` overlay. Temporary diagnostic aid for real-device testing
- * where there is no remote-debugging access; remove with the overlay once
- * the share image is confirmed good on a real phone.
- * @type {{t: number, event: string, detail?: string}[]}
- */
-export const shareRenderLog = []
-
-function logRender(event, detail) {
-  shareRenderLog.push({ t: Date.now(), event, detail })
-  if (shareRenderLog.length > 20) shareRenderLog.shift()
-}
-
-/**
  * Waits for webfonts to finish loading and for the browser to paint at
  * least one frame before capturing. Capturing before `document.fonts.ready`
  * settles is a documented way to get an incomplete canvas from this library
@@ -174,17 +160,11 @@ async function waitForPaintReady() {
  */
 export async function renderCardAsFile(cardNode) {
   const { clone, wrapper } = prepareLightClone(cardNode)
-  const start = Date.now()
-  const rect = clone.getBoundingClientRect()
-  logRender('start', `node=${Math.round(rect.width)}x${Math.round(rect.height)}`)
   try {
     const rendered = await withTimeout(
-      waitForPaintReady()
-        .then(() => logRender('paint-ready', `${Date.now() - start}ms`))
-        .then(() => toCanvas(clone, { pixelRatio: 2 })),
+      waitForPaintReady().then(() => toCanvas(clone, { pixelRatio: 2 })),
       RENDER_TIMEOUT_MS,
     )
-    logRender('toCanvas-ok', `${rendered.width}x${rendered.height} total=${Date.now() - start}ms`)
     // Flatten onto an opaque backdrop (see SHARE_BACKDROP). Not done via
     // html-to-image's own `backgroundColor` option: that also overwrites the
     // captured node's background-color, which would repaint the card's
@@ -199,10 +179,8 @@ export async function renderCardAsFile(cardNode) {
     const blob = await new Promise((resolve, reject) =>
       flat.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob-null'))), 'image/png'),
     )
-    logRender('blob-ok', `size=${blob.size}b`)
     return new File([blob], 'vote-sahayak-card.png', { type: 'image/png' })
-  } catch (err) {
-    logRender('failed', `${err?.name || ''} ${err?.message || err} total=${Date.now() - start}ms`)
+  } catch {
     return null
   } finally {
     wrapper.remove()
