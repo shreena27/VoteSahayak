@@ -79,7 +79,6 @@ export function SirFlow({ onExitToHome, onStartTask }) {
   const [district, setDistrict] = useState('')
   const [showDistrictField, setShowDistrictField] = useState(false)
   const [outcomeId, setOutcomeId] = useState(null)
-  const [noticeComingSoon, setNoticeComingSoon] = useState(false)
 
   useEffect(() => {
     trackFlowStarted('sir-check')
@@ -122,12 +121,18 @@ export function SirFlow({ onExitToHome, onStartTask }) {
     goTo('card')
   }
 
+  function handleOpenNotice() {
+    trackFlowStarted('sir-notice')
+    goTo('notice')
+  }
+
   const TITLE_BY_SCREEN = {
     name: t('sir.title'),
     state: t('sir.title'),
     cheatsheet: t('sir.title'),
     outcomes: t('sir.outcomes.title'),
     card: t('sir.result.title'),
+    notice: t('sir.notice.title'),
   }
 
   return (
@@ -193,15 +198,25 @@ export function SirFlow({ onExitToHome, onStartTask }) {
             </button>
           </div>
           <div style={{ marginTop: 14, textAlign: 'center' }}>
-            <button type="button" className="btn-text" onClick={() => setNoticeComingSoon(true)}>
+            <button type="button" className="btn-text" onClick={handleOpenNotice}>
               {t('sir.noticeLink')}
             </button>
           </div>
-          {noticeComingSoon && (
-            <p className="notice-coming-soon" role="status">
-              {t('sir.noticeComingSoon')}
-            </p>
-          )}
+        </div>
+      )}
+
+      {screen === 'notice' && (
+        <div className="wizard-result">
+          {(() => {
+            const card = cards.find((c) => c.id === 'card-sir-notice')
+            if (!card) return <p>{t('wizard.backToHome')}</p>
+            return <ActionCard card={card} forms={forms} />
+          })()}
+          <div className="back-home">
+            <button type="button" className="btn-text" onClick={onExitToHome}>
+              {t('wizard.backToHome')}
+            </button>
+          </div>
         </div>
       )}
 

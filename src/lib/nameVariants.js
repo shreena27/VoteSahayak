@@ -104,8 +104,13 @@ export function generateNameVariants(fullName) {
 /**
  * Case-insensitively replaces the first occurrence of `from` with `to`
  * within a single word (or vice versa if `from` isn't present but `to`
- * is), capitalizing the replacement's first letter when the matched
- * text in the original word started with an uppercase letter.
+ * is). Case is matched to the original: if the matched text was entirely
+ * uppercase (e.g. inside an ALL-CAPS name, as printed on a voter ID),
+ * the replacement is uppercased in full rather than just its first
+ * letter — otherwise a multi-letter swap (like "ee"/"i") inside an
+ * all-caps word corrupts to mixed case (e.g. "VIJAY" -> "VEeJAY"
+ * instead of "VEEJAY"). Title-Case input still gets only its first
+ * letter capitalized, matching how the rest of the word is cased.
  * @returns {string|null} null when neither pattern is present in this word
  */
 function swapWithinWord(word, from, to) {
@@ -120,7 +125,12 @@ function swapWithinWord(word, from, to) {
     replacement = from
   }
   const matchedOriginal = word.slice(idx, idx + matchedLen)
+  const isAllUpper = matchedOriginal === matchedOriginal.toUpperCase() && matchedOriginal !== matchedOriginal.toLowerCase()
   const wasUpper = /[A-Z]/.test(matchedOriginal[0] ?? '')
-  const casedReplacement = wasUpper ? replacement.charAt(0).toUpperCase() + replacement.slice(1) : replacement
+  const casedReplacement = isAllUpper
+    ? replacement.toUpperCase()
+    : wasUpper
+      ? replacement.charAt(0).toUpperCase() + replacement.slice(1)
+      : replacement
   return word.slice(0, idx) + casedReplacement + word.slice(idx + matchedLen)
 }

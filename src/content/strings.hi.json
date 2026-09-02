@@ -46,7 +46,7 @@
   "sir.name.helper": "जैसा आपके वोटर ID पर छपा है, या जितना याद हो उतना नज़दीक।",
   "sir.variants.label": "यह भी आज़माएं, अगर वहां आपका नाम अलग तरह से लिखा हो",
   "sir.noticeLink": "मुझे पहले ही नोटिस मिल चुका है →",
-  "sir.noticeComingSoon": "यह जल्द ही बन रहा है — कृपया बाद में देखें।",
+  "sir.notice.title": "आपको नोटिस मिला है",
   "sir.state.label": "आप किस राज्य में वोट डालते हैं?",
   "sir.state.placeholder": "अपना राज्य चुनें",
   "sir.district.label": "अपना ज़िला या निर्वाचन क्षेत्र जानते हैं? (वैकल्पिक)",
@@ -74,5 +74,12 @@
   "sir.outcomes.could-not-complete.title": "जांच पूरी नहीं हो पाई",
   "sir.outcomes.could-not-complete.desc": "साइट बंद थी, या कैप्चा लोड नहीं हुआ",
   "sir.nameChecked": "जांचा गया नाम",
-  "sir.stateChecked": "राज्य"
+  "sir.stateChecked": "राज्य",
+
+  "offline.title": "आप ऑफ़लाइन हैं",
+  "offline.body": "SIR स्थिति जांचने के लिए इंटरनेट कनेक्शन चाहिए। आपके सेव किए गए Action Card अब भी काम करते हैं और नीचे खोले जा सकते हैं।",
+  "offline.retry": "फिर कोशिश करें",
+  "offline.savedCardsHeading": "सेव किए गए कार्ड",
+  "offline.savedCardsEmpty": "आपने अभी तक कोई कार्ड सेव नहीं किया है। दोबारा ऑनलाइन आने पर, किसी Action Card पर सेव बटन दबाकर उसे यहां ऑफ़लाइन के लिए रखें।",
+  "offline.savedOn": "सेव किया गया"
 }

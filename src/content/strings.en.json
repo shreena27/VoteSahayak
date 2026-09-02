@@ -46,7 +46,7 @@
   "sir.name.helper": "As printed on your voter ID, or as close as you remember.",
   "sir.variants.label": "Try these too, in case your name is spelled differently there",
   "sir.noticeLink": "I already received a notice →",
-  "sir.noticeComingSoon": "This is being built next — check back soon.",
+  "sir.notice.title": "You received a notice",
   "sir.state.label": "Which state do you vote in?",
   "sir.state.placeholder": "Select your state",
   "sir.district.label": "Know your district or constituency? (optional)",
@@ -74,5 +74,12 @@
   "sir.outcomes.could-not-complete.title": "Couldn't complete the check",
   "sir.outcomes.could-not-complete.desc": "Site was down, or CAPTCHA wouldn't load",
   "sir.nameChecked": "Name checked",
-  "sir.stateChecked": "State"
+  "sir.stateChecked": "State",
+
+  "offline.title": "You're offline",
+  "offline.body": "Checking your SIR status needs a connection. Your saved Action Cards still work and can be opened below.",
+  "offline.retry": "Retry",
+  "offline.savedCardsHeading": "Saved cards",
+  "offline.savedCardsEmpty": "You haven't saved any cards yet. Once you're back online, use the Save button on an Action Card to keep it here for offline access.",
+  "offline.savedOn": "Saved"
 }

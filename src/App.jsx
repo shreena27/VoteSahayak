@@ -4,17 +4,24 @@ import { Home } from './components/Home.jsx'
 import { TaskPicker } from './components/TaskPicker.jsx'
 import { Wizard } from './components/Wizard.jsx'
 import { SirFlow } from './components/SirFlow.jsx'
+import { ActionCard } from './components/ActionCard.jsx'
+import forms from './content/forms.json'
 
 function App() {
   const { lang, setLang } = useLanguage()
   const { t } = useTranslation()
-  // 'home' | 'picker' | 'wizard' | 'sir' — the picker is its own step between
-  // Home's wizard-entry row and the actual wizard, so Back from the wizard's
-  // first question returns to the picker (to try a different task), not all
-  // the way past it to Home. 'sir' owns its own internal screen stack
-  // (SirFlow), same as 'wizard' does for Wizard.
+  // 'home' | 'picker' | 'wizard' | 'sir' | 'savedCard' — the picker is its
+  // own step between Home's wizard-entry row and the actual wizard, so Back
+  // from the wizard's first question returns to the picker (to try a
+  // different task), not all the way past it to Home. 'sir' owns its own
+  // internal screen stack (SirFlow), same as 'wizard' does for Wizard.
+  // 'savedCard' renders a device-local SAVED_CARD snapshot straight from
+  // Home's offline state — deliberately NOT routed through Wizard/SirFlow's
+  // own card lookups, since a saved snapshot must render exactly as it was
+  // when saved, not whatever cards.json says today (the ERD's own rule).
   const [view, setView] = useState('home')
   const [activeTaskId, setActiveTaskId] = useState(null)
+  const [activeSavedCard, setActiveSavedCard] = useState(null)
 
   return (
     <>
@@ -78,8 +85,32 @@ function App() {
             setView('wizard')
           }}
         />
+      ) : view === 'savedCard' && activeSavedCard ? (
+        <div className="wizard-screen">
+          <div className="app-header">
+            <button type="button" className="back" onClick={() => setView('home')} aria-label={t('wizard.back')}>
+              ‹
+            </button>
+            <h1 className="title">{t('offline.savedCardsHeading')}</h1>
+          </div>
+          <div className="wizard-result">
+            <ActionCard card={activeSavedCard.payload_snapshot} forms={forms} />
+            <div className="back-home">
+              <button type="button" className="btn-text" onClick={() => setView('home')}>
+                {t('wizard.backToHome')}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : (
-        <Home onOpenPicker={() => setView('picker')} onOpenSir={() => setView('sir')} />
+        <Home
+          onOpenPicker={() => setView('picker')}
+          onOpenSir={() => setView('sir')}
+          onOpenSavedCard={(entry) => {
+            setActiveSavedCard(entry)
+            setView('savedCard')
+          }}
+        />
       )}
     </>
   )
