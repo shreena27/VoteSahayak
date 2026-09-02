@@ -101,9 +101,9 @@ export const QA_BANK = [
     answer_hi:
       'समय की कोई आधिकारिक गारंटी नहीं है। एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार), सुधार में 6 महीने तक लगे — इसे एक संभावना मानें, सामान्य इंतज़ार नहीं। जितनी जल्दी हो सके आवेदन करें, खासकर SIR की समय-सीमा से पहले, और NVSP पर अपनी स्थिति ट्रैक करें।',
     source_en:
-      "Former diplomat Navdeep Suri's public account (WION) · Moderate Confidence — no general timeline is officially published",
+      "Former diplomat Navdeep Suri's public account (WION) · Moderate Confidence — not an official processing time",
     source_hi:
-      'पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता — कोई सामान्य समय-सीमा आधिकारिक रूप से प्रकाशित नहीं है',
+      'पूर्व राजनयिक नवदीप सूरी का सार्वजनिक बयान (WION) · मध्यम विश्वसनीयता — यह कोई आधिकारिक प्रक्रिया समय नहीं है',
   },
   {
     id: 'correction-not-always-reliable',

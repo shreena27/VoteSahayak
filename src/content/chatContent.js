@@ -48,9 +48,9 @@ export const CHAT_CHIPS = [
     question_en: 'How long does correction take?',
     question_hi: 'सुधार में कितना समय लगता है?',
     answer_en:
-      "There's no official guarantee. Some corrections clear in a few weeks; others take longer with no update in between. Apply as early as you can, and follow up with your BLO if you don't hear back.",
+      "There's no official guarantee. Some applicants report their status stays \"Submitted\" for a month or more with no update in between. Apply as early as you can, and follow up with your BLO if you don't hear back.",
     answer_hi:
-      'कोई आधिकारिक गारंटी नहीं है। कुछ सुधार कुछ हफ्तों में हो जाते हैं, कुछ में ज़्यादा समय लगता है और बीच में कोई अपडेट नहीं मिलता। जितनी जल्दी हो सके आवेदन करें, और अगर जवाब न मिले तो अपने BLO से संपर्क करें।',
+      'कोई आधिकारिक गारंटी नहीं है। कुछ आवेदकों के अनुसार स्थिति एक महीने या उससे ज़्यादा समय तक "Submitted" ही दिखती रहती है, बीच में कोई अपडेट नहीं मिलता। जितनी जल्दी हो सके आवेदन करें, और अगर जवाब न मिले तो अपने BLO से संपर्क करें।',
     source_en: 'Reported citizen experience — not an official processing time',
     source_hi: 'नागरिकों द्वारा बताया गया अनुभव — यह कोई आधिकारिक प्रक्रिया समय नहीं है',
   },

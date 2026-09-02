@@ -137,11 +137,14 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || /^placeholder/i.test(apiKey)) {
-    // No real key configured (e.g. a fork of this repo without one set) —
-    // this is not the citizen's problem to see as a 500; behave exactly like
-    // a below-threshold miss so the UI's existing honest-fallback path
-    // handles it the same way.
+  if (!apiKey || /^placeholder/i.test(apiKey) || apiKey === '[SENSITIVE]') {
+    // No real key configured (e.g. a fork of this repo without one set, or a
+    // local `vercel env pull` of a Sensitive-type var, which resolves to the
+    // literal string "[SENSITIVE]" rather than the real value) — this is not
+    // the citizen's problem to see as a 500; behave exactly like a
+    // below-threshold miss so the UI's existing honest-fallback path handles
+    // it the same way, instead of falling through to a real (failing) Gemini
+    // call first.
     res.status(200).json({ matched: false });
     return;
   }
