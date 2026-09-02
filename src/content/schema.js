@@ -95,9 +95,11 @@
  * @typedef {Object} UpdateItem
  * @property {string} id
  * @property {string|null} state_id  - FK into a future STATE_INFO table; null = national-level update (state-scoped SIR updates are Phase 2 step 9's job, not this step's)
- * @property {string} headline_en    - short bold lead-in shown above text_en in the urgency strip (matches the locked mockup's <b>SIR in progress</b> pattern), e.g. "SIR, Phase II"
+ * @property {string} headline_en    - short bold lead-in shown above teaser_en/text_en (matches the locked mockup's <b>SIR in progress</b> pattern), e.g. "SIR, Phase II"
  * @property {string} headline_hi
- * @property {string} text_en
+ * @property {string} teaser_en      - one short sentence, no figures or citation; shown in Home's urgency strip, which is a glance-only pointer, not the full explanation
+ * @property {string} teaser_hi
+ * @property {string} text_en        - the full explanation including figures; shown (with source_line/verified_on) on the SIR flow's name-entry screen, reached only by someone who tapped through to actually start a check
  * @property {string} text_hi
  * @property {string|null} last_date - ISO date; null when there's no pending deadline to show (a calm/settled update, not an active countdown) — never a countdown timer either way, per this project's locked "no fake urgency" rule
  * @property {string} verified_on    - ISO date
@@ -588,7 +590,7 @@ export function validateUpdates(updates) {
 
   for (const update of updates) {
     const label = update?.id ?? '(missing id)';
-    for (const field of ['id', 'headline_en', 'headline_hi', 'text_en', 'text_hi', 'verified_on', 'source_line', 'source_line_hi', 'source_url']) {
+    for (const field of ['id', 'headline_en', 'headline_hi', 'teaser_en', 'teaser_hi', 'text_en', 'text_hi', 'verified_on', 'source_line', 'source_line_hi', 'source_url']) {
       if (!update[field]) errors.push(`updates.json: "${label}" is missing required field "${field}"`);
     }
     if (update.id) {

@@ -39,8 +39,8 @@
   "chat.honestFallback": "I don't know the answer to that for certain, and I'd rather not guess on something like this.",
   "chat.honestFallbackNote": "Outside the topics I'm built to answer right now — call the ECI helpline: 1950, or check the official page directly.",
 
-  "home.sirRow.title": "Am I still on the voter list?",
-  "home.sirRow.subtitle": "Check if the recent list revision affected you",
+  "home.sirRow.title": "Check my SIR risk",
+  "home.sirRow.subtitle": "Check if the recent Special Intensive Revision (SIR) affected you",
   "home.wizardRow.title": "My details are wrong, or I've moved.",
   "home.wizardRow.subtitle": "Get the exact form for your situation, in plain language",
 
