@@ -94,8 +94,8 @@ export const CHAT_CHIPS = [
       "SIR (Special Intensive Revision) is a periodic recheck of the voter list. Phase II finished around April 2026 — net 5.2 crore names were removed across 12 states and 3 union territories, and that figure already accounts for about 2 crore names added back on appeal. If you're not sure whether it affected you, you can check your name directly from the home screen.",
     answer_hi:
       'SIR (विशेष गहन पुनरीक्षण) वोटर सूची की एक समय-समय पर होने वाली जांच है। चरण II लगभग अप्रैल 2026 में पूरा हुआ — 12 राज्यों और 3 केंद्र शासित प्रदेशों में अंत में 5.2 करोड़ नाम हटाए गए, और अपील पर वापस जोड़े गए लगभग 2 करोड़ नाम इस संख्या में पहले से घटाए जा चुके हैं। अगर आपको यकीन नहीं है कि इसका असर आप पर पड़ा, तो होम स्क्रीन से सीधे अपना नाम जांच सकते हैं।',
-    source_en: 'Election Commission of India',
-    source_hi: 'भारत निर्वाचन आयोग',
+    source_en: 'Press reporting of ECI SIR Phase II figures (OpIndia, Deccan Herald)',
+    source_hi: 'ECI के SIR चरण II आंकड़ों की मीडिया रिपोर्टिंग (OpIndia, Deccan Herald)',
     verified_on: '2026-09-01',
   },
 ]
