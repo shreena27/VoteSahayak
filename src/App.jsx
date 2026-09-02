@@ -6,6 +6,7 @@ import { Wizard } from './components/Wizard.jsx'
 import { SirFlow } from './components/SirFlow.jsx'
 import { Chat } from './components/Chat.jsx'
 import { ActionCard } from './components/ActionCard.jsx'
+import { UpdatePrompt } from './components/UpdatePrompt.jsx'
 import forms from './content/forms.json'
 
 function App() {
@@ -116,6 +117,11 @@ function App() {
           }}
         />
       )}
+
+      {/* Rendered last, not first: the toast's own container always exists
+          in the DOM (see UpdatePrompt.jsx) so its buttons don't sit ahead
+          of the real screen's content in tab order while invisible. */}
+      <UpdatePrompt />
     </>
   )
 }
