@@ -46,6 +46,12 @@ if (enabled) {
   import('mixpanel-browser')
     .then(({ default: mixpanel }) => {
       mixpanel.init(token, {
+        // This project uses Mixpanel's EU data-residency cluster (its
+        // dashboard lives at eu.mixpanel.com). The SDK defaults to the US
+        // ingestion endpoint, which silently drops events for an EU-hosted
+        // project rather than erroring — api_host must point at the EU
+        // cluster or nothing tracked here ever shows up.
+        api_host: 'https://api-eu.mixpanel.com',
         // No user identifiers beyond Mixpanel's own anonymous distinct_id —
         // this product's whole trust thesis rests on not collecting more than
         // it needs. autocapture off is what actually enforces "nothing else
