@@ -355,9 +355,16 @@ export function SirFlow({ onExitToHome, onStartTask }) {
             )
           })()}
           {outcomeId === 'found-misspelled' && (
-            <div className="back-home">
-              <button type="button" className="btn-text" onClick={() => onStartTask('correct-details')}>
+            <div style={{ marginTop: 18 }}>
+              <button type="button" className="btn-secondary" onClick={() => onStartTask('correct-details')}>
                 {t('sir.outcomes.found-misspelled.fixLink')}
+              </button>
+            </div>
+          )}
+          {outcomeId === 'not-found' && (
+            <div style={{ marginTop: 18 }}>
+              <button type="button" className="btn-secondary" onClick={() => onStartTask('new-registration')}>
+                {t('sir.outcomes.not-found.registerLink')}
               </button>
             </div>
           )}
