@@ -1,0 +1,313 @@
+<title>Wizard Refresh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400..800&display=swap">
+<style>
+/* ---- Tokens: copied verbatim from src/tokens.css (light on :root, dark twice) ---- */
+:root{
+  --bg:#F7F2E7; --surface:#FFFFFF; --surface-alt:#EFE7D3; --surface-sunken:#EDE4CE;
+  --ink:#211C15; --ink-secondary:#57503E; --ink-muted:#6E6752;
+  --border:#E0D4B4; --border-strong:#CBBB8E;
+  --accent:#4A2E8C; --accent-ink:#3A2470; --accent-soft:#ECE6F7; --on-accent:#FFFFFF;
+  --amber:#B07A1E; --amber-soft:#F7EDD8; --amber-ink:#8C6018;
+  --ok:#3E7A57; --ok-soft:#E7F1EA; --on-ok:#FFFFFF;
+  --danger:#A6433A; --danger-soft:#F5E6E4;
+  --neutral:#6B6558; --neutral-soft:#EAE4D5;
+  --shadow:0 1px 2px rgba(33,28,21,.06), 0 8px 20px -12px rgba(33,28,21,.18);
+  --shadow-lift:0 2px 4px rgba(33,28,21,.08), 0 16px 32px -16px rgba(33,28,21,.28);
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+    --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+    --border:#3B3424; --border-strong:#4E4530;
+    --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+    --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+    --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+    --danger:#D98077; --danger-soft:#3A211E;
+    --neutral:#A39C89; --neutral-soft:#2A251A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+  --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+  --border:#3B3424; --border-strong:#4E4530;
+  --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+  --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+  --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+  --danger:#D98077; --danger-soft:#3A211E;
+  --neutral:#A39C89; --neutral-soft:#2A251A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans Devanagari',-apple-system,'Segoe UI',sans-serif;
+  margin:0; padding:0;
+  font-variant-numeric:tabular-nums;
+  font-size:14px;
+}
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+/* ---- Review chrome (not part of the app) ---- */
+.review{max-width:1040px; margin:0 auto; padding:28px 20px 56px;}
+.review-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:14px 24px; margin-bottom:22px;}
+.review-head h1{font-size:20px; margin:0 0 4px; font-weight:700; letter-spacing:-0.01em;}
+.review-head p{margin:0; color:var(--ink-secondary); font-size:13px; max-width:56ch; line-height:1.5;}
+.controls{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center;}
+.seg{display:inline-flex; border:1.5px solid var(--border-strong); border-radius:999px; padding:2px; background:var(--surface);}
+.seg button{border:0; background:transparent; color:var(--ink-secondary); font-size:12px; font-weight:600; padding:5px 11px; border-radius:999px; cursor:pointer;}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent);}
+.check{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--ink-secondary); cursor:pointer;}
+.check input{accent-color:var(--accent); width:15px; height:15px; margin:0;}
+
+.compare{display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:28px; align-items:start;}
+.col-label{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 auto 4px; max-width:480px; padding:0 18px; font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-muted);}
+.col-label .sub{font-weight:500; letter-spacing:0; text-transform:none; font-size:12px; color:var(--ink-muted);}
+/* The phone surface: the app's real page background is --bg, so the screen sits on a bordered --surface panel only to mark its edges for review. */
+.phone{max-width:480px; margin:0 auto; background:var(--bg); border:1px solid var(--border); border-radius:18px; overflow:hidden;}
+
+.legend{max-width:760px; margin:40px auto 0; border-top:1px dashed var(--border-strong); padding-top:20px;}
+.legend h2{font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-muted); margin:0 0 12px;}
+.legend h2 + ul{margin-bottom:24px;}
+.legend ul{list-style:none; margin:0; padding:0; display:grid; gap:12px;}
+.legend li{display:flex; gap:12px; font-size:13px; line-height:1.55; color:var(--ink-secondary);}
+.legend li strong{color:var(--ink);}
+.legend .n{flex:none; width:20px; height:20px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:2px;}
+.legend .n.quiet{background:var(--neutral-soft); color:var(--ink-muted);}
+.legend code{font-family:ui-monospace, Consolas, monospace; font-size:12px; color:var(--ink);}
+.review-note{font-size:11.5px; color:var(--accent-ink); text-align:center; margin:10px 0 0; min-height:1.4em;}
+
+/* review-only annotation badge, toggleable */
+.annot{position:absolute; top:-9px; right:-6px; width:18px; height:18px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); border:1.5px solid var(--accent); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; line-height:1; z-index:1;}
+body.no-annot .annot{display:none;}
+
+/* ---- Ported from src/components/shared.css ---- */
+.app-header{padding:6px 0 14px; display:flex; align-items:center; gap:10px;}
+.app-header .back{width:30px; height:30px; border-radius:999px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--ink-secondary); flex:none; background:var(--surface); cursor:pointer;}
+.app-header .title{margin:0; font-size:15px; font-weight:600;}
+.btn-primary{display:flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:var(--on-accent); border:none; border-radius:12px; padding:14px 18px; font-size:15px; font-weight:600; cursor:pointer; width:100%;}
+.btn-primary:disabled{opacity:.45; cursor:not-allowed;}
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+
+/* ---- Ported from src/components/Wizard.css ---- */
+.wizard-screen{max-width:480px; margin:0 auto; padding:24px 18px 100px;}
+.preflight{background:var(--surface-alt); border-radius:12px; padding:12px 14px; margin-bottom:16px; display:flex; gap:10px; align-items:flex-start;}
+.preflight .glyph{font-size:16px; flex:none;}
+.preflight .txt{font-size:12.5px; line-height:1.55; color:var(--ink-secondary);}
+.preflight .txt b{display:block; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:3px;}
+.wizard-question{font-size:19px; margin:6px 0 18px; font-weight:600; line-height:1.4; text-wrap:balance;}
+.chip-row{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:22px;}
+.chip-row.stacked{flex-direction:column;}
+.chip{border:1.5px solid var(--border-strong); border-radius:999px; padding:10px 16px; font-size:14px; background:var(--surface); color:var(--ink); cursor:pointer; transition:transform .18s ease-out, border-color .18s ease-out, background .18s ease-out;}
+.chip:hover{border-color:var(--accent);}
+.chip.sel{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:600;}
+.chip-row.stacked .chip{width:100%; text-align:center; padding:14px;}
+.advance-hint{font-size:11.5px; color:var(--ink-muted); margin-top:14px; text-align:center;}
+.wizard-slide{animation:slide-in .18s ease-out;}
+@keyframes slide-in{from{opacity:0; transform:translateX(14px);} to{opacity:1; transform:none;}}
+
+/* ---- Refreshed variant: one change only ---- */
+/* Selected multi-select chips carry a check glyph, so "picked" is not signalled by fill color and weight alone. Uses the chip's own --on-accent; no new token. */
+.v2 .chip .tick{display:none; width:12px; height:12px; margin:0 6px -1px 0; vertical-align:baseline;}
+.v2 .chip.sel .tick{display:inline-block;}
+.v2 .chip-row{position:relative;}
+
+.q[hidden]{display:none;}
+
+@media (prefers-reduced-motion: reduce){
+  .wizard-slide{animation:none;}
+  .chip{transition:none;}
+}
+</style>
+
+<div class="review">
+  <header class="review-head">
+    <div>
+      <h1>Wizard Refresh</h1>
+      <p>The "Correct my details" wizard, the app's one two-question flow, as shipped and with a single polish change. No step indicator, by decision: Wizard.css rules it out and every flow is one or two questions long.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Theme">
+        <button type="button" data-theme-pick="system" aria-pressed="true">System</button>
+        <button type="button" data-theme-pick="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme-pick="dark" aria-pressed="false">Dark</button>
+      </div>
+      <div class="seg" role="group" aria-label="Question shown">
+        <button type="button" data-q="1" aria-pressed="true">Q1</button>
+        <button type="button" data-q="2" aria-pressed="false">Q2</button>
+      </div>
+      <label class="check"><input type="checkbox" id="annotToggle" checked> Show change markers</label>
+    </div>
+  </header>
+
+  <div class="compare">
+
+    <!-- ================= AS SHIPPED ================= -->
+    <section aria-labelledby="lbl-current">
+      <div class="col-label"><span id="lbl-current">As shipped</span><span class="sub">src/components/Wizard.jsx</span></div>
+      <div class="phone">
+        <div class="wizard-screen" data-col="v1">
+          <div class="app-header">
+            <button type="button" class="back" aria-label="Back" data-back>‹</button>
+            <h1 class="title">Correct my details</h1>
+          </div>
+
+          <div class="q" data-q-panel="1">
+            <div class="preflight">
+              <div class="glyph" aria-hidden="true">🗂️</div>
+              <div class="txt"><b>Keep ready</b>Proof of your correct name, parent's name, date of birth, or photo (Aadhaar, passport, or birth certificate), and your existing voter ID (EPIC) number if you have it.</div>
+            </div>
+            <h2 class="wizard-question wizard-slide" tabindex="-1">What's wrong on your card?</h2>
+            <div class="chip-row">
+              <button type="button" class="chip" data-opt="name" aria-pressed="false">My name</button>
+              <button type="button" class="chip" data-opt="parent" aria-pressed="false">Father's/mother's name</button>
+              <button type="button" class="chip" data-opt="dob" aria-pressed="false">Date of birth</button>
+              <button type="button" class="chip" data-opt="photo" aria-pressed="false">Photo</button>
+            </div>
+            <button type="button" class="btn-primary" data-continue>Continue</button>
+            <p class="advance-hint">Pick all that apply, then Continue</p>
+          </div>
+
+          <div class="q" data-q-panel="2" hidden>
+            <h2 class="wizard-question wizard-slide" tabindex="-1">Do you have proof of the correct details?</h2>
+            <div class="chip-row stacked">
+              <button type="button" class="chip" data-single="yes">Yes, I have it</button>
+              <button type="button" class="chip" data-single="no">No, not yet</button>
+            </div>
+            <p class="advance-hint">Tap an answer to continue</p>
+            <p class="review-note" data-note></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REFRESHED ================= -->
+    <section aria-labelledby="lbl-refresh">
+      <div class="col-label"><span id="lbl-refresh">Refreshed</span><span class="sub">one change: check glyph on picked chips</span></div>
+      <div class="phone">
+        <div class="wizard-screen v2" data-col="v2">
+          <div class="app-header">
+            <button type="button" class="back" aria-label="Back" data-back>‹</button>
+            <h1 class="title">Correct my details</h1>
+          </div>
+
+          <div class="q" data-q-panel="1">
+            <div class="preflight">
+              <div class="glyph" aria-hidden="true">🗂️</div>
+              <div class="txt"><b>Keep ready</b>Proof of your correct name, parent's name, date of birth, or photo (Aadhaar, passport, or birth certificate), and your existing voter ID (EPIC) number if you have it.</div>
+            </div>
+            <h2 class="wizard-question wizard-slide" tabindex="-1">What's wrong on your card?</h2>
+            <div class="chip-row">
+              <span class="annot" aria-hidden="true">1</span>
+              <button type="button" class="chip" data-opt="name" aria-pressed="false"><svg class="tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg>My name</button>
+              <button type="button" class="chip" data-opt="parent" aria-pressed="false"><svg class="tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg>Father's/mother's name</button>
+              <button type="button" class="chip" data-opt="dob" aria-pressed="false"><svg class="tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg>Date of birth</button>
+              <button type="button" class="chip" data-opt="photo" aria-pressed="false"><svg class="tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5L9.5 3.5"/></svg>Photo</button>
+            </div>
+            <button type="button" class="btn-primary" data-continue>Continue</button>
+            <p class="advance-hint">Pick all that apply, then Continue</p>
+          </div>
+
+          <div class="q" data-q-panel="2" hidden>
+            <h2 class="wizard-question wizard-slide" tabindex="-1">Do you have proof of the correct details?</h2>
+            <div class="chip-row stacked">
+              <button type="button" class="chip" data-single="yes">Yes, I have it</button>
+              <button type="button" class="chip" data-single="no">No, not yet</button>
+            </div>
+            <p class="advance-hint">Tap an answer to continue</p>
+            <p class="review-note" data-note></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="legend" aria-labelledby="lbl-legend">
+    <h2 id="lbl-legend">What changed</h2>
+    <ul>
+      <li><span class="n">1</span><span><strong>Check glyph on picked chips (Q1 only).</strong> As shipped, a picked chip differs from an unpicked one by fill color and a weight bump alone. A 12px check inside the chip gives a second, non-color cue for "picked", which matters on a multi-select where several chips can be on at once. It uses the chip's own <code>--on-accent</code>; no new token. Q2 is single-select and auto-advances on tap, so its chips never sit in a picked state and get no glyph. Both columns share one state: tap chips, Continue and Back, or use the Q1 / Q2 control.</span></li>
+    </ul>
+    <h2>Considered and left alone</h2>
+    <ul>
+      <li><span class="n quiet">·</span><span><strong>No step indicator.</strong> Wizard.css records the decision ("no progress bar, implies bureaucratic length") and the content confirms it: four of five tasks are one question, this one is two. "Step 1 of 2" would be clutter, not signal. Confirmed with the user.</span></li>
+      <li><span class="n quiet">·</span><span><strong>Preflight box unchanged.</strong> The ActionCard's "bolder figures" move needs a real number or key:value to bold; the preflight is one prose sentence with no figure in it, and its document names are already the whole sentence. Bolding fragments of it would also mean markup inside a content string in tasks.json, which is a content change, not a visual one.</span></li>
+      <li><span class="n quiet">·</span><span><strong>Grouping unchanged.</strong> The screen already has exactly one grouped block (preflight) and one question; there is nothing scattered to gather.</span></li>
+      <li><span class="n quiet">·</span><span><strong>Chip size, hint copy, Continue, slide-in, stacked Q2 layout: unchanged.</strong> Each already does one job in one place.</span></li>
+    </ul>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var picks = document.querySelectorAll('[data-theme-pick]');
+  function applyTheme(t){
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    picks.forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-pick') === t)); });
+    try { localStorage.setItem('wz-refresh-theme', t); } catch (e) {}
+  }
+  picks.forEach(function(b){ b.addEventListener('click', function(){ applyTheme(b.getAttribute('data-theme-pick')); }); });
+  var saved = null;
+  try { saved = localStorage.getItem('wz-refresh-theme'); } catch (e) {}
+  if (saved === 'light' || saved === 'dark') applyTheme(saved);
+
+  var annot = document.getElementById('annotToggle');
+  function applyAnnot(){ document.body.classList.toggle('no-annot', !annot.checked); }
+  annot.addEventListener('change', applyAnnot);
+  applyAnnot();
+
+  // One shared state for both columns, mirroring Wizard.jsx: multi-select
+  // toggles + Continue on Q1; single-select auto-advances on Q2.
+  var selected = { name: true, dob: true };
+  var q = 1;
+
+  function render(){
+    document.querySelectorAll('[data-opt]').forEach(function(chip){
+      var on = !!selected[chip.getAttribute('data-opt')];
+      chip.classList.toggle('sel', on);
+      chip.setAttribute('aria-pressed', String(on));
+    });
+    var any = Object.keys(selected).some(function(k){ return selected[k]; });
+    document.querySelectorAll('[data-continue]').forEach(function(b){ b.disabled = !any; });
+    document.querySelectorAll('[data-q-panel]').forEach(function(p){ p.hidden = Number(p.getAttribute('data-q-panel')) !== q; });
+    document.querySelectorAll('[data-q]').forEach(function(b){ b.setAttribute('aria-pressed', String(Number(b.getAttribute('data-q')) === q)); });
+  }
+  function goTo(n){
+    q = n;
+    document.querySelectorAll('[data-single]').forEach(function(c){ c.classList.remove('sel'); });
+    document.querySelectorAll('[data-note]').forEach(function(p){ p.textContent = ''; });
+    render();
+    // Re-trigger the real slide-in and move focus to the question, as Wizard.jsx does.
+    document.querySelectorAll('[data-q-panel="' + n + '"] .wizard-question').forEach(function(h, i){
+      h.classList.remove('wizard-slide'); void h.offsetWidth; h.classList.add('wizard-slide');
+      if (i === 1) h.focus({ preventScroll: true });
+    });
+  }
+  document.querySelectorAll('[data-opt]').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var k = chip.getAttribute('data-opt');
+      selected[k] = !selected[k];
+      render();
+    });
+  });
+  document.querySelectorAll('[data-continue]').forEach(function(b){ b.addEventListener('click', function(){ goTo(2); }); });
+  document.querySelectorAll('[data-back]').forEach(function(b){ b.addEventListener('click', function(){ if (q === 2) goTo(1); }); });
+  document.querySelectorAll('[data-q]').forEach(function(b){ b.addEventListener('click', function(){ goTo(Number(b.getAttribute('data-q'))); }); });
+  document.querySelectorAll('[data-single]').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var v = chip.getAttribute('data-single');
+      document.querySelectorAll('[data-single]').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-single') === v); });
+      document.querySelectorAll('[data-note]').forEach(function(p){
+        p.textContent = v === 'yes' ? 'In the app this auto-advances to the "Correct my details" parchi.' : 'In the app this auto-advances to the "gather first" parchi.';
+      });
+    });
+  });
+  render();
+})();
+</script>
