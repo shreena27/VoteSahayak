@@ -92,6 +92,27 @@ function withTimeout(promise, ms) {
 }
 
 /**
+ * Waits for webfonts to finish loading and for the browser to paint at
+ * least one frame. html-to-image serializes the clone into an SVG and
+ * rasterizes that independently of the live page, but capturing before
+ * `document.fonts.ready` settles still produces a blank/incomplete canvas —
+ * a well-documented failure mode of this library (e.g. bubkoo/html-to-image
+ * issues #488, #155). Confirmed live: a real-device share came back as a
+ * solid black image, and `renderCardAsFile` below fires from a `useEffect`
+ * on the card's mount — the earliest possible moment, racing the self-
+ * hosted Devanagari webfont's load.
+ * @returns {Promise<void>}
+ */
+async function waitForPaintReady() {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+  // Two rAFs: the first callback runs before the next paint, the second
+  // runs only after that paint has actually happened.
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
+/**
  * Renders `cardNode` to a shareable PNG File, or null if rendering fails or
  * exceeds RENDER_TIMEOUT_MS. Safe to call ahead of time (e.g. in a
  * background effect) so a later `shareCard()` call already has a
@@ -102,7 +123,10 @@ function withTimeout(promise, ms) {
 export async function renderCardAsFile(cardNode) {
   const clone = prepareLightClone(cardNode)
   try {
-    const dataUrl = await withTimeout(toPng(clone, { pixelRatio: 2 }), RENDER_TIMEOUT_MS)
+    const dataUrl = await withTimeout(
+      waitForPaintReady().then(() => toPng(clone, { pixelRatio: 2 })),
+      RENDER_TIMEOUT_MS,
+    )
     const blob = await (await fetch(dataUrl)).blob()
     return new File([blob], 'vote-sahayak-card.png', { type: 'image/png' })
   } catch {
