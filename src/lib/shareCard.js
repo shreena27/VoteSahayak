@@ -1,6 +1,15 @@
-import { toPng } from 'html-to-image'
+import { toCanvas } from 'html-to-image'
 
 const RENDER_TIMEOUT_MS = 4000
+
+// The page background the card sits on in the live app (tokens.css --bg).
+// The rendered PNG is flattened onto this so it has no alpha channel at
+// all: WhatsApp re-encodes shared images to JPEG and composites every
+// transparent pixel to solid black (confirmed on a real received file),
+// which would otherwise turn the card's rounded corners and torn bottom
+// edge into black artifacts — or, when the whole capture was transparent
+// (the bug below), into an entirely black image.
+const SHARE_BACKDROP = '#F7F2E7'
 
 // The exact light-theme values from src/tokens.css's base :root block —
 // every custom property the Action Card and its buttons actually consume.
@@ -38,9 +47,10 @@ const LIGHT_CARD_TOKENS = {
  * Clones `node`, pins it to the light palette regardless of the live page's
  * current theme, and lays it out off-screen (not display:none/
  * visibility:hidden — html-to-image needs a real layout box to measure).
- * Caller must remove the returned element from the DOM when done.
+ * Returns the clone to capture plus the wrapper the caller must remove from
+ * the DOM when done.
  * @param {HTMLElement} node
- * @returns {HTMLElement}
+ * @returns {{ clone: HTMLElement, wrapper: HTMLElement }}
  */
 function prepareLightClone(node) {
   const clone = node.cloneNode(true)
@@ -57,11 +67,43 @@ function prepareLightClone(node) {
   // this line, the clone's background correctly forced to light while its
   // text stayed the live theme's color — invisible on a light background).
   clone.style.color = 'var(--ink)'
-  clone.style.position = 'fixed'
-  clone.style.top = '0'
-  clone.style.left = '-99999px'
-  document.body.appendChild(clone)
-  return clone
+
+  // Strip interactive-only controls — same exclusion list the print
+  // stylesheet already uses (ActionCard.css's `@media print`), reused here
+  // rather than invented fresh: Listen/Open/Save/Share buttons do nothing
+  // in a static image and shouldn't appear in one (confirmed live: a real
+  // share came back with the full "Open ↗ / Save / Share on WhatsApp"
+  // button stack baked into the picture).
+  clone.querySelectorAll('.listen-btn, .step-act, .receipt-actions').forEach((el) => el.remove())
+
+  // .receipt's paper-grain texture is an SVG data-URL whose <rect> has no
+  // fill and relies on filter="url(#n)" to become faint noise. Inside
+  // html-to-image's own SVG-as-image render that filter reference does not
+  // resolve, so the rect paints with SVG's default fill — solid black —
+  // tiled over the whole card, hiding the dark ink text (confirmed in a
+  // headless Chrome capture in *light* colour scheme: 1.46M near-black
+  // pixels with the grain, 102 without). Drop it for the share render,
+  // exactly as the print stylesheet already does; at 4.5% alpha it is
+  // invisible after WhatsApp's JPEG re-encode anyway.
+  clone.style.backgroundImage = 'none'
+
+  // Off-screen placement goes on a WRAPPER, never on the clone itself.
+  // html-to-image copies every *computed* style of the captured node onto
+  // its internal copy inside an SVG <foreignObject>, so `position: fixed;
+  // left: -99999px` set directly on the clone was carried into the capture
+  // and laid the card out 99999px outside the SVG viewport — a fully
+  // transparent PNG (confirmed: 0 opaque pixels, identical byte size to a
+  // blank canvas of the same dimensions). The wrapper is not part of the
+  // capture, so the clone keeps .receipt's own `position: relative` and
+  // renders at 0,0.
+  const wrapper = document.createElement('div')
+  wrapper.style.position = 'fixed'
+  wrapper.style.top = '0'
+  wrapper.style.left = '-99999px'
+  wrapper.style.width = `${node.getBoundingClientRect().width}px`
+  wrapper.appendChild(clone)
+  document.body.appendChild(wrapper)
+  return { clone, wrapper }
 }
 
 /**
@@ -92,6 +134,31 @@ function withTimeout(promise, ms) {
 }
 
 /**
+ * Waits for webfonts to finish loading and for the browser to paint at
+ * least one frame before capturing. Capturing before `document.fonts.ready`
+ * settles is a documented way to get an incomplete canvas from this library
+ * (bubkoo/html-to-image issues #488, #155), and `renderCardAsFile` fires
+ * from a `useEffect` on the card's mount — the earliest possible moment,
+ * racing the self-hosted Devanagari webfont's load. Cheap insurance, kept.
+ *
+ * Note: this was NOT the cause of the real-device "solid black image"
+ * report — that was a fully transparent capture (see prepareLightClone)
+ * that WhatsApp's JPEG re-encode turned black. Also: requestAnimationFrame
+ * never fires in a hidden/background tab, so this (and html-to-image's own
+ * internal rAF) can stall there — which is exactly what RENDER_TIMEOUT_MS
+ * guards against.
+ * @returns {Promise<void>}
+ */
+async function waitForPaintReady() {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+  // Two rAFs: the first callback runs before the next paint, the second
+  // runs only after that paint has actually happened.
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
+/**
  * Renders `cardNode` to a shareable PNG File, or null if rendering fails or
  * exceeds RENDER_TIMEOUT_MS. Safe to call ahead of time (e.g. in a
  * background effect) so a later `shareCard()` call already has a
@@ -100,15 +167,31 @@ function withTimeout(promise, ms) {
  * @returns {Promise<File|null>}
  */
 export async function renderCardAsFile(cardNode) {
-  const clone = prepareLightClone(cardNode)
+  const { clone, wrapper } = prepareLightClone(cardNode)
   try {
-    const dataUrl = await withTimeout(toPng(clone, { pixelRatio: 2 }), RENDER_TIMEOUT_MS)
-    const blob = await (await fetch(dataUrl)).blob()
+    const rendered = await withTimeout(
+      waitForPaintReady().then(() => toCanvas(clone, { pixelRatio: 2 })),
+      RENDER_TIMEOUT_MS,
+    )
+    // Flatten onto an opaque backdrop (see SHARE_BACKDROP). Not done via
+    // html-to-image's own `backgroundColor` option: that also overwrites the
+    // captured node's background-color, which would repaint the card's
+    // white paper surface as the page colour.
+    const flat = document.createElement('canvas')
+    flat.width = rendered.width
+    flat.height = rendered.height
+    const ctx = flat.getContext('2d')
+    ctx.fillStyle = SHARE_BACKDROP
+    ctx.fillRect(0, 0, flat.width, flat.height)
+    ctx.drawImage(rendered, 0, 0)
+    const blob = await new Promise((resolve, reject) =>
+      flat.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob-null'))), 'image/png'),
+    )
     return new File([blob], 'vote-sahayak-card.png', { type: 'image/png' })
   } catch {
     return null
   } finally {
-    clone.remove()
+    wrapper.remove()
   }
 }
 
