@@ -14,10 +14,12 @@
          nothing here survives into the app. Self-contained by design: the
          only tokens the app needs at this instant are duplicated inline from
          src/tokens.css, no font/image/CSS fetch. No spinner, no progress bar,
-         no timer motif (project rule) — the monogram settles into place once
-         like an ink stamp landing (echoes the seal on Action Cards, see
-         src/components/Seal.jsx), not a repeating loop, so it never reads as
-         a "still working" indicator. Stops under reduced-motion. -->
+         no timer motif (project rule) — the monogram lands hard and settles
+         once, like an ink stamp striking paper (echoes the seal on Action
+         Cards, see src/components/Seal.jsx), then the name reveals right
+         after impact. A single deliberate motion, not a repeating loop, so
+         it never reads as a "still working" indicator. Stops under
+         reduced-motion. -->
     <style>
       html { background: #F7F2E7; }
       body { margin: 0; background: #F7F2E7; color: #211C15; }
@@ -57,10 +59,10 @@
         }
       }
       .vs-boot svg {
-        width: 44px;
-        height: 44px;
+        width: 60px;
+        height: 60px;
         display: block;
-        animation: vs-boot-stamp .5s cubic-bezier(.22, 1, .36, 1) .15s backwards;
+        animation: vs-boot-stamp .6s cubic-bezier(.22, 1, .36, 1) .1s backwards;
       }
       .vs-boot-name {
         font-size: 17px;
@@ -68,6 +70,8 @@
         letter-spacing: .01em;
         line-height: 1.25;
         margin: 0;
+        opacity: 0;
+        animation: vs-boot-reveal .3s ease-out .35s forwards;
       }
       .vs-boot-name-hi {
         display: block;
@@ -89,13 +93,15 @@
       }
       @keyframes vs-boot-in { to { opacity: 1; } }
       @keyframes vs-boot-stamp {
-        0% { transform: scale(1.3); }
-        60% { transform: scale(.96); }
+        0% { transform: scale(1.65); }
+        55% { transform: scale(.82); }
         100% { transform: scale(1); }
       }
+      @keyframes vs-boot-reveal { to { opacity: 1; } }
       @media (prefers-reduced-motion: reduce) {
         .vs-boot { opacity: 1; animation: none; }
         .vs-boot svg { animation: none; }
+        .vs-boot-name { opacity: 1; animation: none; }
       }
     </style>
   </head>
