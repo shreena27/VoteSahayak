@@ -6,10 +6,11 @@
 // later can't sink the demo (PRD §26) — this file has to stand on its own,
 // permanently, as the fallback path even after RAG lands.
 //
-// Chip set matches the locked mockup (vote-sahayak-mockups-v1.html, screen
-// 5b) exactly — same 5 questions, same order. Answers are new (the mockup
-// only fully worked one example, the Aadhaar/hyphen question, which is
-// reused here as chip 3), but every fact traces to this project's real
+// Chip set is based on the locked mockup (vote-sahayak-mockups-v1.html,
+// screen 5b), same order, plus one addition: the mockup only fully worked
+// one example — the Aadhaar/hyphen question — and this file promotes it to
+// its own chip (id `aadhaar-mismatch`, position 3), so there are 6 chips
+// here, not the mockup's 5. Every fact traces to this project's real
 // research; see the `source_en`/`source_hi` on each entry.
 //
 // `id` doubles as: the chip's own key, the answer message's key, and the
@@ -25,6 +26,8 @@
  * @property {string} answer_hi
  * @property {string} [source_en] - shown as a small citation line under the answer, matching msg-bot's .src treatment. Omitted for answers that are this app's own already-reviewed content (nothing new to cite).
  * @property {string} [source_hi]
+ * @property {string} [link_url] - when set, renders a real tappable outbound link (matching ActionCard's step-act treatment, with the same trackOfficialLinkTapped tracking) instead of just naming the destination in prose.
+ * @property {string} [verified_on] - ISO date; set only when the answer states an as-of fact (e.g. current SIR figures) that can actually go stale, so it gets the same malformed/future/stale checks as a card's verified_on via validateChatChips. Answers whose source is a citation (a law, a permanent portal) rather than a point-in-time fact don't need this.
  */
 
 /** @type {ChatChip[]} */
@@ -32,11 +35,11 @@ export const CHAT_CHIPS = [
   {
     id: 'not-ordinarily-resident',
     question_en: 'Am I a citizen if it says "not ordinarily resident"?',
-    question_hi: 'अगर लिखा है "सामान्य निवासी नहीं", तो क्या मैं नागरिक नहीं हूं?',
+    question_hi: 'अगर लिखा है "सामान्य निवासी नहीं", तो क्या मैं नागरिक हूं?',
     answer_en:
-      'Yes — "not ordinarily resident" is about where you currently live, not about citizenship. It usually means the record shows you\'ve moved away from the address you\'re registered at, which is common for migrants and students. It is never a citizenship question. If this is your situation, Form 8 can update your address.',
+      'It\'s not about citizenship — "not ordinarily resident" is about where you currently live, not who you are. It usually means the record shows you\'ve moved away from the address you\'re registered at, which is common for migrants and students. If this is your situation, Form 8 can update your address.',
     answer_hi:
-      'हां — "सामान्य निवासी नहीं" का मतलब है कि आप अभी उस पते पर नहीं रहते जहां आप पंजीकृत हैं, यह नागरिकता का सवाल नहीं है। यह प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
+      'यह नागरिकता का सवाल नहीं है — "सामान्य निवासी नहीं" का मतलब है कि आप अभी उस पते पर नहीं रहते जहां आप पंजीकृत हैं, यह इस बारे में नहीं कि आप कौन हैं। यह प्रवासी मज़दूरों और छात्रों के साथ आम है। अगर यह आपकी स्थिति है, तो Form 8 से पता अपडेट किया जा सकता है।',
     source_en: 'Research finding, Moderate Confidence — not an official ECI definition',
     source_hi: 'शोध निष्कर्ष, मध्यम विश्वसनीयता — यह ECI की आधिकारिक परिभाषा नहीं है',
   },
@@ -57,8 +60,8 @@ export const CHAT_CHIPS = [
       "Yes, it can — even a small mismatch can block your SIR registration. The Supreme Court has directed ECI to also accept Aadhaar, EPIC, and Ration Card as valid ID during SIR, but the name still has to match your voter roll entry.\n1. Compare your voter ID name to your Aadhaar name.\n2. If they differ, fill Form 8 on the NVSP website.",
     answer_hi:
       'हां, फर्क पड़ सकता है — छोटा सा मेल न होना भी SIR पंजीकरण में रुकावट डाल सकता है। सुप्रीम कोर्ट ने ECI को SIR के दौरान आधार, EPIC और राशन कार्ड को भी मान्य ID के रूप में स्वीकार करने का निर्देश दिया है, लेकिन नाम आपके वोटर रोल की एंट्री से मेल खाना चाहिए।\n1. अपने वोटर ID के नाम की तुलना आधार के नाम से करें।\n2. अगर फर्क है, तो NVSP वेबसाइट पर Form 8 भरें।',
-    source_en: 'Association for Democratic Reforms v. ECI, 2026',
-    source_hi: 'एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI, 2026',
+    source_en: 'Supreme Court directive, Association for Democratic Reforms v. ECI',
+    source_hi: 'सुप्रीम कोर्ट का निर्देश, एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI',
   },
   {
     id: 'panchayat',
@@ -79,6 +82,7 @@ export const CHAT_CHIPS = [
       'आप अपना E-EPIC (डिजिटल वोटर ID) सीधे आधिकारिक पोर्टल से डाउनलोड कर सकते हैं: अपने EPIC नंबर या पंजीकृत मोबाइल से लॉगिन करें, फिर e-EPIC डाउनलोड का विकल्प खोजें। यह ऐप खुद डाउनलोड नहीं करता — यह आपको असली पेज पर भेज रहा है।',
     source_en: 'Official portal: voters.eci.gov.in',
     source_hi: 'आधिकारिक पोर्टल: voters.eci.gov.in',
+    link_url: 'https://voters.eci.gov.in/',
   },
   {
     id: 'what-is-sir',
@@ -88,8 +92,9 @@ export const CHAT_CHIPS = [
       "SIR (Special Intensive Revision) is a periodic recheck of the voter list. Phase II finished around April 2026 — net 5.2 crore names were removed across 12 states and 3 union territories, and that figure already accounts for about 2 crore names added back on appeal. If you're not sure whether it affected you, you can check your name directly from the home screen.",
     answer_hi:
       'SIR (विशेष गहन पुनरीक्षण) वोटर सूची की एक समय-समय पर होने वाली जांच है। चरण II लगभग अप्रैल 2026 में पूरा हुआ — 12 राज्यों और 3 केंद्र शासित प्रदेशों में अंत में 5.2 करोड़ नाम हटाए गए, और अपील पर वापस जोड़े गए लगभग 2 करोड़ नाम इस संख्या में पहले से घटाए जा चुके हैं। अगर आपको यकीन नहीं है कि इसका असर आप पर पड़ा, तो होम स्क्रीन से सीधे अपना नाम जांच सकते हैं।',
-    source_en: 'Election Commission of India · verified 1 Sep 2026',
-    source_hi: 'भारत निर्वाचन आयोग · सत्यापित 1 सितंबर 2026',
+    source_en: 'Election Commission of India',
+    source_hi: 'भारत निर्वाचन आयोग',
+    verified_on: '2026-09-01',
   },
 ]
 

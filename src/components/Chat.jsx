@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage, useTranslation } from '../i18n/hooks.js'
 import { formatDisplayDate } from '../content/schema.js'
-import { trackChatOpened, trackChatAsked, trackChatFallback } from '../lib/analytics.js'
+import { trackChatOpened, trackChatAsked, trackChatFallback, trackOfficialLinkTapped } from '../lib/analytics.js'
 import { CHAT_CHIPS, CHAT_CHIPS_BY_ID } from '../content/chatContent.js'
 import updates from '../content/updates.json'
 import './shared.css'
@@ -45,7 +45,7 @@ export function Chat({ onClose, onOpenSir }) {
   const headingRef = useRef(null)
   const msgsRef = useRef(null)
   const inputRef = useRef(null)
-  const [messages, setMessages] = useState(() => buildInitialMessages(activeLang, update, t))
+  const [messages, setMessages] = useState(() => buildInitialMessages(update))
   const [inputValue, setInputValue] = useState('')
   const [listening, setListening] = useState(false)
   const recognitionRef = useRef(null)
@@ -72,13 +72,8 @@ export function Chat({ onClose, onOpenSir }) {
     trackChatAsked({ chip: chipId })
     setMessages((prev) => [
       ...prev,
-      { id: nextMessageId(), type: 'user', text: activeLang === 'hi' ? chip.question_hi : chip.question_en },
-      {
-        id: nextMessageId(),
-        type: 'bot',
-        text: activeLang === 'hi' ? chip.answer_hi : chip.answer_en,
-        source: activeLang === 'hi' ? chip.source_hi : chip.source_en,
-      },
+      { id: nextMessageId(), type: 'user-chip', chipId },
+      { id: nextMessageId(), type: 'bot-chip', chipId },
     ])
   }
 
@@ -89,8 +84,8 @@ export function Chat({ onClose, onOpenSir }) {
     trackChatFallback()
     setMessages((prev) => [
       ...prev,
-      { id: nextMessageId(), type: 'user', text },
-      { id: nextMessageId(), type: 'honest', text: t('chat.honestFallback'), note: t('chat.honestFallbackNote') },
+      { id: nextMessageId(), type: 'user-text', text },
+      { id: nextMessageId(), type: 'honest' },
     ])
     setInputValue('')
   }
@@ -189,16 +184,16 @@ export function Chat({ onClose, onOpenSir }) {
   )
 }
 
-function buildInitialMessages(activeLang, update, t) {
-  const msgs = [{ id: nextMessageId(), type: 'bot', text: t('chat.greeting') }]
+// Messages store language-independent references (chip ids, the raw update
+// object, or the user's own typed text) rather than pre-resolved strings —
+// ChatMessage resolves display text from the CURRENT active language at
+// render time, so toggling language mid-session re-renders the whole
+// transcript correctly instead of leaving earlier turns stuck in whichever
+// language was active when they were first added.
+function buildInitialMessages(update) {
+  const msgs = [{ id: nextMessageId(), type: 'greeting' }]
   if (update) {
-    msgs.push({
-      id: nextMessageId(),
-      type: 'update',
-      headline: activeLang === 'hi' ? update.headline_hi : update.headline_en,
-      text: activeLang === 'hi' ? update.text_hi : update.text_en,
-      verifiedOn: update.verified_on,
-    })
+    msgs.push({ id: nextMessageId(), type: 'update', update })
   }
   return msgs
 }
@@ -208,16 +203,29 @@ function ChatMessage({ message, onMiniAct }) {
   const { lang } = useLanguage()
   const activeLang = lang ?? 'en'
 
-  if (message.type === 'user') return <div className="msg-user">{message.text}</div>
+  if (message.type === 'user-text') return <div className="msg-user">{message.text}</div>
+
+  if (message.type === 'user-chip') {
+    const chip = CHAT_CHIPS_BY_ID[message.chipId]
+    if (!chip) return null
+    return <div className="msg-user">{activeLang === 'hi' ? chip.question_hi : chip.question_en}</div>
+  }
+
+  if (message.type === 'greeting') {
+    return <div className="msg-bot">{t('chat.greeting')}</div>
+  }
 
   if (message.type === 'update') {
+    const { update } = message
+    const headline = activeLang === 'hi' ? update.headline_hi : update.headline_en
+    const text = activeLang === 'hi' ? update.text_hi : update.text_en
     return (
       <div className="msg-update">
-        <b>{message.headline}</b>
-        {message.text}
-        {message.verifiedOn && (
+        <b>{headline}</b>
+        {text}
+        {update.verified_on && (
           <span className="verified-mini">
-            {t('card.verified')} {formatDisplayDate(message.verifiedOn, activeLang)}
+            {t('card.verified')} {formatDisplayDate(update.verified_on, activeLang)}
           </span>
         )}
         <div>
@@ -235,22 +243,44 @@ function ChatMessage({ message, onMiniAct }) {
   if (message.type === 'honest') {
     return (
       <div className="msg-honest">
-        {message.text}
-        {message.note && <span className="src honest-note">{message.note}</span>}
+        {t('chat.honestFallback')}
+        <span className="src honest-note">{t('chat.honestFallbackNote')}</span>
       </div>
     )
   }
 
-  // 'bot'
+  // 'bot-chip'
+  const chip = CHAT_CHIPS_BY_ID[message.chipId]
+  if (!chip) return null
+  const text = activeLang === 'hi' ? chip.answer_hi : chip.answer_en
+  const source = activeLang === 'hi' ? chip.source_hi : chip.source_en
   return (
     <div className="msg-bot">
-      {message.text.split('\n').map((line, i) => (
+      {text.split('\n').map((line, i) => (
         <span key={i}>
           {i > 0 && <br />}
           {line}
         </span>
       ))}
-      {message.source && <span className="src">{t('chat.sourcePrefix')} {message.source}</span>}
+      {chip.link_url && (
+        <div>
+          <a
+            className="step-act"
+            href={chip.link_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackOfficialLinkTapped(chip.id)}
+          >
+            {t('card.open')}
+          </a>
+        </div>
+      )}
+      {source && (
+        <span className="src">
+          {t('chat.sourcePrefix')} {source}
+          {chip.verified_on && <> · {t('card.verified')} {formatDisplayDate(chip.verified_on, activeLang)}</>}
+        </span>
+      )}
     </div>
   )
 }
