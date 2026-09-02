@@ -34,12 +34,33 @@ export function saveCard(cardPayload) {
   }
 }
 
+// A snapshot is stored forever, never rewritten (see saveCard's ERD note) —
+// so a snapshot written by an older build can still be read back after a
+// later schema change. Home.jsx and ActionCard.jsx read these fields
+// unguarded (headline/meaning/timeline text, and array methods on steps/
+// rejection_tags/document_requirements), so a missing or wrong-typed field
+// here would white-screen the offline saved-cards view with no error
+// boundary to catch it. Drop the entry instead of rendering it broken.
+function isRenderableSnapshot(entry) {
+  const p = entry?.payload_snapshot
+  return (
+    typeof entry?.id === 'string' &&
+    typeof entry?.saved_on === 'string' &&
+    p != null &&
+    typeof p.headline_en === 'string' &&
+    typeof p.headline_hi === 'string' &&
+    Array.isArray(p.steps) &&
+    Array.isArray(p.rejection_tags) &&
+    Array.isArray(p.document_requirements)
+  )
+}
+
 /** @returns {Array<{id: string, payload_snapshot: object, saved_on: string}>} */
 export function readSavedCards() {
   try {
     const raw = window.localStorage.getItem(SAVED_CARDS_KEY)
     const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
+    return Array.isArray(parsed) ? parsed.filter(isRenderableSnapshot) : []
   } catch {
     return []
   }

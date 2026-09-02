@@ -123,10 +123,10 @@ export const QA_BANK = [
     question_en: 'Will a small spelling mistake get my vote rejected outright?',
     question_hi: 'क्या स्पेलिंग की छोटी गलती से मेरा वोट पूरी तरह खारिज हो जाएगा?',
     answer_en:
-      "Not necessarily. Election law (Representation of the People Act 1951, Section 61) lets officials accept your identity another way for a small spelling mistake. The Supreme Court has also directed the Election Commission to avoid unfairly excluding eligible voters over this kind of issue. This isn't guaranteed — it depends on the polling officer.\n1. Fill Form 8 now to fix it anyway.\n2. Don't rely on this rule alone.",
+      "Not necessarily. Election Commission rules let a polling officer accept an alternate ID document (like Aadhaar or a passport) to confirm your identity despite a small spelling mismatch. The Supreme Court has also directed the Election Commission to avoid unfairly excluding eligible voters over this kind of issue. This isn't guaranteed — it depends on the polling officer.\n1. Fill Form 8 now to fix it anyway.\n2. Don't rely on this rule alone.",
     answer_hi:
-      'ज़रूरी नहीं। चुनाव कानून (जन प्रतिनिधित्व अधिनियम 1951, धारा 61) अधिकारियों को छोटी स्पेलिंग गलती पर आपकी पहचान किसी और तरह से स्वीकार करने देता है। सुप्रीम कोर्ट ने चुनाव आयोग को इस तरह के मामलों में योग्य मतदाताओं को गलत तरीके से बाहर न करने का निर्देश भी दिया है। यह गारंटी नहीं है — यह पोलिंग अधिकारी पर निर्भर करता है।\n1. फिर भी इसे ठीक करने के लिए अभी Form 8 भरें।\n2. सिर्फ इस नियम पर भरोसा न करें।',
-    source_en: 'Representation of the People Act 1951, Section 61 (The Hindu); Supreme Court directive, Association for Democratic Reforms v. ECI, WP(C) 640/2025',
-    source_hi: 'जन प्रतिनिधित्व अधिनियम 1951, धारा 61 (The Hindu); सुप्रीम कोर्ट का निर्देश, एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI, WP(C) 640/2025',
+      'ज़रूरी नहीं। चुनाव आयोग के नियम पोलिंग अधिकारी को छोटी स्पेलिंग गलती होने पर भी कोई और पहचान दस्तावेज़ (जैसे आधार या पासपोर्ट) स्वीकार करके आपकी पहचान की पुष्टि करने देते हैं। सुप्रीम कोर्ट ने चुनाव आयोग को इस तरह के मामलों में योग्य मतदाताओं को गलत तरीके से बाहर न करने का निर्देश भी दिया है। यह गारंटी नहीं है — यह पोलिंग अधिकारी पर निर्भर करता है।\n1. फिर भी इसे ठीक करने के लिए अभी Form 8 भरें।\n2. सिर्फ इस नियम पर भरोसा न करें।',
+    source_en: "ECI's alternate identity document procedure (The Hindu); Supreme Court directive, Association for Democratic Reforms v. ECI, WP(C) 640/2025",
+    source_hi: 'ECI की वैकल्पिक पहचान दस्तावेज़ प्रक्रिया (The Hindu); सुप्रीम कोर्ट का निर्देश, एसोसिएशन फॉर डेमोक्रेटिक रिफॉर्म्स बनाम ECI, WP(C) 640/2025',
   },
 ]
