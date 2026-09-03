@@ -12,6 +12,7 @@ import {
   trackCardListened,
   trackOfficialLinkTapped,
 } from '../lib/analytics.js'
+import './shared.css'
 import './ActionCard.css'
 
 const STEP_ICON_MAP = {
@@ -57,6 +58,9 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const headlineRef = useRef(null)
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
   const [speaking, setSpeaking] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [checkedDocs, setCheckedDocs] = useState(() => new Set())
+  const [screen, setScreen] = useState('prepare')
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -95,7 +99,19 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   // without unmounting it.
   useEffect(() => {
     headlineRef.current?.focus()
+    setDetailsOpen(false)
+    setCheckedDocs(new Set())
+    setScreen('prepare')
   }, [card.id])
+
+  // Moves focus to whichever screen becomes active — mirrors the
+  // headline-focus pattern above, but fires on `screen` changes rather than
+  // card.id changes.
+  const stepsHeadingRef = useRef(null)
+  useEffect(() => {
+    if (screen === 'steps') stepsHeadingRef.current?.focus()
+    else headlineRef.current?.focus()
+  }, [screen])
 
   // Best-effort background render so Share can respond within the same
   // click's user-activation gesture — iOS Safari requires navigator.share()
@@ -144,6 +160,15 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     if (saved) trackCardSaved(card.id)
   }
 
+  function toggleDocChecked(docId) {
+    setCheckedDocs((prev) => {
+      const next = new Set(prev)
+      if (next.has(docId)) next.delete(docId)
+      else next.add(docId)
+      return next
+    })
+  }
+
   async function handleShare() {
     const officialLink = card.steps.find((s) => s.action_kind === 'url')?.action_value
     const waText = `${headline}\n\n${meaning}${officialLink ? `\n\n${officialLink}` : ''}`
@@ -161,6 +186,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   return (
     <div className="receipt" ref={cardRef}>
       <div className="receipt-inner">
+      <div hidden={screen !== 'prepare'}>
         <span className="receipt-tag">{tagSuffix ? `${tag} · ${tagSuffix}` : tag}</span>
         <h2 ref={headlineRef} tabIndex={-1}>
           {headline}
@@ -180,41 +206,94 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
           </div>
         ))}
 
-        <div className="receipt-row stack">
-          <span className="k">{t('card.timeline')}</span>
-          <span className="v">{timeline}</span>
-        </div>
-
-        {card.rejection_tags.length > 0 && (
-          <>
-            <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
-            <div className="receipt-rejects">
-              {card.rejection_tags.map((tagItem) => (
-                <span key={tagItem.id} className="reject-tag">
-                  {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
-                </span>
-              ))}
+        <button
+          type="button"
+          className="disclose"
+          aria-expanded={detailsOpen}
+          aria-controls={`details-panel-${card.id}`}
+          onClick={() => setDetailsOpen((v) => !v)}
+        >
+          <span className="disclose-label">{detailsOpen ? t('card.hideDetails') : t('card.showDetails')}</span>
+          <svg className="chev" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 5.5l4 4 4-4" />
+          </svg>
+        </button>
+        <div id={`details-panel-${card.id}`} className="panel" hidden={!detailsOpen}>
+          <div className="receipt-meta">
+            <div className="receipt-row stack">
+              <span className="k">{t('card.timeline')}</span>
+              <span className="v">{timeline}</span>
             </div>
-          </>
-        )}
+            <div className="receipt-row">
+              <span className="k">{t('card.verified')}</span>
+              <span className="v num">{formatDisplayDate(card.verified_on, activeLang)}</span>
+            </div>
+            <div className="receipt-row stack">
+              <span className="v">{activeLang === 'hi' ? card.source_line_hi : card.source_line}</span>
+            </div>
+          </div>
+
+          {card.rejection_tags.length > 0 && (
+            <>
+              <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
+              <div className="receipt-rejects">
+                {card.rejection_tags.map((tagItem) => {
+                  const label = activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en
+                  const match = label.match(/^(.*)(\([^)]+\))\s*$/)
+                  return (
+                    <span key={tagItem.id} className="reject-tag">
+                      {match ? match[1].trim() : label}
+                      {match && <span className="reject-note">{match[2]}</span>}
+                    </span>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </div>
 
         {card.document_requirements.length > 0 && (
           <>
-            <div className="doclist-heading">{t('card.documentsNeeded')}</div>
+            <div className="doclist-heading has-progress">
+              <span>{t('card.documentsNeeded')}</span>
+              <DocProgressRing total={card.document_requirements.length} checked={checkedDocs.size} label={t('card.ready')} />
+            </div>
             <ul className="receipt-doclist">
               {card.document_requirements.map((doc) => (
                 <li key={doc.id}>
-                  <span className="box" />
-                  <span>
+                  <input
+                    type="checkbox"
+                    id={`doc-check-${card.id}-${doc.id}`}
+                    className="box"
+                    checked={checkedDocs.has(doc.id)}
+                    onChange={() => toggleDocChecked(doc.id)}
+                  />
+                  <label htmlFor={`doc-check-${card.id}-${doc.id}`}>
                     {activeLang === 'hi' ? doc.label_hi : doc.label_en}
                     {doc.any_one_of && <span className="any-one-of">{t('card.documentsAnyOneOf')}</span>}
-                  </span>
+                  </label>
                 </li>
               ))}
             </ul>
           </>
         )}
 
+        <div className="receipt-actions">
+          <button type="button" className="btn-primary" onClick={() => setScreen('steps')}>
+            {t('wizard.continue')}
+          </button>
+        </div>
+      </div>
+
+      <div hidden={screen !== 'steps'}>
+        <div className="app-header card-steps-header">
+          <button type="button" className="back" onClick={() => setScreen('prepare')} aria-label={t('card.backToPrepare')}>
+            ‹
+          </button>
+          <h2 className="title" ref={stepsHeadingRef} tabIndex={-1}>
+            {t('card.steps')}
+          </h2>
+        </div>
         <ol className="receipt-steps">
           {orderedSteps.map((step, i) => (
             <li key={step.id}>
@@ -288,6 +367,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
           </button>
         </div>
       </div>
+      </div>
     </div>
   )
 }
@@ -297,5 +377,33 @@ function WhatsAppIcon() {
     <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
       <path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3 0 .1 0 .5-.2 1.1z" />
     </svg>
+  )
+}
+
+const RING_RADIUS = 7.5
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
+
+function DocProgressRing({ total, checked, label }) {
+  const offset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * checked) / total
+  return (
+    <span className="ready">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <circle className="track" cx="10" cy="10" r={RING_RADIUS} fill="none" strokeWidth="2.4" />
+        <circle
+          className="fill"
+          cx="10"
+          cy="10"
+          r={RING_RADIUS}
+          fill="none"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeDasharray={RING_CIRCUMFERENCE}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <span aria-live="polite">
+        <span className="num">{checked}</span>/<span className="num">{total}</span> {label}
+      </span>
+    </span>
   )
 }

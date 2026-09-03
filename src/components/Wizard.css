@@ -73,6 +73,13 @@
   color: var(--on-accent);
   font-weight: 600;
 }
+.chip-check {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
 .chip-row.stacked .chip {
   width: 100%;
   text-align: center;

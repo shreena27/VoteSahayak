@@ -1,0 +1,510 @@
+<title>ActionCard Refresh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400..800&display=swap">
+<style>
+/* ---- Tokens: copied verbatim from src/tokens.css (light on :root, dark twice) ---- */
+:root{
+  --bg:#F7F2E7; --surface:#FFFFFF; --surface-alt:#EFE7D3; --surface-sunken:#EDE4CE;
+  --ink:#211C15; --ink-secondary:#57503E; --ink-muted:#6E6752;
+  --border:#E0D4B4; --border-strong:#CBBB8E;
+  --accent:#4A2E8C; --accent-ink:#3A2470; --accent-soft:#ECE6F7; --on-accent:#FFFFFF;
+  --amber:#B07A1E; --amber-soft:#F7EDD8; --amber-ink:#8C6018;
+  --ok:#3E7A57; --ok-soft:#E7F1EA; --on-ok:#FFFFFF;
+  --danger:#A6433A; --danger-soft:#F5E6E4;
+  --neutral:#6B6558; --neutral-soft:#EAE4D5;
+  --shadow:0 1px 2px rgba(33,28,21,.06), 0 8px 20px -12px rgba(33,28,21,.18);
+  --shadow-lift:0 2px 4px rgba(33,28,21,.08), 0 16px 32px -16px rgba(33,28,21,.28);
+  --shadow-hover:0 4px 8px rgba(33,28,21,.1), 0 24px 44px -18px rgba(33,28,21,.32);
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+    --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+    --border:#3B3424; --border-strong:#4E4530;
+    --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+    --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+    --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+    --danger:#D98077; --danger-soft:#3A211E;
+    --neutral:#A39C89; --neutral-soft:#2A251A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+    --shadow-hover:0 4px 8px rgba(0,0,0,.4), 0 24px 44px -18px rgba(0,0,0,.65);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161310; --surface:#211C15; --surface-alt:#2A2318; --surface-sunken:#1C170F;
+  --ink:#F3EEE1; --ink-secondary:#C7BEA6; --ink-muted:#9A937E;
+  --border:#3B3424; --border-strong:#4E4530;
+  --accent:#A48DEE; --accent-ink:#C1AEFA; --accent-soft:#2A2340; --on-accent:#1B1430;
+  --amber:#D9A23B; --amber-soft:#382B14; --amber-ink:#E7BB63;
+  --ok:#6FB88C; --ok-soft:#1E3327; --on-ok:#10241A;
+  --danger:#D98077; --danger-soft:#3A211E;
+  --neutral:#A39C89; --neutral-soft:#2A251A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.35), 0 16px 32px -16px rgba(0,0,0,.6);
+  --shadow-hover:0 4px 8px rgba(0,0,0,.4), 0 24px 44px -18px rgba(0,0,0,.65);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans Devanagari',-apple-system,'Segoe UI',sans-serif;
+  margin:0; padding:0;
+  font-variant-numeric:tabular-nums;
+  font-size:14px;
+}
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+/* ---- Review chrome (not part of the app) ---- */
+.review{max-width:960px; margin:0 auto; padding:28px 20px 56px;}
+.review-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:14px 24px; margin-bottom:26px;}
+.review-head h1{font-size:20px; margin:0 0 4px; font-weight:700; letter-spacing:-0.01em;}
+.review-head p{margin:0; color:var(--ink-secondary); font-size:13px; max-width:52ch; line-height:1.5;}
+.controls{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center;}
+.seg{display:inline-flex; border:1.5px solid var(--border-strong); border-radius:999px; padding:2px; background:var(--surface);}
+.seg button{border:0; background:transparent; color:var(--ink-secondary); font-size:12px; font-weight:600; padding:5px 11px; border-radius:999px; cursor:pointer;}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent);}
+.check{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--ink-secondary); cursor:pointer;}
+.check input{accent-color:var(--accent); width:15px; height:15px; margin:0;}
+
+.compare{display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); gap:36px 28px; align-items:start;}
+.col-label{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 auto 12px; max-width:420px; font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-muted);}
+.col-label .sub{font-weight:500; letter-spacing:0; text-transform:none; font-size:12px; color:var(--ink-muted);}
+.flow{max-width:420px; margin:0 auto;}
+
+.legend{max-width:720px; margin:40px auto 0; border-top:1px dashed var(--border-strong); padding-top:20px;}
+.legend h2{font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-muted); margin:0 0 12px;}
+.legend h2 + ol{margin-bottom:24px;}
+.legend ol{list-style:none; margin:0; padding:0; display:grid; gap:12px;}
+.legend li{display:flex; gap:12px; font-size:13px; line-height:1.55; color:var(--ink-secondary);}
+.legend li strong{color:var(--ink);}
+.legend .n{flex:none; width:20px; height:20px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:2px;}
+
+/* review-only annotation badge, toggleable */
+.annot{position:absolute; top:-9px; right:-4px; width:18px; height:18px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); border:1.5px solid var(--accent); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; line-height:1; z-index:1;}
+body.no-annot .annot{display:none;}
+
+/* ---- Ported from src/components/shared.css: the app's real header/back and Continue ---- */
+.app-header{padding:6px 0 14px; display:flex; align-items:center; gap:10px; position:relative;}
+.app-header .back{width:30px; height:30px; border-radius:999px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--ink-secondary); flex:none; background:var(--surface); cursor:pointer;}
+.app-header .title{margin:0; font-size:15px; font-weight:600;}
+.btn-primary{display:flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:var(--on-accent); border:none; border-radius:12px; padding:14px 18px; font-size:15px; font-weight:600; cursor:pointer; width:100%;}
+
+/* ---- .receipt: ported from src/components/ActionCard.css ---- */
+.receipt{
+  background:var(--surface);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.31 0 0 0 0 0.24 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  border:none; border-radius:16px 16px 0 0; position:relative;
+  box-shadow:var(--shadow-lift); padding-bottom:10px; max-width:420px; margin:0 auto;
+  transition:transform .18s ease-out, box-shadow .18s ease-out;
+  clip-path:polygon(
+    0 0, 100% 0, 100% calc(100% - 8px),
+    97.5% 100%, 95% calc(100% - 8px), 92.5% 100%, 90% calc(100% - 8px), 87.5% 100%,
+    85% calc(100% - 8px), 82.5% 100%, 80% calc(100% - 8px), 77.5% 100%,
+    75% calc(100% - 8px), 72.5% 100%, 70% calc(100% - 8px), 67.5% 100%,
+    65% calc(100% - 8px), 62.5% 100%, 60% calc(100% - 8px), 57.5% 100%,
+    55% calc(100% - 8px), 52.5% 100%, 50% calc(100% - 8px), 47.5% 100%,
+    45% calc(100% - 8px), 42.5% 100%, 40% calc(100% - 8px), 37.5% 100%,
+    35% calc(100% - 8px), 32.5% 100%, 30% calc(100% - 8px), 27.5% 100%,
+    25% calc(100% - 8px), 22.5% 100%, 20% calc(100% - 8px), 17.5% 100%,
+    15% calc(100% - 8px), 12.5% 100%, 10% calc(100% - 8px), 7.5% 100%,
+    5% calc(100% - 8px), 2.5% 100%, 0 calc(100% - 8px)
+  );
+}
+.receipt:hover{transform:translateY(-3px) rotate(-0.3deg); box-shadow:var(--shadow-hover);}
+.receipt::before{content:''; position:absolute; top:0; left:0; right:0; height:5px; background:repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 18px); opacity:.55;}
+.receipt-inner{padding:22px 18px 18px;}
+
+.receipt-tag{display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent-ink); background:var(--accent-soft); border-radius:5px; padding:4px 8px; margin-bottom:14px;}
+.receipt h2{font-size:19px; line-height:1.4; margin:0 0 4px; text-wrap:balance;}
+
+.listen-btn{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--border-strong); border-radius:999px; padding:7px 13px; font-size:12.5px; font-weight:600; color:var(--ink-secondary); background:var(--surface); cursor:pointer; margin:0 0 12px;}
+
+.receipt-meaning{background:var(--surface-alt); border-radius:11px; padding:13px 14px; font-size:13px; line-height:1.6; margin:14px 0;}
+
+.receipt-row{display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);}
+.receipt-row:last-child{border-bottom:none;}
+.receipt-row .k{font-size:12.5px; color:var(--ink-muted); flex:none; width:38%;}
+.receipt-row .v{font-size:13px; font-weight:600; text-align:right;}
+.receipt-row.stack{display:block;}
+.receipt-row.stack .k{display:block; width:auto; margin-bottom:5px;}
+.receipt-row.stack .v{display:block; text-align:left;}
+
+.receipt-rejects{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px;}
+.reject-tag{background:var(--amber-soft); color:var(--amber-ink); font-size:11px; font-weight:600; padding:5px 9px; border-radius:999px;}
+
+.doclist-heading{font-size:11.5px; font-weight:600; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.04em; margin:14px 0 8px;}
+
+.receipt-doclist{margin:0; padding:0; list-style:none;}
+.receipt-doclist li{display:flex; gap:9px; font-size:13px; padding:7px 0; border-bottom:1px dashed var(--border);}
+.receipt-doclist li:last-child{border:none;}
+.receipt-doclist .box{width:15px; height:15px; border:1.5px solid var(--border-strong); border-radius:4px; flex:none; margin-top:2px; background:transparent; padding:0;}
+.receipt-doclist .any-one-of{display:block; font-size:10.5px; color:var(--ink-muted); font-weight:600; text-transform:uppercase; letter-spacing:.03em; margin-top:2px;}
+
+.receipt-steps{margin:0; padding:0; list-style:none;}
+.receipt-steps li{display:flex; gap:10px; font-size:13px; line-height:1.5; margin-bottom:10px; flex-wrap:wrap;}
+.receipt-steps .n{flex:none; width:20px; height:20px; border-radius:999px; background:var(--accent); color:var(--on-accent); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+.receipt-steps .step-ico{flex:none; font-size:15px; width:22px; text-align:center;}
+.receipt-steps .body{flex:1; min-width:0;}
+.step-act{display:inline-flex; align-items:center; gap:5px; margin-top:6px; margin-right:6px; border:1.5px solid var(--accent); color:var(--accent-ink); border-radius:999px; padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer; background:var(--surface); text-decoration:none;}
+
+.stamp{display:inline-block; width:96px; height:96px; color:var(--accent-ink); transform:rotate(-8deg); margin:6px 0 12px;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 .45'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 .45'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)'/%3E%3C/svg%3E");}
+.stamp svg{width:100%; height:100%; display:block;}
+.stamp-row{display:flex; justify-content:flex-end; margin:2px 0 -6px;}
+.stamp-row .stamp{margin:0;}
+
+.receipt-footer{border-top:1px dashed var(--border-strong); margin-top:16px; padding-top:12px; display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:11.5px; color:var(--ink-muted);}
+
+.receipt-actions{display:flex; gap:8px; margin-top:16px;}
+.btn-wa{display:flex; align-items:center; justify-content:center; gap:8px; background:var(--ok); color:var(--on-ok); border:none; border-radius:12px; padding:11px 18px; font-size:13.5px; font-weight:600; cursor:pointer; width:100%;}
+
+/* ---- Refreshed variant: the three approved moves, the two-screen split, and the copy pass ---- */
+
+/* Move 3: key labels + numbers, slightly bolder, tabular figures */
+.receipt.v2 .receipt-row .k{font-weight:600; color:var(--ink-secondary); font-size:12px; letter-spacing:.01em;}
+.receipt.v2 .num{font-weight:700; font-variant-numeric:tabular-nums; color:var(--ink);}
+.receipt.v2 .reject-tag .num{color:inherit;}
+.receipt.v2 .receipt-footer .num{color:var(--ink-secondary);}
+
+/* Move 2: one meta block: timeline, verified date, source together */
+.receipt.v2 .receipt-meta{position:relative; border:1px dashed var(--border-strong); border-radius:10px; padding:2px 13px; margin:2px 0 0;}
+.receipt.v2 .receipt-meta .receipt-row{padding:9px 0;}
+.receipt.v2 .receipt-meta .receipt-row .v{font-weight:600;}
+.receipt.v2 .receipt-meta .receipt-row.stack .v{font-weight:500; line-height:1.5;}
+
+/* Move 1: "X of Y ready" ring on the checklist heading; list open by default */
+.receipt.v2 .doclist-heading.has-progress{position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:16px;}
+.receipt.v2 .ready{display:inline-flex; align-items:center; gap:6px; text-transform:none; letter-spacing:0; font-size:12px; color:var(--ink-secondary); font-weight:500;}
+.receipt.v2 .ready svg{width:20px; height:20px; display:block; transform:rotate(-90deg);}
+.receipt.v2 .ready .track{stroke:var(--border-strong);}
+.receipt.v2 .ready .fill{stroke:var(--accent); transition:stroke-dashoffset .25s ease-out;}
+.receipt.v2 .receipt-doclist .box{cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--on-accent);}
+.receipt.v2 .receipt-doclist .box svg{width:10px; height:10px; display:none;}
+.receipt.v2 .receipt-doclist .box[aria-checked="true"]{background:var(--accent); border-color:var(--accent);}
+.receipt.v2 .receipt-doclist .box[aria-checked="true"] svg{display:block;}
+
+/* Copy pass: caveat demoted to a footnote line inside the same chip */
+.receipt.v2 .receipt-rejects{position:relative;}
+.receipt.v2 .reject-tag{padding:6px 11px 7px; border-radius:12px; line-height:1.45;}
+.receipt.v2 .reject-note{display:block; font-size:10px; font-weight:500; color:var(--ink-muted); margin-top:2px;}
+
+/* "Show details" disclosure for the secondary info (meta block + rejection reasons) */
+.receipt.v2 .disclose{position:relative; display:flex; align-items:center; gap:10px; width:100%; margin:12px 0 0; padding:11px 0; background:transparent; border:0; border-top:1px dashed var(--border-strong); color:var(--accent-ink); font-size:12.5px; font-weight:700; cursor:pointer; text-align:left; border-radius:0;}
+.receipt.v2 .disclose .disclose-label{flex:1;}
+.receipt.v2 .disclose .chev{width:14px; height:14px; flex:none; transition:transform .2s ease-out;}
+.receipt.v2 .disclose[aria-expanded="true"] .chev{transform:rotate(180deg);}
+.receipt.v2 .panel{padding-bottom:4px;}
+.receipt.v2 .panel .doclist-heading{margin-top:12px;}
+
+/* Two-screen split */
+.receipt.v2 .receipt-actions{position:relative;}
+.screen[hidden]{display:none;}
+.receipt.v2.screen-2 .receipt-inner{padding-top:20px;}
+
+@media (prefers-reduced-motion: reduce){
+  .receipt{transition:none;}
+  .receipt:hover{transform:none;}
+  .receipt.v2 .ready .fill{transition:none;}
+  .receipt.v2 .disclose .chev{transition:none;}
+}
+</style>
+
+<div class="review">
+  <header class="review-head">
+    <div>
+      <h1>ActionCard Refresh</h1>
+      <p>The Form 8 parchi, as shipped today and refreshed: split into two screens (understand and prepare, then steps), the three approved moves, and a plain-language copy pass. Same tokens, same paper, every fact still reachable.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Theme">
+        <button type="button" data-theme-pick="system" aria-pressed="true">System</button>
+        <button type="button" data-theme-pick="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme-pick="dark" aria-pressed="false">Dark</button>
+      </div>
+      <div class="seg" role="group" aria-label="Refreshed screen">
+        <button type="button" data-screen="1" aria-pressed="true">Screen 1</button>
+        <button type="button" data-screen="2" aria-pressed="false">Screen 2</button>
+      </div>
+      <label class="check"><input type="checkbox" id="annotToggle" checked> Show change markers</label>
+    </div>
+  </header>
+
+  <div class="compare">
+
+    <!-- ================= CURRENT ================= -->
+    <section aria-labelledby="lbl-current">
+      <div class="col-label"><span id="lbl-current">As shipped</span><span class="sub">one screen · src/components/ActionCard.jsx</span></div>
+      <div class="receipt">
+        <div class="receipt-inner">
+          <span class="receipt-tag">Form Guide · Form 8</span>
+          <h2 tabindex="-1">Update your address — Form 8</h2>
+          <button type="button" class="listen-btn" aria-pressed="false">🔊 सुनें · Listen</button>
+
+          <div class="receipt-meaning">You moved, so your voter registration needs to move with you. This is normal and common — Form 8 covers exactly this, no other form needed.</div>
+
+          <div class="receipt-row stack">
+            <span class="k">Timeline</span>
+            <span class="v">Usually a few weeks. In one documented case (a former diplomat's public account) it took up to 6 months — treat that as a possibility, not a guarantee, and apply as early as you can.</span>
+          </div>
+
+          <div class="doclist-heading">Why applications like this get rejected</div>
+          <div class="receipt-rejects">
+            <span class="reject-tag">Not "ordinarily resident" — about 12–15% of cases (research estimate, not an official figure)</span>
+          </div>
+
+          <div class="doclist-heading">Documents needed</div>
+          <ul class="receipt-doclist">
+            <li><span class="box"></span><span>Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement)<span class="any-one-of">Any one of these</span></span></li>
+            <li><span class="box"></span><span>Your existing Voter ID (EPIC) card, if you have one</span></li>
+          </ul>
+
+          <ol class="receipt-steps">
+            <li><span class="n">1</span><span class="step-ico" aria-hidden="true">🔗</span><span class="body">Open Form 8 on the official portal<br><a class="step-act" href="#" onclick="return false">Open ↗</a></span></li>
+            <li><span class="n">2</span><span class="step-ico" aria-hidden="true">✏️</span><span class="body">Fill in your new address exactly as it appears on your proof of address<br></span></li>
+            <li><span class="n">3</span><span class="step-ico" aria-hidden="true">📮</span><span class="body">Submit online, or hand it to your local Booth Level Officer (BLO)<br></span></li>
+            <li><span class="n">4</span><span class="step-ico" aria-hidden="true">🔖</span><span class="body">Save this card so you have everything in one place<br><button type="button" class="step-act">Save</button></span></li>
+            <li><span class="n">5</span><span class="step-ico" aria-hidden="true">📤</span><span class="body">Share this card with anyone helping you<br><button type="button" class="step-act">Share on WhatsApp</button></span></li>
+          </ol>
+
+          <div class="stamp-row"><div class="stamp">
+            <svg viewBox="0 0 120 120" role="img" aria-label="VERIFIED 01 SEP 2026">
+              <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="3.5 4.2"/>
+              <circle cx="60" cy="60" r="49" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <defs><path id="arcA" d="M22.5,60 A37.5,37.5 0 0 1 97.5,60"/></defs>
+              <text font-size="9.8" font-weight="700" letter-spacing="2.2" fill="currentColor"><textPath href="#arcA" startOffset="50%" text-anchor="middle">VOTE SAHAYAK</textPath></text>
+              <text x="60" y="97" font-size="9" text-anchor="middle" fill="currentColor">★ ★ ★</text>
+              <text x="60" y="59" font-size="11.8" font-weight="800" text-anchor="middle" textLength="46" lengthAdjust="spacingAndGlyphs" fill="currentColor">VERIFIED</text>
+              <text x="60" y="72" font-size="7.6" font-weight="600" text-anchor="middle" textLength="44" lengthAdjust="spacingAndGlyphs" fill="currentColor">01 SEP 2026</text>
+            </svg>
+          </div></div>
+
+          <div class="receipt-footer">
+            <span>Source: Election Commission of India · Verified 1 Sep 2026</span>
+            <span>Helpline: 1950</span>
+          </div>
+
+          <div class="receipt-actions">
+            <button type="button" class="btn-wa"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3 0 .1 0 .5-.2 1.1z"/></svg>Share on WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REFRESHED: two screens ================= -->
+    <section aria-labelledby="lbl-refresh">
+      <div class="col-label"><span id="lbl-refresh">Refreshed</span><span class="sub" id="screenSub">screen 1 of 2 · Understand &amp; prepare</span></div>
+      <div class="flow">
+
+        <!-- Screen 1: Understand & prepare -->
+        <div class="screen" id="screen-1">
+          <div class="receipt v2">
+            <div class="receipt-inner">
+              <span class="receipt-tag">Form Guide · Form 8</span>
+              <h2 tabindex="-1">Update your address — Form 8</h2>
+              <button type="button" class="listen-btn" aria-pressed="false">🔊 सुनें · Listen</button>
+
+              <div class="receipt-meaning">You moved, so your voter registration needs to move with you. This is normal and common — Form 8 covers exactly this, no other form needed.</div>
+
+              <!-- Secondary info behind "Show details": meta block (Move 2) + rejection reasons -->
+              <button type="button" class="disclose" data-disclose="details-panel" data-open="Show details" data-close="Hide details" aria-expanded="false" aria-controls="details-panel">
+                <span class="annot" aria-hidden="true">4</span>
+                <span class="disclose-label">Show details</span>
+                <svg class="chev" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5l4 4 4-4"/></svg>
+              </button>
+              <div id="details-panel" class="panel" hidden>
+                <div class="receipt-meta">
+                  <span class="annot" aria-hidden="true">2</span>
+                  <div class="receipt-row stack">
+                    <span class="k">Timeline</span>
+                    <span class="v">Usually a few weeks. In one documented case, a former diplomat reported it took up to <span class="num">6 months</span>. Treat this as possible, not certain. Apply as early as you can.</span>
+                  </div>
+                  <div class="receipt-row">
+                    <span class="k">Verified</span>
+                    <span class="v num">1 Sep 2026</span>
+                  </div>
+                  <div class="receipt-row">
+                    <span class="k">Source</span>
+                    <span class="v">Election Commission of India</span>
+                  </div>
+                </div>
+
+                <div class="doclist-heading">Why applications like this get rejected</div>
+                <div class="receipt-rejects">
+                  <span class="annot" aria-hidden="true">3</span>
+                  <span class="reject-tag">Not "ordinarily resident" — about <span class="num">12–15%</span> of cases<span class="reject-note">(research estimate, not an official figure)</span></span>
+                </div>
+              </div>
+
+              <!-- Documents: the point of this screen, open by default. Move 1. -->
+              <div class="doclist-heading has-progress">
+                <span class="annot" aria-hidden="true">1</span>
+                <span>Documents needed</span>
+                <span class="ready">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <circle class="track" cx="10" cy="10" r="7.5" fill="none" stroke-width="2.4"/>
+                    <circle class="fill" id="readyFill" cx="10" cy="10" r="7.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="47.12" stroke-dashoffset="23.56"/>
+                  </svg>
+                  <span aria-live="polite"><span class="num" id="readyCount">1</span> of <span class="num">2</span> ready</span>
+                </span>
+              </div>
+              <ul class="receipt-doclist" id="doclist">
+                <li>
+                  <button type="button" class="box" role="checkbox" aria-checked="true" aria-label="Proof of your new address"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2l2.2 2.2L8.2 3"/></svg></button>
+                  <span>Proof of your new address (an updated Aadhaar, a recent utility bill, or a rent agreement)<span class="any-one-of">Any one of these</span></span>
+                </li>
+                <li>
+                  <button type="button" class="box" role="checkbox" aria-checked="false" aria-label="Your Voter ID (EPIC) card"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2l2.2 2.2L8.2 3"/></svg></button>
+                  <span>Your Voter ID (EPIC) card, if you have one</span>
+                </li>
+              </ul>
+
+              <!-- Split point: the app's real Continue (.btn-primary from shared.css) -->
+              <div class="receipt-actions">
+                <span class="annot" aria-hidden="true">5</span>
+                <button type="button" class="btn-primary" data-go="2">Continue</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 2: Steps -->
+        <div class="screen" id="screen-2" hidden>
+          <div class="app-header">
+            <span class="annot" aria-hidden="true">5</span>
+            <button type="button" class="back" data-go="1" aria-label="Back">‹</button>
+            <h1 class="title">Steps</h1>
+          </div>
+          <div class="receipt v2 screen-2">
+            <div class="receipt-inner">
+              <ol class="receipt-steps">
+                <li><span class="n">1</span><span class="step-ico" aria-hidden="true">🔗</span><span class="body">Open Form 8 on the official portal<br><a class="step-act" href="#" onclick="return false">Open ↗</a></span></li>
+                <li><span class="n">2</span><span class="step-ico" aria-hidden="true">✏️</span><span class="body">Fill in your new address exactly as it appears on your proof of address<br></span></li>
+                <li><span class="n">3</span><span class="step-ico" aria-hidden="true">📮</span><span class="body">Submit online, or hand it to your local Booth Level Officer (BLO)<br></span></li>
+                <li><span class="n">4</span><span class="step-ico" aria-hidden="true">🔖</span><span class="body">Save this card so you have everything in one place<br><button type="button" class="step-act">Save</button></span></li>
+                <li><span class="n">5</span><span class="step-ico" aria-hidden="true">📤</span><span class="body">Share this card with anyone helping you<br><button type="button" class="step-act">Share on WhatsApp</button></span></li>
+              </ol>
+
+              <div class="stamp-row"><div class="stamp">
+                <svg viewBox="0 0 120 120" role="img" aria-label="VERIFIED 01 SEP 2026">
+                  <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="3.5 4.2"/>
+                  <circle cx="60" cy="60" r="49" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                  <circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                  <defs><path id="arcB" d="M22.5,60 A37.5,37.5 0 0 1 97.5,60"/></defs>
+                  <text font-size="9.8" font-weight="700" letter-spacing="2.2" fill="currentColor"><textPath href="#arcB" startOffset="50%" text-anchor="middle">VOTE SAHAYAK</textPath></text>
+                  <text x="60" y="97" font-size="9" text-anchor="middle" fill="currentColor">★ ★ ★</text>
+                  <text x="60" y="59" font-size="11.8" font-weight="800" text-anchor="middle" textLength="46" lengthAdjust="spacingAndGlyphs" fill="currentColor">VERIFIED</text>
+                  <text x="60" y="72" font-size="7.6" font-weight="600" text-anchor="middle" textLength="44" lengthAdjust="spacingAndGlyphs" fill="currentColor">01 SEP 2026</text>
+                </svg>
+              </div></div>
+
+              <div class="receipt-footer">
+                <span>Source: Election Commission of India · Verified <span class="num">1 Sep 2026</span></span>
+                <span>Helpline: <span class="num">1950</span></span>
+              </div>
+
+              <div class="receipt-actions">
+                <button type="button" class="btn-wa"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3 0 .1 0 .5-.2 1.1z"/></svg>Share on WhatsApp</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <aside class="legend" aria-labelledby="lbl-legend">
+    <h2 id="lbl-legend">Two screens</h2>
+    <ol>
+      <li><span class="n">5</span><span><strong>Split after "Documents needed".</strong> Screen 1 (Understand &amp; prepare): tag, headline, Listen, meaning, "Show details" (meta block + rejection reasons, closed by default), the document checklist open with its ring, and the app's real <code>.btn-primary</code> Continue. Screen 2 (Steps): the app's real <code>.app-header .back</code> with a "Steps" title, all five steps fully shown, the seal, the footer (source, verified date, helpline), and Share on WhatsApp. Continue and Back are wired; the Screen 1 / Screen 2 control above does the same.</span></li>
+      <li><span class="n">4</span><span><strong>"Show details"</strong> stays on screen 1 for the secondary information only. The checklist itself is no longer behind a toggle because it is the point of that screen.</span></li>
+    </ol>
+    <h2>The three approved moves</h2>
+    <ol>
+      <li><span class="n">1</span><span><strong>Checklist progress.</strong> A 20px ring plus "1 of 2 ready" on the "Documents needed" heading, driven by the real checked count (tap a box to try it). A ring rather than a bar: it echoes the round seal and the step numerals, and a full-width bar would read as an app progress bar cutting across the receipt.</span></li>
+      <li><span class="n">2</span><span><strong>One meta block.</strong> Timeline, Verified date and Source in a single dashed-border box, in the position the timeline row used to hold. The dashed line is the receipt's existing vocabulary, so it reads as part of the paper, not a card on a card.</span></li>
+      <li><span class="n">3</span><span><strong>Bolder keys and figures.</strong> Row labels go from muted 400 to secondary 600; the figures that decide something for the reader (6 months, 12–15%, 1 Sep 2026, 1950, 1 of 2) are set at 700 with tabular figures, using the tabular-nums rule already on body.</span></li>
+    </ol>
+    <h2>Copy pass (less text-heavy)</h2>
+    <ol>
+      <li><span class="n">T</span><span><strong>Timeline</strong> split into four short sentences, same facts, same 6-month figure: "Usually a few weeks. In one documented case, a former diplomat reported it took up to 6 months. Treat this as possible, not certain. Apply as early as you can."</span></li>
+      <li><span class="n">R</span><span><strong>Rejection tag</strong> keeps every word. The caveat "(research estimate, not an official figure)" drops to a second line at 10px, weight 500, muted ink, so it reads as a footnote under the 12–15% clause rather than equal-weight text.</span></li>
+      <li><span class="n">M</span><span><strong>Meaning paragraph</strong> left as-is. No trim was found that keeps both the warmth and every fact ("normal and common", "no other form needed"), so it was not forced.</span></li>
+      <li><span class="n">D</span><span><strong>Document 2:</strong> "Your existing Voter ID (EPIC) card, if you have one" became "Your Voter ID (EPIC) card, if you have one". "Existing" repeated what "if you have one" already says. No other label, heading or step lost a word: each remaining candidate carried a number, caveat or scope qualifier ("any one of", "exactly as it appears", "official").</span></li>
+    </ol>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var picks = document.querySelectorAll('[data-theme-pick]');
+  function applyTheme(t){
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    picks.forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-pick') === t)); });
+    try { localStorage.setItem('ac-refresh-theme', t); } catch (e) {}
+  }
+  picks.forEach(function(b){ b.addEventListener('click', function(){ applyTheme(b.getAttribute('data-theme-pick')); }); });
+  var saved = null;
+  try { saved = localStorage.getItem('ac-refresh-theme'); } catch (e) {}
+  if (saved === 'light' || saved === 'dark') applyTheme(saved);
+
+  var annot = document.getElementById('annotToggle');
+  function applyAnnot(){ document.body.classList.toggle('no-annot', !annot.checked); }
+  annot.addEventListener('change', applyAnnot);
+  applyAnnot();
+
+  // Move 1: real ratio from the checklist state.
+  var boxes = document.querySelectorAll('#doclist .box');
+  var C = 2 * Math.PI * 7.5;
+  function updateReady(){
+    var done = 0;
+    boxes.forEach(function(b){ if (b.getAttribute('aria-checked') === 'true') done++; });
+    document.getElementById('readyCount').textContent = String(done);
+    document.getElementById('readyFill').setAttribute('stroke-dashoffset', String(C - (C * done / boxes.length)));
+  }
+  boxes.forEach(function(b){
+    b.addEventListener('click', function(){
+      b.setAttribute('aria-checked', b.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+      updateReady();
+    });
+  });
+  updateReady();
+
+  // "Show details" disclosure on screen 1.
+  document.querySelectorAll('.disclose[data-disclose]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') !== 'true';
+      var target = document.getElementById(btn.getAttribute('data-disclose'));
+      btn.setAttribute('aria-expanded', String(open));
+      target.hidden = !open;
+      btn.querySelector('.disclose-label').textContent = btn.getAttribute(open ? 'data-close' : 'data-open');
+    });
+  });
+
+  // Two-screen navigation: Continue, Back, and the review control all call showScreen.
+  var subs = { 1: 'screen 1 of 2 · Understand & prepare', 2: 'screen 2 of 2 · Steps' };
+  function showScreen(n){
+    [1, 2].forEach(function(i){ document.getElementById('screen-' + i).hidden = (i !== n); });
+    document.querySelectorAll('[data-screen]').forEach(function(b){ b.setAttribute('aria-pressed', String(Number(b.getAttribute('data-screen')) === n)); });
+    document.getElementById('screenSub').textContent = subs[n];
+  }
+  document.querySelectorAll('[data-go]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var n = Number(b.getAttribute('data-go'));
+      showScreen(n);
+      var focusTarget = document.querySelector('#screen-' + n + ' ' + (n === 2 ? '.title' : 'h2'));
+      if (focusTarget) { focusTarget.setAttribute('tabindex', '-1'); focusTarget.focus({ preventScroll: true }); }
+    });
+  });
+  document.querySelectorAll('[data-screen]').forEach(function(b){
+    b.addEventListener('click', function(){ showScreen(Number(b.getAttribute('data-screen'))); });
+  });
+  showScreen(1);
+})();
+</script>

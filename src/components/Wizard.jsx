@@ -226,6 +226,11 @@ export function Wizard({ taskId, onExit, onExitToHome }) {
             aria-pressed={currentQuestion.multi_select ? selected.includes(option.id) : undefined}
             onClick={() => (currentQuestion.multi_select ? toggleMultiSelect(option.id) : handleSingleChoice(option))}
           >
+            {currentQuestion.multi_select && selected.includes(option.id) && (
+              <svg className="chip-check" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M2 5.2l2.2 2.2L8.2 3" />
+              </svg>
+            )}
             {activeLang === 'hi' ? option.label_hi : option.label_en}
           </button>
         ))}

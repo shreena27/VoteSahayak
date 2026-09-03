@@ -7,7 +7,7 @@
     "meaning_en": "You moved, so your voter registration needs to move with you. This is normal and common — Form 8 covers exactly this, no other form needed.",
     "meaning_hi": "आप कहीं और रहने चले गए हैं, इसलिए आपका वोटर पंजीकरण भी वहीं होना चाहिए। यह सामान्य और आम बात है — फॉर्म 8 इसे पूरी तरह कवर करता है, किसी और फॉर्म की ज़रूरत नहीं।",
     "form_id": "form-8",
-    "timeline_en": "Usually a few weeks. In one documented case (a former diplomat's public account) it took up to 6 months — treat that as a possibility, not a guarantee, and apply as early as you can.",
+    "timeline_en": "Usually a few weeks. In one documented case, a former diplomat reported it took up to 6 months. Treat this as possible, not certain. Apply as early as you can.",
     "timeline_hi": "आमतौर पर कुछ हफ्तों में हो जाता है। एक दर्ज मामले में (एक पूर्व राजनयिक के सार्वजनिक बयान के अनुसार) इसमें 6 महीने तक लगे — इसे एक संभावना मानें, गारंटी नहीं, और जितनी जल्दी हो सके आवेदन करें।",
     "rejection_tags": [
       {
@@ -25,7 +25,7 @@
       },
       {
         "id": "doc-existing-epic",
-        "label_en": "Your existing Voter ID (EPIC) card, if you have one",
+        "label_en": "Your Voter ID (EPIC) card, if you have one",
         "label_hi": "आपका मौजूदा वोटर ID (EPIC) कार्ड, अगर आपके पास है",
         "any_one_of": false
       }

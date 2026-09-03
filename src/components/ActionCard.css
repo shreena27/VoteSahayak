@@ -138,6 +138,83 @@
   border-radius: 999px;
 }
 
+.receipt-meta {
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  padding: 2px 13px;
+  margin: 2px 0 0;
+}
+.receipt-meta .receipt-row {
+  padding: 9px 0;
+}
+.receipt-meta .receipt-row .v {
+  font-weight: 600;
+}
+.receipt-meta .receipt-row.stack .v {
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.disclose {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 11px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px dashed var(--border-strong);
+  color: var(--accent-ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.disclose .disclose-label {
+  flex: 1;
+}
+.disclose .chev {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  transition: transform 0.2s ease-out;
+}
+.disclose[aria-expanded='true'] .chev {
+  transform: rotate(180deg);
+}
+.panel {
+  padding-bottom: 4px;
+}
+.panel .doclist-heading {
+  margin-top: 12px;
+}
+
+.reject-tag {
+  padding: 6px 11px 7px;
+  border-radius: 12px;
+  line-height: 1.45;
+}
+.reject-note {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclose .chev {
+    transition: none;
+  }
+}
+
 .doclist-heading {
   font-size: 11.5px;
   font-weight: 600;
@@ -145,6 +222,41 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 14px 0 8px;
+}
+.doclist-heading.has-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+.ready svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transform: rotate(-90deg);
+}
+.ready .track {
+  stroke: var(--border-strong);
+}
+.ready .fill {
+  stroke: var(--accent);
+  transition: stroke-dashoffset 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ready .fill {
+    transition: none;
+  }
 }
 
 .receipt-doclist {
@@ -162,13 +274,8 @@
 .receipt-doclist li:last-child {
   border: none;
 }
-.receipt-doclist .box {
-  width: 15px;
-  height: 15px;
-  border: 1.5px solid var(--border-strong);
-  border-radius: 4px;
-  flex: none;
-  margin-top: 2px;
+.receipt-doclist label {
+  cursor: pointer;
 }
 .receipt-doclist .any-one-of {
   display: block;
@@ -178,6 +285,36 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin-top: 2px;
+}
+
+.receipt-doclist input.box {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  flex: none;
+  margin: 2px 0 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  position: relative;
+}
+.receipt-doclist input.box:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.receipt-doclist input.box:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 5px;
+  height: 8px;
+  border: solid var(--on-accent);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(40deg);
 }
 
 .receipt-steps {
@@ -298,6 +435,10 @@
   width: 100%;
 }
 
+.card-steps-header {
+  margin: -4px 0 4px;
+}
+
 /* Print: the card fills the page, everything else disappears. */
 @media print {
   body * {
@@ -306,6 +447,9 @@
   .receipt,
   .receipt * {
     visibility: visible;
+  }
+  .receipt [hidden] {
+    display: block !important;
   }
   .receipt {
     position: absolute;
@@ -319,7 +463,8 @@
   }
   .listen-btn,
   .step-act,
-  .receipt-actions {
+  .receipt-actions,
+  .card-steps-header .back {
     display: none !important;
   }
   /* Chrome's print dialog defaults "background graphics" off, which would
