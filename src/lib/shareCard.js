@@ -68,6 +68,18 @@ function prepareLightClone(node) {
   // text stayed the live theme's color — invisible on a light background).
   clone.style.color = 'var(--ink)'
 
+  // ActionCard now keeps both its "prepare" and "steps" screens (and the
+  // "Show details" panel) permanently in the DOM and toggles visibility via
+  // the `hidden` attribute, rather than conditionally unmounting either —
+  // specifically so this function always has the complete card to capture,
+  // regardless of which screen or disclosure state the live UI is showing.
+  // html-to-image respects `hidden` (a hidden element has no layout box), so
+  // without this, a share triggered on Screen 1 would silently omit the
+  // steps/seal/footer, and one triggered on Screen 2 would omit the
+  // headline/meaning. Un-hide everything on the clone only — the live page
+  // is untouched.
+  clone.querySelectorAll('[hidden]').forEach((el) => el.removeAttribute('hidden'))
+
   // Strip interactive-only controls — same exclusion list the print
   // stylesheet already uses (ActionCard.css's `@media print`), reused here
   // rather than invented fresh: Listen/Open/Save/Share buttons do nothing
