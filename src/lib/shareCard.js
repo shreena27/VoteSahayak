@@ -101,15 +101,22 @@ function prepareLightClone(node) {
     .querySelectorAll('.listen-btn, .step-act, .receipt-actions, .card-steps-header .back')
     .forEach((el) => el.remove())
 
-  // Checkbox `checked` is a live DOM *property*, set here via React's
-  // controlled-input mechanism (never reflected as the `checked` HTML
-  // *attribute*). html-to-image serializes the clone to markup to build its
-  // SVG <foreignObject> (see the paper-grain filter note below for the same
-  // general failure class), and markup serialization only sees attributes —
-  // so a checked box was silently rendering as unchecked in the captured
-  // image (confirmed live: checkbox showed checked + "1/2 ready" on the real
-  // page, but the shared PNG showed unchecked + "0/2 ready"). Reflecting the
-  // property onto the attribute here is what the serializer actually sees.
+  // Defensive/belt-and-braces only — NOT the fix for the "checked box
+  // rendered unchecked" bug (that turned out to be a stale precomputed
+  // share image in ActionCard.jsx's pre-render effect, fixed there by
+  // adding checkedDocs to its dependency array; see that effect's comment).
+  // Checked-out here at the time: in the pinned html-to-image version, the
+  // library inlines each element's *computed* style onto the clone as it
+  // walks the tree, before ever serializing to markup — computed style
+  // already reflects the live `checked` DOM property regardless of whether
+  // the `checked` HTML *attribute* is present, and its cloned pseudo-element
+  // rule for the checkmark (`.<uuid>:after`) isn't gated by a `:checked`
+  // selector either. So this attribute reflection has no effect on the
+  // rendered pixels today. Left in anyway as cheap insurance against a
+  // future library change that starts relying on the attribute (e.g. if a
+  // later version's checkmark styling used a `:checked` selector, or the
+  // `appearance: none` on `.box` in ActionCard.css were ever dropped) —
+  // harmless either way, since the attribute always matches the property.
   clone.querySelectorAll('input[type="checkbox"]').forEach((el) => {
     el.toggleAttribute('checked', el.checked)
   })

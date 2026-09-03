@@ -120,17 +120,34 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   // timeout guard, so a stalled render here can't hang the component; it
   // just leaves shareFileRef empty and handleShare falls back to a
   // text-only share. Re-runs on language change so the cached image never
-  // shows the wrong language.
+  // shows the wrong language — and on checkedDocs change, so a document the
+  // user just ticked off actually shows as checked in the shared image
+  // (confirmed live: without this dependency, checking a box then sharing
+  // sent whatever was cached at mount — unchecked, "0/2 ready" — since this
+  // effect never re-ran and handleShare only ever reads the cached
+  // shareFileRef, never renders fresh itself).
+  //
+  // Debounced 400ms so rapid checkbox taps don't each trigger their own
+  // real render (renderCardAsFile takes real, non-trivial time). Tradeoff,
+  // left as-is rather than "fixed": a share fired inside this 400ms window
+  // still sends the previous, slightly-stale image rather than the very
+  // latest tick — rendering synchronously on click instead would break the
+  // no-`await`-before-navigator.share() constraint documented on handleShare
+  // below (iOS Safari's user-activation rule), so this is the accepted
+  // tradeoff, not an oversight.
   useEffect(() => {
     if (!cardRef.current) return undefined
     let cancelled = false
-    renderCardAsFile(cardRef.current).then((file) => {
-      if (!cancelled) shareFileRef.current = file
-    })
+    const timer = setTimeout(() => {
+      renderCardAsFile(cardRef.current).then((file) => {
+        if (!cancelled) shareFileRef.current = file
+      })
+    }, 400)
     return () => {
       cancelled = true
+      clearTimeout(timer)
     }
-  }, [activeLang])
+  }, [activeLang, checkedDocs])
 
   function handleListen() {
     if (speaking) {
