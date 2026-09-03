@@ -432,6 +432,10 @@
   width: 100%;
 }
 
+.card-steps-header {
+  margin: -4px 0 4px;
+}
+
 /* Print: the card fills the page, everything else disappears. */
 @media print {
   body * {
@@ -440,6 +444,9 @@
   .receipt,
   .receipt * {
     visibility: visible;
+  }
+  .receipt [hidden] {
+    display: block !important;
   }
   .receipt {
     position: absolute;

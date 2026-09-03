@@ -12,6 +12,7 @@ import {
   trackCardListened,
   trackOfficialLinkTapped,
 } from '../lib/analytics.js'
+import './shared.css'
 import './ActionCard.css'
 
 const STEP_ICON_MAP = {
@@ -59,6 +60,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const [speaking, setSpeaking] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [checkedDocs, setCheckedDocs] = useState(() => new Set())
+  const [screen, setScreen] = useState('prepare')
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -99,7 +101,17 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     headlineRef.current?.focus()
     setDetailsOpen(false)
     setCheckedDocs(new Set())
+    setScreen('prepare')
   }, [card.id])
+
+  // Moves focus to whichever screen becomes active — mirrors the
+  // headline-focus pattern above, but fires on `screen` changes rather than
+  // card.id changes.
+  const stepsHeadingRef = useRef(null)
+  useEffect(() => {
+    if (screen === 'steps') stepsHeadingRef.current?.focus()
+    else headlineRef.current?.focus()
+  }, [screen])
 
   // Best-effort background render so Share can respond within the same
   // click's user-activation gesture — iOS Safari requires navigator.share()
@@ -174,6 +186,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   return (
     <div className="receipt" ref={cardRef}>
       <div className="receipt-inner">
+      <div hidden={screen !== 'prepare'}>
         <span className="receipt-tag">{tagSuffix ? `${tag} · ${tagSuffix}` : tag}</span>
         <h2 ref={headlineRef} tabIndex={-1}>
           {headline}
@@ -269,6 +282,22 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
           </>
         )}
 
+        <div className="receipt-actions">
+          <button type="button" className="btn-primary" onClick={() => setScreen('steps')}>
+            {t('wizard.continue')}
+          </button>
+        </div>
+      </div>
+
+      <div hidden={screen !== 'steps'}>
+        <div className="app-header card-steps-header">
+          <button type="button" className="back" onClick={() => setScreen('prepare')} aria-label={t('wizard.back')}>
+            ‹
+          </button>
+          <h1 className="title" ref={stepsHeadingRef} tabIndex={-1}>
+            {t('card.steps')}
+          </h1>
+        </div>
         <ol className="receipt-steps">
           {orderedSteps.map((step, i) => (
             <li key={step.id}>
@@ -341,6 +370,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
             {t('card.shareWhatsapp')}
           </button>
         </div>
+      </div>
       </div>
     </div>
   )
