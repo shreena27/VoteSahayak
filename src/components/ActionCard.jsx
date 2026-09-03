@@ -57,6 +57,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const headlineRef = useRef(null)
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
   const [speaking, setSpeaking] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -95,6 +96,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   // without unmounting it.
   useEffect(() => {
     headlineRef.current?.focus()
+    setDetailsOpen(false)
   }, [card.id])
 
   // Best-effort background render so Share can respond within the same
@@ -180,23 +182,51 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
           </div>
         ))}
 
-        <div className="receipt-row stack">
-          <span className="k">{t('card.timeline')}</span>
-          <span className="v">{timeline}</span>
-        </div>
-
-        {card.rejection_tags.length > 0 && (
-          <>
-            <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
-            <div className="receipt-rejects">
-              {card.rejection_tags.map((tagItem) => (
-                <span key={tagItem.id} className="reject-tag">
-                  {activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en}
-                </span>
-              ))}
+        <button
+          type="button"
+          className="disclose"
+          aria-expanded={detailsOpen}
+          aria-controls={`details-panel-${card.id}`}
+          onClick={() => setDetailsOpen((v) => !v)}
+        >
+          <span className="disclose-label">{detailsOpen ? t('card.hideDetails') : t('card.showDetails')}</span>
+          <svg className="chev" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 5.5l4 4 4-4" />
+          </svg>
+        </button>
+        <div id={`details-panel-${card.id}`} className="panel" hidden={!detailsOpen}>
+          <div className="receipt-meta">
+            <div className="receipt-row stack">
+              <span className="k">{t('card.timeline')}</span>
+              <span className="v">{timeline}</span>
             </div>
-          </>
-        )}
+            <div className="receipt-row">
+              <span className="k">{t('card.verified')}</span>
+              <span className="v num">{formatDisplayDate(card.verified_on, activeLang)}</span>
+            </div>
+            <div className="receipt-row stack">
+              <span className="v">{activeLang === 'hi' ? card.source_line_hi : card.source_line}</span>
+            </div>
+          </div>
+
+          {card.rejection_tags.length > 0 && (
+            <>
+              <div className="doclist-heading">{t('card.rejectionsHeading')}</div>
+              <div className="receipt-rejects">
+                {card.rejection_tags.map((tagItem) => {
+                  const label = activeLang === 'hi' ? tagItem.label_hi : tagItem.label_en
+                  const match = label.match(/^(.*)(\([^)]+\))\s*$/)
+                  return (
+                    <span key={tagItem.id} className="reject-tag">
+                      {match ? match[1].trim() : label}
+                      {match && <span className="reject-note">{match[2]}</span>}
+                    </span>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </div>
 
         {card.document_requirements.length > 0 && (
           <>
