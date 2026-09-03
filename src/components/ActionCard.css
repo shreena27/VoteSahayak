@@ -445,7 +445,7 @@
   .receipt * {
     visibility: visible;
   }
-  .receipt [hidden] {
+  .receipt-inner > [hidden] {
     display: block !important;
   }
   .receipt {
