@@ -274,6 +274,9 @@
 .receipt-doclist li:last-child {
   border: none;
 }
+.receipt-doclist label {
+  cursor: pointer;
+}
 .receipt-doclist .any-one-of {
   display: block;
   font-size: 10.5px;
@@ -445,7 +448,7 @@
   .receipt * {
     visibility: visible;
   }
-  .receipt-inner > [hidden] {
+  .receipt [hidden] {
     display: block !important;
   }
   .receipt {

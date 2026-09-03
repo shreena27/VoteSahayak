@@ -259,25 +259,21 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
               <DocProgressRing total={card.document_requirements.length} checked={checkedDocs.size} label={t('card.ready')} />
             </div>
             <ul className="receipt-doclist">
-              {card.document_requirements.map((doc) => {
-                const labelId = `doc-label-${card.id}-${doc.id}`
-                return (
-                  <li key={doc.id}>
-                    <input
-                      type="checkbox"
-                      id={`doc-check-${card.id}-${doc.id}`}
-                      className="box"
-                      checked={checkedDocs.has(doc.id)}
-                      onChange={() => toggleDocChecked(doc.id)}
-                      aria-labelledby={labelId}
-                    />
-                    <span id={labelId}>
-                      {activeLang === 'hi' ? doc.label_hi : doc.label_en}
-                      {doc.any_one_of && <span className="any-one-of">{t('card.documentsAnyOneOf')}</span>}
-                    </span>
-                  </li>
-                )
-              })}
+              {card.document_requirements.map((doc) => (
+                <li key={doc.id}>
+                  <input
+                    type="checkbox"
+                    id={`doc-check-${card.id}-${doc.id}`}
+                    className="box"
+                    checked={checkedDocs.has(doc.id)}
+                    onChange={() => toggleDocChecked(doc.id)}
+                  />
+                  <label htmlFor={`doc-check-${card.id}-${doc.id}`}>
+                    {activeLang === 'hi' ? doc.label_hi : doc.label_en}
+                    {doc.any_one_of && <span className="any-one-of">{t('card.documentsAnyOneOf')}</span>}
+                  </label>
+                </li>
+              ))}
             </ul>
           </>
         )}
@@ -291,12 +287,12 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
 
       <div hidden={screen !== 'steps'}>
         <div className="app-header card-steps-header">
-          <button type="button" className="back" onClick={() => setScreen('prepare')} aria-label={t('wizard.back')}>
+          <button type="button" className="back" onClick={() => setScreen('prepare')} aria-label={t('card.backToPrepare')}>
             ‹
           </button>
-          <h1 className="title" ref={stepsHeadingRef} tabIndex={-1}>
+          <h2 className="title" ref={stepsHeadingRef} tabIndex={-1}>
             {t('card.steps')}
-          </h1>
+          </h2>
         </div>
         <ol className="receipt-steps">
           {orderedSteps.map((step, i) => (
