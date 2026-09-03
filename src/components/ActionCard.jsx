@@ -58,6 +58,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   const [saveState, setSaveState] = useState(() => (isCardSaved(card.id) ? 'saved' : 'idle'))
   const [speaking, setSpeaking] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [checkedDocs, setCheckedDocs] = useState(() => new Set())
 
   const form = useMemo(() => forms.find((f) => f.id === card.form_id) ?? null, [forms, card.form_id])
 
@@ -97,6 +98,7 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
   useEffect(() => {
     headlineRef.current?.focus()
     setDetailsOpen(false)
+    setCheckedDocs(new Set())
   }, [card.id])
 
   // Best-effort background render so Share can respond within the same
@@ -144,6 +146,15 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     const saved = saveCard(card)
     setSaveState(saved ? 'saved' : 'failed')
     if (saved) trackCardSaved(card.id)
+  }
+
+  function toggleDocChecked(docId) {
+    setCheckedDocs((prev) => {
+      const next = new Set(prev)
+      if (next.has(docId)) next.delete(docId)
+      else next.add(docId)
+      return next
+    })
   }
 
   async function handleShare() {
@@ -230,17 +241,30 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
 
         {card.document_requirements.length > 0 && (
           <>
-            <div className="doclist-heading">{t('card.documentsNeeded')}</div>
+            <div className="doclist-heading has-progress">
+              <span>{t('card.documentsNeeded')}</span>
+              <DocProgressRing total={card.document_requirements.length} checked={checkedDocs.size} label={t('card.ready')} />
+            </div>
             <ul className="receipt-doclist">
-              {card.document_requirements.map((doc) => (
-                <li key={doc.id}>
-                  <span className="box" />
-                  <span>
-                    {activeLang === 'hi' ? doc.label_hi : doc.label_en}
-                    {doc.any_one_of && <span className="any-one-of">{t('card.documentsAnyOneOf')}</span>}
-                  </span>
-                </li>
-              ))}
+              {card.document_requirements.map((doc) => {
+                const labelId = `doc-label-${card.id}-${doc.id}`
+                return (
+                  <li key={doc.id}>
+                    <input
+                      type="checkbox"
+                      id={`doc-check-${card.id}-${doc.id}`}
+                      className="box"
+                      checked={checkedDocs.has(doc.id)}
+                      onChange={() => toggleDocChecked(doc.id)}
+                      aria-labelledby={labelId}
+                    />
+                    <span id={labelId}>
+                      {activeLang === 'hi' ? doc.label_hi : doc.label_en}
+                      {doc.any_one_of && <span className="any-one-of">{t('card.documentsAnyOneOf')}</span>}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           </>
         )}
@@ -327,5 +351,33 @@ function WhatsAppIcon() {
     <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
       <path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3 0 .1 0 .5-.2 1.1z" />
     </svg>
+  )
+}
+
+const RING_RADIUS = 7.5
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
+
+function DocProgressRing({ total, checked, label }) {
+  const offset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * checked) / total
+  return (
+    <span className="ready">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <circle className="track" cx="10" cy="10" r={RING_RADIUS} fill="none" strokeWidth="2.4" />
+        <circle
+          className="fill"
+          cx="10"
+          cy="10"
+          r={RING_RADIUS}
+          fill="none"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeDasharray={RING_CIRCUMFERENCE}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <span aria-live="polite">
+        <span className="num">{checked}</span>/<span className="num">{total}</span> {label}
+      </span>
+    </span>
   )
 }
