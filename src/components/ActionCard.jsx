@@ -140,7 +140,14 @@ export function ActionCard({ card, forms = [], extraRows = [], tagSuffix }) {
     let cancelled = false
     const timer = setTimeout(() => {
       renderCardAsFile(cardRef.current).then((file) => {
-        if (!cancelled) shareFileRef.current = file
+        // `file` is null on any render failure/timeout (RENDER_TIMEOUT_MS).
+        // Now that this effect re-fires on every checklist toggle (not just
+        // mount/language-change), a slow or failed render must NOT clobber a
+        // previously-good cached image with null — that would silently
+        // downgrade Share to text-only right when the user is most likely to
+        // tap it. A stale-but-present image beats no image, matching this
+        // effect's own documented preference above.
+        if (!cancelled && file) shareFileRef.current = file
       })
     }, 400)
     return () => {
