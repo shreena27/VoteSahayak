@@ -101,6 +101,19 @@ function prepareLightClone(node) {
     .querySelectorAll('.listen-btn, .step-act, .receipt-actions, .card-steps-header .back')
     .forEach((el) => el.remove())
 
+  // Checkbox `checked` is a live DOM *property*, set here via React's
+  // controlled-input mechanism (never reflected as the `checked` HTML
+  // *attribute*). html-to-image serializes the clone to markup to build its
+  // SVG <foreignObject> (see the paper-grain filter note below for the same
+  // general failure class), and markup serialization only sees attributes —
+  // so a checked box was silently rendering as unchecked in the captured
+  // image (confirmed live: checkbox showed checked + "1/2 ready" on the real
+  // page, but the shared PNG showed unchecked + "0/2 ready"). Reflecting the
+  // property onto the attribute here is what the serializer actually sees.
+  clone.querySelectorAll('input[type="checkbox"]').forEach((el) => {
+    el.toggleAttribute('checked', el.checked)
+  })
+
   // .receipt's paper-grain texture is an SVG data-URL whose <rect> has no
   // fill and relies on filter="url(#n)" to become faint noise. Inside
   // html-to-image's own SVG-as-image render that filter reference does not
