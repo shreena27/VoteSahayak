@@ -460,7 +460,8 @@
   }
   .listen-btn,
   .step-act,
-  .receipt-actions {
+  .receipt-actions,
+  .card-steps-header .back {
     display: none !important;
   }
   /* Chrome's print dialog defaults "background graphics" off, which would

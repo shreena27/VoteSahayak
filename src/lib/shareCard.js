@@ -78,6 +78,11 @@ function prepareLightClone(node) {
   // steps/seal/footer, and one triggered on Screen 2 would omit the
   // headline/meaning. Un-hide everything on the clone only — the live page
   // is untouched.
+  //
+  // This runs before the interactive-controls strip below, but the two
+  // selectors don't target each other's matches (neither depends on
+  // `hidden` state), so the two calls are order-independent — swapping them
+  // would produce the same clone.
   clone.querySelectorAll('[hidden]').forEach((el) => el.removeAttribute('hidden'))
 
   // Strip interactive-only controls — same exclusion list the print
@@ -85,8 +90,16 @@ function prepareLightClone(node) {
   // rather than invented fresh: Listen/Open/Save/Share buttons do nothing
   // in a static image and shouldn't appear in one (confirmed live: a real
   // share came back with the full "Open ↗ / Save / Share on WhatsApp"
-  // button stack baked into the picture).
-  clone.querySelectorAll('.listen-btn, .step-act, .receipt-actions').forEach((el) => el.remove())
+  // button stack baked into the picture). `.card-steps-header .back` is
+  // included for the same reason: before Screen 2 was un-hidden above, its
+  // "‹" back button never reached a capture (Screen 2 was always hidden at
+  // the pre-render effect's mount-time call), so this is the first render
+  // where it would otherwise show up baked into the middle of the image.
+  // The `<h1>` "Steps" heading in the same header is intentionally left in
+  // place — it reads as a legitimate section label, not a dead control.
+  clone
+    .querySelectorAll('.listen-btn, .step-act, .receipt-actions, .card-steps-header .back')
+    .forEach((el) => el.remove())
 
   // .receipt's paper-grain texture is an SVG data-URL whose <rect> has no
   // fill and relies on filter="url(#n)" to become faint noise. Inside
